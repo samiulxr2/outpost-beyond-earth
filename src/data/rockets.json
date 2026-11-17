@@ -1,0 +1,117 @@
+{
+  "metadata": {
+    "dataset": "NASA Space Launch System & Commercial Launch Vehicle Performance Fact Sheets",
+    "source": "NASA Exploration Systems Development Directorate (ESDMD) & Commercial Launch Providers",
+    "sourceUrl": "https://www.nasa.gov/humans-in-space/space-launch-system/",
+    "retrievedOn": "2026-11-17",
+    "dataOrigin": "factsheet-manual",
+    "units": {
+      "mass": "Kilograms (kg)",
+      "thrust": "Kilonewtons (kN)",
+      "isp": "Seconds (s)",
+      "cost": "Million USD ($M)"
+    }
+  },
+  "rockets": [
+    {
+      "id": "sls_block_1b",
+      "name": "SLS Block 1B (Cargo / EUS)",
+      "agency": "NASA",
+      "stages": [
+        {
+          "name": "Core Stage + 2x 5-Segment SRBs",
+          "dryMassKg": 130000,
+          "propellantMassKg": 2450000,
+          "ispVacuumS": 300
+        },
+        {
+          "name": "Exploration Upper Stage (4x RL10C-3)",
+          "dryMassKg": 14000,
+          "propellantMassKg": 129000,
+          "ispVacuumS": 453
+        }
+      ],
+      "maxPayloadToLEOKg": 105000,
+      "maxPayloadToTLIKg": 38000,
+      "maxPayloadToTMIKg": 27000,
+      "costPerLaunchMUSD": 2200,
+      "reliabilityRating": "Human-Rated (Artemis Baseline)",
+      "description": "NASA's deep-space heavy-lift vehicle powered by four RS-25 engines and the Exploration Upper Stage (EUS)."
+    },
+    {
+      "id": "falcon_heavy_exp",
+      "name": "Falcon Heavy (Fully Expendable)",
+      "agency": "SpaceX",
+      "stages": [
+        {
+          "name": "3x Falcon Boosters (27 Merlin 1D)",
+          "dryMassKg": 66600,
+          "propellantMassKg": 1230000,
+          "ispVacuumS": 311
+        },
+        {
+          "name": "Second Stage (1x Merlin 1D Vac)",
+          "dryMassKg": 4000,
+          "propellantMassKg": 92000,
+          "ispVacuumS": 348
+        }
+      ],
+      "maxPayloadToLEOKg": 63800,
+      "maxPayloadToTLIKg": 19000,
+      "maxPayloadToTMIKg": 16800,
+      "costPerLaunchMUSD": 150,
+      "reliabilityRating": "High Operational Flight Heritage",
+      "description": "Cost-effective commercial heavy-lift vehicle utilized for Europa Clipper and Gateway logistics."
+    },
+    {
+      "id": "starship_hls",
+      "name": "Starship HLS (Depot Refueled)",
+      "agency": "SpaceX / NASA Artemis",
+      "stages": [
+        {
+          "name": "Super Heavy Booster (33 Raptor 3)",
+          "dryMassKg": 200000,
+          "propellantMassKg": 3400000,
+          "ispVacuumS": 350
+        },
+        {
+          "name": "Starship Second Stage / HLS",
+          "dryMassKg": 100000,
+          "propellantMassKg": 1200000,
+          "ispVacuumS": 380
+        }
+      ],
+      "maxPayloadToLEOKg": 150000,
+      "maxPayloadToTLIKg": 100000,
+      "maxPayloadToTMIKg": 100000,
+      "costPerLaunchMUSD": 200,
+      "reliabilityRating": "Next-Gen Lunar Surface Architecture",
+      "description": "Massive stainless-steel lunar lander selected by NASA for Artemis III and IV crew landings."
+    },
+    {
+      "id": "vulcan_centaur",
+      "name": "Vulcan Centaur (VC6L)",
+      "agency": "United Launch Alliance (ULA)",
+      "stages": [
+        {
+          "name": "Booster (2x BE-4 + 6 SRBs)",
+          "dryMassKg": 42000,
+          "propellantMassKg": 520000,
+          "ispVacuumS": 335
+        },
+        {
+          "name": "Centaur V (2x RL10C-1-1)",
+          "dryMassKg": 5800,
+          "propellantMassKg": 54000,
+          "ispVacuumS": 453.8
+        }
+      ],
+      "maxPayloadToLEOKg": 27200,
+      "maxPayloadToTLIKg": 12100,
+      "maxPayloadToTMIKg": 9800,
+      "costPerLaunchMUSD": 120,
+      "reliabilityRating": "High Precision Orbital Injection",
+      "description": "High-energy upper stage rocket providing precise orbital injection for Peregrine and military payloads."
+    }
+  ]
+}

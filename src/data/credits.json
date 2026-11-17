@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "dataset": "NASA International Space Apps Challenge 2027 Attribution Registry",
+    "source": "NASA Open Science Data Initiative",
+    "sourceUrl": "https://www.spaceappschallenge.org/",
+    "retrievedOn": "2026-11-17",
+    "dataOrigin": "factsheet-manual",
+    "units": {
+      "citation": "BibTeX / Text"
+    }
+  },
+  "gameTitle": "Outpost: Beyond Earth",
+  "event": "NASA International Space Apps Challenge 2027",
+  "credits": [
+    {
+      "role": "Orbital Mechanics & Planetary Telemetry",
+      "source": "NASA Jet Propulsion Laboratory (JPL) Horizons Ephemeris System",
+      "url": "https://ssd.jpl.nasa.gov/horizons/",
+      "citation": "Giorgini, J.D., et al. (1996), JPL's On-Line Solar System Data Service, Bull. Am. Astron. Soc."
+    },
+    {
+      "role": "Lunar Topography & Artemis Polar Landing Sites",
+      "source": "Lunar Reconnaissance Orbiter (LRO) LOLA & LROC Teams",
+      "url": "https://lunar.gsfc.nasa.gov/",
+      "citation": "Smith, D.E., et al. (2010), Initial observations from the Lunar Orbiter Laser Altimeter (LOLA) on LRO, GRL."
+    },
+    {
+      "role": "Mars Atmospheric & Topographical Telemetry",
+      "source": "Mars 2020 Perseverance & Mars Global Surveyor MOLA",
+      "url": "https://mars.nasa.gov/mars2020/",
+      "citation": "Zurek, R.W., et al. Mars Climate and Surface Observation Systems."
+    },
+    {
+      "role": "Space Weather & Solar Particle Events (DONKI)",
+      "source": "NASA Community Coordinated Modeling Center (CCMC) DONKI",
+      "url": "https://kauai.ccmc.gsfc.nasa.gov/DONKI/",
+      "citation": "Space Weather Database Of Notifications, Knowledge, Information."
+    },
+    {
+      "role": "Life Support (ECLSS) Metabolic Baselines",
+      "source": "NASA Human Integration Design Handbook (HIDH)",
+      "url": "https://www.nasa.gov/hhp/human-integration-design-handbook/",
+      "citation": "NASA/SP-2010-3407 Human Integration Design Handbook."
+    },
+    {
+      "role": "Nuclear Surface Power (Kilopower Project)",
+      "source": "NASA Glenn Research Center & Los Alamos National Laboratory",
+      "url": "https://www.nasa.gov/directorates/stmd/kilopower/",
+      "citation": "McClure, P., et al. (2020), Kilopower Project Results, Nuclear Technology."
+    }
+  ]
+}

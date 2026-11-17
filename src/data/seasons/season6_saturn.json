@@ -1,0 +1,311 @@
+{
+  "metadata": {
+    "dataset": "NASA Outer Solar System Hydrocarbon & Cryovolcanic Worlds",
+    "source": "NASA Cassini-Huygens Mission & JHU/APL Dragonfly Team",
+    "sourceUrl": "https://science.nasa.gov/mission/dragonfly/",
+    "retrievedOn": "2026-11-17",
+    "dataOrigin": "factsheet-manual",
+    "units": {
+      "budget": "Credits / USD",
+      "time": "Earth Days",
+      "resources": "Kilograms (kg)"
+    }
+  },
+  "seasonId": 6,
+  "seasonName": "Season 6: Methane Seas (Titan & Enceladus)",
+  "destination": "Titan",
+  "bodyId": "titan",
+  "description": "Operate in dense nitrogen atmospheres with liquid methane seas, cryovolcano geysers on Enceladus, and Dragonfly rotorcraft exploration.",
+  "levels": [
+    {
+      "levelNumber": 1,
+      "title": "Saturnian Moon Level 1",
+      "landingSiteId": "titan_kraken_mare",
+      "missionDurationDays": 80,
+      "startingBudgetCredits": 4000000,
+      "startingSciencePoints": 1500,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_sat_1",
+          "description": "Titan / Enceladus Settlement Phase 1",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 50,
+        "twoStarThresholdDays": 70
+      },
+      "realDataReference": {
+        "title": "Cassini-Huygens & Dragonfly Mission",
+        "source": "NASA JHU/APL Dragonfly Team",
+        "explanation": "Titan has a 1.45 bar nitrogen atmosphere with methane hydrological cycle."
+      }
+    },
+    {
+      "levelNumber": 2,
+      "title": "Saturnian Moon Level 2",
+      "landingSiteId": "titan_kraken_mare",
+      "missionDurationDays": 160,
+      "startingBudgetCredits": 4700000,
+      "startingSciencePoints": 1850,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_sat_2",
+          "description": "Titan / Enceladus Settlement Phase 2",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 100,
+        "twoStarThresholdDays": 140
+      },
+      "realDataReference": {
+        "title": "Cassini-Huygens & Dragonfly Mission",
+        "source": "NASA JHU/APL Dragonfly Team",
+        "explanation": "Titan has a 1.45 bar nitrogen atmosphere with methane hydrological cycle."
+      }
+    },
+    {
+      "levelNumber": 3,
+      "title": "Saturnian Moon Level 3",
+      "landingSiteId": "titan_kraken_mare",
+      "missionDurationDays": 240,
+      "startingBudgetCredits": 5400000,
+      "startingSciencePoints": 2200,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_sat_3",
+          "description": "Titan / Enceladus Settlement Phase 3",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 150,
+        "twoStarThresholdDays": 210
+      },
+      "realDataReference": {
+        "title": "Cassini-Huygens & Dragonfly Mission",
+        "source": "NASA JHU/APL Dragonfly Team",
+        "explanation": "Titan has a 1.45 bar nitrogen atmosphere with methane hydrological cycle."
+      }
+    },
+    {
+      "levelNumber": 4,
+      "title": "Saturnian Moon Level 4",
+      "landingSiteId": "titan_kraken_mare",
+      "missionDurationDays": 320,
+      "startingBudgetCredits": 6100000,
+      "startingSciencePoints": 2550,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_sat_4",
+          "description": "Titan / Enceladus Settlement Phase 4",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 200,
+        "twoStarThresholdDays": 280
+      },
+      "realDataReference": {
+        "title": "Cassini-Huygens & Dragonfly Mission",
+        "source": "NASA JHU/APL Dragonfly Team",
+        "explanation": "Titan has a 1.45 bar nitrogen atmosphere with methane hydrological cycle."
+      }
+    },
+    {
+      "levelNumber": 5,
+      "title": "Saturnian Moon Level 5",
+      "landingSiteId": "titan_kraken_mare",
+      "missionDurationDays": 400,
+      "startingBudgetCredits": 6800000,
+      "startingSciencePoints": 2900,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_sat_5",
+          "description": "Titan / Enceladus Settlement Phase 5",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 250,
+        "twoStarThresholdDays": 350
+      },
+      "realDataReference": {
+        "title": "Cassini-Huygens & Dragonfly Mission",
+        "source": "NASA JHU/APL Dragonfly Team",
+        "explanation": "Titan has a 1.45 bar nitrogen atmosphere with methane hydrological cycle."
+      }
+    },
+    {
+      "levelNumber": 6,
+      "title": "Saturnian Moon Level 6",
+      "landingSiteId": "titan_kraken_mare",
+      "missionDurationDays": 480,
+      "startingBudgetCredits": 7500000,
+      "startingSciencePoints": 3250,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_sat_6",
+          "description": "Titan / Enceladus Settlement Phase 6",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 300,
+        "twoStarThresholdDays": 420
+      },
+      "realDataReference": {
+        "title": "Cassini-Huygens & Dragonfly Mission",
+        "source": "NASA JHU/APL Dragonfly Team",
+        "explanation": "Titan has a 1.45 bar nitrogen atmosphere with methane hydrological cycle."
+      }
+    },
+    {
+      "levelNumber": 7,
+      "title": "Saturnian Moon Level 7",
+      "landingSiteId": "titan_kraken_mare",
+      "missionDurationDays": 560,
+      "startingBudgetCredits": 8200000,
+      "startingSciencePoints": 3600,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_sat_7",
+          "description": "Titan / Enceladus Settlement Phase 7",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 350,
+        "twoStarThresholdDays": 490
+      },
+      "realDataReference": {
+        "title": "Cassini-Huygens & Dragonfly Mission",
+        "source": "NASA JHU/APL Dragonfly Team",
+        "explanation": "Titan has a 1.45 bar nitrogen atmosphere with methane hydrological cycle."
+      }
+    },
+    {
+      "levelNumber": 8,
+      "title": "Saturnian Moon Level 8",
+      "landingSiteId": "titan_kraken_mare",
+      "missionDurationDays": 640,
+      "startingBudgetCredits": 8900000,
+      "startingSciencePoints": 3950,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_sat_8",
+          "description": "Titan / Enceladus Settlement Phase 8",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 400,
+        "twoStarThresholdDays": 560
+      },
+      "realDataReference": {
+        "title": "Cassini-Huygens & Dragonfly Mission",
+        "source": "NASA JHU/APL Dragonfly Team",
+        "explanation": "Titan has a 1.45 bar nitrogen atmosphere with methane hydrological cycle."
+      }
+    },
+    {
+      "levelNumber": 9,
+      "title": "Saturnian Moon Level 9",
+      "landingSiteId": "titan_kraken_mare",
+      "missionDurationDays": 720,
+      "startingBudgetCredits": 9600000,
+      "startingSciencePoints": 4300,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_sat_9",
+          "description": "Titan / Enceladus Settlement Phase 9",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 450,
+        "twoStarThresholdDays": 630
+      },
+      "realDataReference": {
+        "title": "Cassini-Huygens & Dragonfly Mission",
+        "source": "NASA JHU/APL Dragonfly Team",
+        "explanation": "Titan has a 1.45 bar nitrogen atmosphere with methane hydrological cycle."
+      }
+    },
+    {
+      "levelNumber": 10,
+      "title": "Saturnian Moon Level 10",
+      "landingSiteId": "titan_kraken_mare",
+      "missionDurationDays": 800,
+      "startingBudgetCredits": 10300000,
+      "startingSciencePoints": 4650,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_sat_10",
+          "description": "Titan / Enceladus Settlement Phase 10",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 500,
+        "twoStarThresholdDays": 700
+      },
+      "realDataReference": {
+        "title": "Cassini-Huygens & Dragonfly Mission",
+        "source": "NASA JHU/APL Dragonfly Team",
+        "explanation": "Titan has a 1.45 bar nitrogen atmosphere with methane hydrological cycle."
+      }
+    }
+  ]
+}

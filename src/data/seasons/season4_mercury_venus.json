@@ -1,0 +1,331 @@
+{
+  "metadata": {
+    "dataset": "NASA Inner Solar System Planetary Studies",
+    "source": "NASA Langley HAVOC Study & MESSENGER Mission",
+    "sourceUrl": "https://sacd.larc.nasa.gov/smab/havoc/",
+    "retrievedOn": "2026-11-17",
+    "dataOrigin": "factsheet-manual",
+    "units": {
+      "budget": "Credits / USD",
+      "time": "Earth Days",
+      "resources": "Kilograms (kg)"
+    }
+  },
+  "seasonId": 4,
+  "seasonName": "Season 4: Thermal Extremes (Venus Clouds & Mercury Poles)",
+  "destination": "Venus & Mercury",
+  "bodyId": "venus",
+  "description": "Hovering aerostat cloud platforms in the benign 55km Venus atmosphere and permanently shadowed cryogenic ice craters on Mercury.",
+  "levels": [
+    {
+      "levelNumber": 1,
+      "title": "Inner Planet Level 1",
+      "landingSiteId": "venus_cloud_altitude_55km",
+      "missionDurationDays": 50,
+      "startingBudgetCredits": 2500000,
+      "startingSciencePoints": 800,
+      "availableModules": [
+        "vsat_solar_array",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_inner_1",
+          "description": "Inner Solar System Phase 1",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 35,
+        "twoStarThresholdDays": 45
+      },
+      "realDataReference": {
+        "title": "HAVOC Venus Cloud Architecture & MESSENGER Mercury Polar Ice",
+        "source": "NASA Langley Research Center",
+        "explanation": "At 55 km, Venus has 1 bar pressure and 25°C."
+      }
+    },
+    {
+      "levelNumber": 2,
+      "title": "Inner Planet Level 2",
+      "landingSiteId": "venus_cloud_altitude_55km",
+      "missionDurationDays": 100,
+      "startingBudgetCredits": 3000000,
+      "startingSciencePoints": 1050,
+      "availableModules": [
+        "vsat_solar_array",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_inner_2",
+          "description": "Inner Solar System Phase 2",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 70,
+        "twoStarThresholdDays": 90
+      },
+      "realDataReference": {
+        "title": "HAVOC Venus Cloud Architecture & MESSENGER Mercury Polar Ice",
+        "source": "NASA Langley Research Center",
+        "explanation": "At 55 km, Venus has 1 bar pressure and 25°C."
+      }
+    },
+    {
+      "levelNumber": 3,
+      "title": "Inner Planet Level 3",
+      "landingSiteId": "venus_cloud_altitude_55km",
+      "missionDurationDays": 150,
+      "startingBudgetCredits": 3500000,
+      "startingSciencePoints": 1300,
+      "availableModules": [
+        "vsat_solar_array",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_inner_3",
+          "description": "Inner Solar System Phase 3",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 105,
+        "twoStarThresholdDays": 135
+      },
+      "realDataReference": {
+        "title": "HAVOC Venus Cloud Architecture & MESSENGER Mercury Polar Ice",
+        "source": "NASA Langley Research Center",
+        "explanation": "At 55 km, Venus has 1 bar pressure and 25°C."
+      }
+    },
+    {
+      "levelNumber": 4,
+      "title": "Inner Planet Level 4",
+      "landingSiteId": "venus_cloud_altitude_55km",
+      "missionDurationDays": 200,
+      "startingBudgetCredits": 4000000,
+      "startingSciencePoints": 1550,
+      "availableModules": [
+        "vsat_solar_array",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_inner_4",
+          "description": "Inner Solar System Phase 4",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 140,
+        "twoStarThresholdDays": 180
+      },
+      "realDataReference": {
+        "title": "HAVOC Venus Cloud Architecture & MESSENGER Mercury Polar Ice",
+        "source": "NASA Langley Research Center",
+        "explanation": "At 55 km, Venus has 1 bar pressure and 25°C."
+      }
+    },
+    {
+      "levelNumber": 5,
+      "title": "Inner Planet Level 5",
+      "landingSiteId": "venus_cloud_altitude_55km",
+      "missionDurationDays": 250,
+      "startingBudgetCredits": 4500000,
+      "startingSciencePoints": 1800,
+      "availableModules": [
+        "vsat_solar_array",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_inner_5",
+          "description": "Inner Solar System Phase 5",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 175,
+        "twoStarThresholdDays": 225
+      },
+      "realDataReference": {
+        "title": "HAVOC Venus Cloud Architecture & MESSENGER Mercury Polar Ice",
+        "source": "NASA Langley Research Center",
+        "explanation": "At 55 km, Venus has 1 bar pressure and 25°C."
+      }
+    },
+    {
+      "levelNumber": 6,
+      "title": "Inner Planet Level 6",
+      "landingSiteId": "mercury_polar_crater",
+      "missionDurationDays": 300,
+      "startingBudgetCredits": 5000000,
+      "startingSciencePoints": 2050,
+      "availableModules": [
+        "vsat_solar_array",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_inner_6",
+          "description": "Inner Solar System Phase 6",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 210,
+        "twoStarThresholdDays": 270
+      },
+      "realDataReference": {
+        "title": "HAVOC Venus Cloud Architecture & MESSENGER Mercury Polar Ice",
+        "source": "NASA Langley Research Center",
+        "explanation": "At 55 km, Venus has 1 bar pressure and 25°C."
+      }
+    },
+    {
+      "levelNumber": 7,
+      "title": "Inner Planet Level 7",
+      "landingSiteId": "mercury_polar_crater",
+      "missionDurationDays": 350,
+      "startingBudgetCredits": 5500000,
+      "startingSciencePoints": 2300,
+      "availableModules": [
+        "vsat_solar_array",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_inner_7",
+          "description": "Inner Solar System Phase 7",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 245,
+        "twoStarThresholdDays": 315
+      },
+      "realDataReference": {
+        "title": "HAVOC Venus Cloud Architecture & MESSENGER Mercury Polar Ice",
+        "source": "NASA Langley Research Center",
+        "explanation": "At 55 km, Venus has 1 bar pressure and 25°C."
+      }
+    },
+    {
+      "levelNumber": 8,
+      "title": "Inner Planet Level 8",
+      "landingSiteId": "mercury_polar_crater",
+      "missionDurationDays": 400,
+      "startingBudgetCredits": 6000000,
+      "startingSciencePoints": 2550,
+      "availableModules": [
+        "vsat_solar_array",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_inner_8",
+          "description": "Inner Solar System Phase 8",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 280,
+        "twoStarThresholdDays": 360
+      },
+      "realDataReference": {
+        "title": "HAVOC Venus Cloud Architecture & MESSENGER Mercury Polar Ice",
+        "source": "NASA Langley Research Center",
+        "explanation": "At 55 km, Venus has 1 bar pressure and 25°C."
+      }
+    },
+    {
+      "levelNumber": 9,
+      "title": "Inner Planet Level 9",
+      "landingSiteId": "mercury_polar_crater",
+      "missionDurationDays": 450,
+      "startingBudgetCredits": 6500000,
+      "startingSciencePoints": 2800,
+      "availableModules": [
+        "vsat_solar_array",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_inner_9",
+          "description": "Inner Solar System Phase 9",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 315,
+        "twoStarThresholdDays": 405
+      },
+      "realDataReference": {
+        "title": "HAVOC Venus Cloud Architecture & MESSENGER Mercury Polar Ice",
+        "source": "NASA Langley Research Center",
+        "explanation": "At 55 km, Venus has 1 bar pressure and 25°C."
+      }
+    },
+    {
+      "levelNumber": 10,
+      "title": "Inner Planet Level 10",
+      "landingSiteId": "mercury_polar_crater",
+      "missionDurationDays": 500,
+      "startingBudgetCredits": 7000000,
+      "startingSciencePoints": 3050,
+      "availableModules": [
+        "vsat_solar_array",
+        "inflatable_hab_alpha"
+      ],
+      "objectives": [
+        {
+          "id": "obj_inner_10",
+          "description": "Inner Solar System Phase 10",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 350,
+        "twoStarThresholdDays": 450
+      },
+      "realDataReference": {
+        "title": "HAVOC Venus Cloud Architecture & MESSENGER Mercury Polar Ice",
+        "source": "NASA Langley Research Center",
+        "explanation": "At 55 km, Venus has 1 bar pressure and 25°C."
+      }
+    }
+  ]
+}

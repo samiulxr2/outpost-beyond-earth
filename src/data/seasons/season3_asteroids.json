@@ -1,0 +1,331 @@
+{
+  "metadata": {
+    "dataset": "NASA Small Bodies & Asteroid Belt Exploration",
+    "source": "NASA JPL Dawn & Psyche Science Teams",
+    "sourceUrl": "https://science.nasa.gov/mission/dawn/",
+    "retrievedOn": "2026-11-17",
+    "dataOrigin": "factsheet-manual",
+    "units": {
+      "budget": "Credits / USD",
+      "time": "Earth Days",
+      "resources": "Kilograms (kg)"
+    }
+  },
+  "seasonId": 3,
+  "seasonName": "Season 3: Asteroid Prospectors (Psyche & Ceres)",
+  "destination": "Ceres",
+  "bodyId": "ceres",
+  "description": "Microgravity mining, tethered centrifuge artificial gravity habitats, and mass-driver propellant transport in the Asteroid Belt.",
+  "levels": [
+    {
+      "levelNumber": 1,
+      "title": "Asteroid Level 1",
+      "landingSiteId": "ceres_base",
+      "missionDurationDays": 45,
+      "startingBudgetCredits": 2000000,
+      "startingSciencePoints": 500,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_ast_1",
+          "description": "Establish Ceres Outpost Milestone 1",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "micrometeorite_shower"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 30,
+        "twoStarThresholdDays": 40
+      },
+      "realDataReference": {
+        "title": "Dawn Mission at Ceres",
+        "source": "NASA JPL Dawn Team",
+        "explanation": "Ceres contains abundant subsurface ice and mineral salts."
+      }
+    },
+    {
+      "levelNumber": 2,
+      "title": "Asteroid Level 2",
+      "landingSiteId": "ceres_base",
+      "missionDurationDays": 90,
+      "startingBudgetCredits": 2400000,
+      "startingSciencePoints": 700,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_ast_2",
+          "description": "Establish Ceres Outpost Milestone 2",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "micrometeorite_shower"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 60,
+        "twoStarThresholdDays": 80
+      },
+      "realDataReference": {
+        "title": "Dawn Mission at Ceres",
+        "source": "NASA JPL Dawn Team",
+        "explanation": "Ceres contains abundant subsurface ice and mineral salts."
+      }
+    },
+    {
+      "levelNumber": 3,
+      "title": "Asteroid Level 3",
+      "landingSiteId": "ceres_base",
+      "missionDurationDays": 135,
+      "startingBudgetCredits": 2800000,
+      "startingSciencePoints": 900,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_ast_3",
+          "description": "Establish Ceres Outpost Milestone 3",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "micrometeorite_shower"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 90,
+        "twoStarThresholdDays": 120
+      },
+      "realDataReference": {
+        "title": "Dawn Mission at Ceres",
+        "source": "NASA JPL Dawn Team",
+        "explanation": "Ceres contains abundant subsurface ice and mineral salts."
+      }
+    },
+    {
+      "levelNumber": 4,
+      "title": "Asteroid Level 4",
+      "landingSiteId": "ceres_base",
+      "missionDurationDays": 180,
+      "startingBudgetCredits": 3200000,
+      "startingSciencePoints": 1100,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_ast_4",
+          "description": "Establish Ceres Outpost Milestone 4",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "micrometeorite_shower"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 120,
+        "twoStarThresholdDays": 160
+      },
+      "realDataReference": {
+        "title": "Dawn Mission at Ceres",
+        "source": "NASA JPL Dawn Team",
+        "explanation": "Ceres contains abundant subsurface ice and mineral salts."
+      }
+    },
+    {
+      "levelNumber": 5,
+      "title": "Asteroid Level 5",
+      "landingSiteId": "ceres_base",
+      "missionDurationDays": 225,
+      "startingBudgetCredits": 3600000,
+      "startingSciencePoints": 1300,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_ast_5",
+          "description": "Establish Ceres Outpost Milestone 5",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "micrometeorite_shower"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 150,
+        "twoStarThresholdDays": 200
+      },
+      "realDataReference": {
+        "title": "Dawn Mission at Ceres",
+        "source": "NASA JPL Dawn Team",
+        "explanation": "Ceres contains abundant subsurface ice and mineral salts."
+      }
+    },
+    {
+      "levelNumber": 6,
+      "title": "Asteroid Level 6",
+      "landingSiteId": "ceres_base",
+      "missionDurationDays": 270,
+      "startingBudgetCredits": 4000000,
+      "startingSciencePoints": 1500,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_ast_6",
+          "description": "Establish Ceres Outpost Milestone 6",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "micrometeorite_shower"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 180,
+        "twoStarThresholdDays": 240
+      },
+      "realDataReference": {
+        "title": "Dawn Mission at Ceres",
+        "source": "NASA JPL Dawn Team",
+        "explanation": "Ceres contains abundant subsurface ice and mineral salts."
+      }
+    },
+    {
+      "levelNumber": 7,
+      "title": "Asteroid Level 7",
+      "landingSiteId": "ceres_base",
+      "missionDurationDays": 315,
+      "startingBudgetCredits": 4400000,
+      "startingSciencePoints": 1700,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_ast_7",
+          "description": "Establish Ceres Outpost Milestone 7",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "micrometeorite_shower"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 210,
+        "twoStarThresholdDays": 280
+      },
+      "realDataReference": {
+        "title": "Dawn Mission at Ceres",
+        "source": "NASA JPL Dawn Team",
+        "explanation": "Ceres contains abundant subsurface ice and mineral salts."
+      }
+    },
+    {
+      "levelNumber": 8,
+      "title": "Asteroid Level 8",
+      "landingSiteId": "ceres_base",
+      "missionDurationDays": 360,
+      "startingBudgetCredits": 4800000,
+      "startingSciencePoints": 1900,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_ast_8",
+          "description": "Establish Ceres Outpost Milestone 8",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "micrometeorite_shower"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 240,
+        "twoStarThresholdDays": 320
+      },
+      "realDataReference": {
+        "title": "Dawn Mission at Ceres",
+        "source": "NASA JPL Dawn Team",
+        "explanation": "Ceres contains abundant subsurface ice and mineral salts."
+      }
+    },
+    {
+      "levelNumber": 9,
+      "title": "Asteroid Level 9",
+      "landingSiteId": "ceres_base",
+      "missionDurationDays": 405,
+      "startingBudgetCredits": 5200000,
+      "startingSciencePoints": 2100,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_ast_9",
+          "description": "Establish Ceres Outpost Milestone 9",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "micrometeorite_shower"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 270,
+        "twoStarThresholdDays": 360
+      },
+      "realDataReference": {
+        "title": "Dawn Mission at Ceres",
+        "source": "NASA JPL Dawn Team",
+        "explanation": "Ceres contains abundant subsurface ice and mineral salts."
+      }
+    },
+    {
+      "levelNumber": 10,
+      "title": "Asteroid Level 10",
+      "landingSiteId": "ceres_base",
+      "missionDurationDays": 450,
+      "startingBudgetCredits": 5600000,
+      "startingSciencePoints": 2300,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_ast_10",
+          "description": "Establish Ceres Outpost Milestone 10",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "micrometeorite_shower"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 300,
+        "twoStarThresholdDays": 400
+      },
+      "realDataReference": {
+        "title": "Dawn Mission at Ceres",
+        "source": "NASA JPL Dawn Team",
+        "explanation": "Ceres contains abundant subsurface ice and mineral salts."
+      }
+    }
+  ]
+}

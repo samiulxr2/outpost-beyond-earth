@@ -1,0 +1,331 @@
+{
+  "metadata": {
+    "dataset": "NASA Outer Planets Ocean Worlds Exploration",
+    "source": "NASA JPL Europa Clipper Team & Galileo Mission",
+    "sourceUrl": "https://europa.nasa.gov/",
+    "retrievedOn": "2026-11-17",
+    "dataOrigin": "factsheet-manual",
+    "units": {
+      "budget": "Credits / USD",
+      "time": "Earth Days",
+      "resources": "Kilograms (kg)"
+    }
+  },
+  "seasonId": 5,
+  "seasonName": "Season 5: Ocean Worlds (Europa & Ganymede)",
+  "destination": "Europa",
+  "bodyId": "europa",
+  "description": "Navigate intense Jovian radiation belts, melt through 20km ice crusts, and deploy sub-surface autonomous ocean probes.",
+  "levels": [
+    {
+      "levelNumber": 1,
+      "title": "Jovian Moon Level 1",
+      "landingSiteId": "europa_chaos_terrain",
+      "missionDurationDays": 60,
+      "startingBudgetCredits": 3500000,
+      "startingSciencePoints": 1200,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_jup_1",
+          "description": "Jovian Ocean Research Phase 1",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 40,
+        "twoStarThresholdDays": 55
+      },
+      "realDataReference": {
+        "title": "Europa Clipper & Galileo Magnetometry",
+        "source": "NASA JPL Europa Clipper Team",
+        "explanation": "Europa harbors a global subsurface liquid ocean under its ice."
+      }
+    },
+    {
+      "levelNumber": 2,
+      "title": "Jovian Moon Level 2",
+      "landingSiteId": "europa_chaos_terrain",
+      "missionDurationDays": 120,
+      "startingBudgetCredits": 4100000,
+      "startingSciencePoints": 1500,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_jup_2",
+          "description": "Jovian Ocean Research Phase 2",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 80,
+        "twoStarThresholdDays": 110
+      },
+      "realDataReference": {
+        "title": "Europa Clipper & Galileo Magnetometry",
+        "source": "NASA JPL Europa Clipper Team",
+        "explanation": "Europa harbors a global subsurface liquid ocean under its ice."
+      }
+    },
+    {
+      "levelNumber": 3,
+      "title": "Jovian Moon Level 3",
+      "landingSiteId": "europa_chaos_terrain",
+      "missionDurationDays": 180,
+      "startingBudgetCredits": 4700000,
+      "startingSciencePoints": 1800,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_jup_3",
+          "description": "Jovian Ocean Research Phase 3",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 120,
+        "twoStarThresholdDays": 165
+      },
+      "realDataReference": {
+        "title": "Europa Clipper & Galileo Magnetometry",
+        "source": "NASA JPL Europa Clipper Team",
+        "explanation": "Europa harbors a global subsurface liquid ocean under its ice."
+      }
+    },
+    {
+      "levelNumber": 4,
+      "title": "Jovian Moon Level 4",
+      "landingSiteId": "europa_chaos_terrain",
+      "missionDurationDays": 240,
+      "startingBudgetCredits": 5300000,
+      "startingSciencePoints": 2100,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_jup_4",
+          "description": "Jovian Ocean Research Phase 4",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 160,
+        "twoStarThresholdDays": 220
+      },
+      "realDataReference": {
+        "title": "Europa Clipper & Galileo Magnetometry",
+        "source": "NASA JPL Europa Clipper Team",
+        "explanation": "Europa harbors a global subsurface liquid ocean under its ice."
+      }
+    },
+    {
+      "levelNumber": 5,
+      "title": "Jovian Moon Level 5",
+      "landingSiteId": "europa_chaos_terrain",
+      "missionDurationDays": 300,
+      "startingBudgetCredits": 5900000,
+      "startingSciencePoints": 2400,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_jup_5",
+          "description": "Jovian Ocean Research Phase 5",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 200,
+        "twoStarThresholdDays": 275
+      },
+      "realDataReference": {
+        "title": "Europa Clipper & Galileo Magnetometry",
+        "source": "NASA JPL Europa Clipper Team",
+        "explanation": "Europa harbors a global subsurface liquid ocean under its ice."
+      }
+    },
+    {
+      "levelNumber": 6,
+      "title": "Jovian Moon Level 6",
+      "landingSiteId": "europa_chaos_terrain",
+      "missionDurationDays": 360,
+      "startingBudgetCredits": 6500000,
+      "startingSciencePoints": 2700,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_jup_6",
+          "description": "Jovian Ocean Research Phase 6",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 240,
+        "twoStarThresholdDays": 330
+      },
+      "realDataReference": {
+        "title": "Europa Clipper & Galileo Magnetometry",
+        "source": "NASA JPL Europa Clipper Team",
+        "explanation": "Europa harbors a global subsurface liquid ocean under its ice."
+      }
+    },
+    {
+      "levelNumber": 7,
+      "title": "Jovian Moon Level 7",
+      "landingSiteId": "europa_chaos_terrain",
+      "missionDurationDays": 420,
+      "startingBudgetCredits": 7100000,
+      "startingSciencePoints": 3000,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_jup_7",
+          "description": "Jovian Ocean Research Phase 7",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 280,
+        "twoStarThresholdDays": 385
+      },
+      "realDataReference": {
+        "title": "Europa Clipper & Galileo Magnetometry",
+        "source": "NASA JPL Europa Clipper Team",
+        "explanation": "Europa harbors a global subsurface liquid ocean under its ice."
+      }
+    },
+    {
+      "levelNumber": 8,
+      "title": "Jovian Moon Level 8",
+      "landingSiteId": "europa_chaos_terrain",
+      "missionDurationDays": 480,
+      "startingBudgetCredits": 7700000,
+      "startingSciencePoints": 3300,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_jup_8",
+          "description": "Jovian Ocean Research Phase 8",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 320,
+        "twoStarThresholdDays": 440
+      },
+      "realDataReference": {
+        "title": "Europa Clipper & Galileo Magnetometry",
+        "source": "NASA JPL Europa Clipper Team",
+        "explanation": "Europa harbors a global subsurface liquid ocean under its ice."
+      }
+    },
+    {
+      "levelNumber": 9,
+      "title": "Jovian Moon Level 9",
+      "landingSiteId": "europa_chaos_terrain",
+      "missionDurationDays": 540,
+      "startingBudgetCredits": 8300000,
+      "startingSciencePoints": 3600,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_jup_9",
+          "description": "Jovian Ocean Research Phase 9",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 360,
+        "twoStarThresholdDays": 495
+      },
+      "realDataReference": {
+        "title": "Europa Clipper & Galileo Magnetometry",
+        "source": "NASA JPL Europa Clipper Team",
+        "explanation": "Europa harbors a global subsurface liquid ocean under its ice."
+      }
+    },
+    {
+      "levelNumber": 10,
+      "title": "Jovian Moon Level 10",
+      "landingSiteId": "europa_chaos_terrain",
+      "missionDurationDays": 600,
+      "startingBudgetCredits": 8900000,
+      "startingSciencePoints": 3900,
+      "availableModules": [
+        "kilopower_nuclear_reactor",
+        "cryo_propellant_depot"
+      ],
+      "objectives": [
+        {
+          "id": "obj_jup_10",
+          "description": "Jovian Ocean Research Phase 10",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 400,
+        "twoStarThresholdDays": 550
+      },
+      "realDataReference": {
+        "title": "Europa Clipper & Galileo Magnetometry",
+        "source": "NASA JPL Europa Clipper Team",
+        "explanation": "Europa harbors a global subsurface liquid ocean under its ice."
+      }
+    }
+  ]
+}

@@ -1,0 +1,385 @@
+{
+  "metadata": {
+    "dataset": "NASA Mars Exploration Program & Mars Architecture",
+    "source": "NASA MEPAG & Mars 2020 Science Team",
+    "sourceUrl": "https://mars.nasa.gov/",
+    "retrievedOn": "2026-11-17",
+    "dataOrigin": "factsheet-manual",
+    "units": {
+      "budget": "Credits / USD",
+      "time": "Martian Sols & Earth Days",
+      "resources": "Kilograms (kg), kWh"
+    }
+  },
+  "seasonId": 2,
+  "seasonName": "Season 2: The Red Frontier (Mars)",
+  "destination": "Mars",
+  "bodyId": "mars",
+  "description": "Conquer Jezero Crater. Overcome 15-minute comms delays, atmospheric dust storms that smother solar arrays, extract oxygen with MOXIE, and grow crops in Martian greenhouse soil.",
+  "levels": [
+    {
+      "levelNumber": 1,
+      "title": "Mars Level 1: Touchdown at Jezero",
+      "landingSiteId": "jezero_crater",
+      "missionDurationDays": 30,
+      "startingBudgetCredits": 1500000,
+      "startingSciencePoints": 300,
+      "availableModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "moxie_oxygen_generator",
+        "inflatable_hab_alpha",
+        "eclss_life_support"
+      ],
+      "objectives": [
+        {
+          "id": "obj_mars_1",
+          "description": "Complete Mars Phase 1 Mission Objectives",
+          "targetCount": 1,
+          "type": "MISSION_OBJECTIVE",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 20,
+        "twoStarThresholdDays": 28,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Mars 2020 Perseverance Science at Jezero",
+        "source": "NASA Mars 2020 Mission (Farley et al., Science 2020)",
+        "explanation": "Jezero crater preserves evidence of an ancient river-fed lake. MOXIE demonstrated generating oxygen from the thin 95% CO2 atmosphere."
+      }
+    },
+    {
+      "levelNumber": 2,
+      "title": "Mars Level 2: Perseverance Sample Recovery",
+      "landingSiteId": "jezero_crater",
+      "missionDurationDays": 60,
+      "startingBudgetCredits": 1800000,
+      "startingSciencePoints": 450,
+      "availableModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "moxie_oxygen_generator",
+        "inflatable_hab_alpha",
+        "eclss_life_support"
+      ],
+      "objectives": [
+        {
+          "id": "obj_mars_2",
+          "description": "Complete Mars Phase 2 Mission Objectives",
+          "targetCount": 1,
+          "type": "MISSION_OBJECTIVE",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 40,
+        "twoStarThresholdDays": 56,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Mars 2020 Perseverance Science at Jezero",
+        "source": "NASA Mars 2020 Mission (Farley et al., Science 2020)",
+        "explanation": "Jezero crater preserves evidence of an ancient river-fed lake. MOXIE demonstrated generating oxygen from the thin 95% CO2 atmosphere."
+      }
+    },
+    {
+      "levelNumber": 3,
+      "title": "Mars Level 3: MOXIE Atmosphere Splitting",
+      "landingSiteId": "jezero_crater",
+      "missionDurationDays": 90,
+      "startingBudgetCredits": 2100000,
+      "startingSciencePoints": 600,
+      "availableModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "moxie_oxygen_generator",
+        "inflatable_hab_alpha",
+        "eclss_life_support"
+      ],
+      "objectives": [
+        {
+          "id": "obj_mars_3",
+          "description": "Complete Mars Phase 3 Mission Objectives",
+          "targetCount": 1,
+          "type": "MISSION_OBJECTIVE",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 60,
+        "twoStarThresholdDays": 84,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Mars 2020 Perseverance Science at Jezero",
+        "source": "NASA Mars 2020 Mission (Farley et al., Science 2020)",
+        "explanation": "Jezero crater preserves evidence of an ancient river-fed lake. MOXIE demonstrated generating oxygen from the thin 95% CO2 atmosphere."
+      }
+    },
+    {
+      "levelNumber": 4,
+      "title": "Mars Level 4: The Dust Sol",
+      "landingSiteId": "jezero_crater",
+      "missionDurationDays": 120,
+      "startingBudgetCredits": 2400000,
+      "startingSciencePoints": 750,
+      "availableModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "moxie_oxygen_generator",
+        "inflatable_hab_alpha",
+        "eclss_life_support"
+      ],
+      "objectives": [
+        {
+          "id": "obj_mars_4",
+          "description": "Complete Mars Phase 4 Mission Objectives",
+          "targetCount": 1,
+          "type": "MISSION_OBJECTIVE",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "mars_regional_dust_storm"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 80,
+        "twoStarThresholdDays": 112,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Mars 2020 Perseverance Science at Jezero",
+        "source": "NASA Mars 2020 Mission (Farley et al., Science 2020)",
+        "explanation": "Jezero crater preserves evidence of an ancient river-fed lake. MOXIE demonstrated generating oxygen from the thin 95% CO2 atmosphere."
+      }
+    },
+    {
+      "levelNumber": 5,
+      "title": "Mars Level 5: Martian Greenhouse (CEA)",
+      "landingSiteId": "jezero_crater",
+      "missionDurationDays": 150,
+      "startingBudgetCredits": 2700000,
+      "startingSciencePoints": 900,
+      "availableModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "moxie_oxygen_generator",
+        "inflatable_hab_alpha",
+        "eclss_life_support"
+      ],
+      "objectives": [
+        {
+          "id": "obj_mars_5",
+          "description": "Complete Mars Phase 5 Mission Objectives",
+          "targetCount": 1,
+          "type": "MISSION_OBJECTIVE",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "mars_regional_dust_storm"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 100,
+        "twoStarThresholdDays": 140,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Mars 2020 Perseverance Science at Jezero",
+        "source": "NASA Mars 2020 Mission (Farley et al., Science 2020)",
+        "explanation": "Jezero crater preserves evidence of an ancient river-fed lake. MOXIE demonstrated generating oxygen from the thin 95% CO2 atmosphere."
+      }
+    },
+    {
+      "levelNumber": 6,
+      "title": "Mars Level 6: Arcadia Subsurface Glaciers",
+      "landingSiteId": "arcadia_planitia",
+      "missionDurationDays": 180,
+      "startingBudgetCredits": 3000000,
+      "startingSciencePoints": 1050,
+      "availableModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "moxie_oxygen_generator",
+        "inflatable_hab_alpha",
+        "eclss_life_support"
+      ],
+      "objectives": [
+        {
+          "id": "obj_mars_6",
+          "description": "Complete Mars Phase 6 Mission Objectives",
+          "targetCount": 1,
+          "type": "MISSION_OBJECTIVE",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "mars_regional_dust_storm"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 120,
+        "twoStarThresholdDays": 168,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Mars 2020 Perseverance Science at Jezero",
+        "source": "NASA Mars 2020 Mission (Farley et al., Science 2020)",
+        "explanation": "Jezero crater preserves evidence of an ancient river-fed lake. MOXIE demonstrated generating oxygen from the thin 95% CO2 atmosphere."
+      }
+    },
+    {
+      "levelNumber": 7,
+      "title": "Mars Level 7: Global Dust Storm Survival",
+      "landingSiteId": "jezero_crater",
+      "missionDurationDays": 210,
+      "startingBudgetCredits": 3300000,
+      "startingSciencePoints": 1200,
+      "availableModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "moxie_oxygen_generator",
+        "inflatable_hab_alpha",
+        "eclss_life_support"
+      ],
+      "objectives": [
+        {
+          "id": "obj_mars_7",
+          "description": "Complete Mars Phase 7 Mission Objectives",
+          "targetCount": 1,
+          "type": "MISSION_OBJECTIVE",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "mars_regional_dust_storm"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 140,
+        "twoStarThresholdDays": 196,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Mars 2020 Perseverance Science at Jezero",
+        "source": "NASA Mars 2020 Mission (Farley et al., Science 2020)",
+        "explanation": "Jezero crater preserves evidence of an ancient river-fed lake. MOXIE demonstrated generating oxygen from the thin 95% CO2 atmosphere."
+      }
+    },
+    {
+      "levelNumber": 8,
+      "title": "Mars Level 8: Autonomous Comms Delay Management",
+      "landingSiteId": "jezero_crater",
+      "missionDurationDays": 240,
+      "startingBudgetCredits": 3600000,
+      "startingSciencePoints": 1350,
+      "availableModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "moxie_oxygen_generator",
+        "inflatable_hab_alpha",
+        "eclss_life_support"
+      ],
+      "objectives": [
+        {
+          "id": "obj_mars_8",
+          "description": "Complete Mars Phase 8 Mission Objectives",
+          "targetCount": 1,
+          "type": "MISSION_OBJECTIVE",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "mars_regional_dust_storm"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 160,
+        "twoStarThresholdDays": 224,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Mars 2020 Perseverance Science at Jezero",
+        "source": "NASA Mars 2020 Mission (Farley et al., Science 2020)",
+        "explanation": "Jezero crater preserves evidence of an ancient river-fed lake. MOXIE demonstrated generating oxygen from the thin 95% CO2 atmosphere."
+      }
+    },
+    {
+      "levelNumber": 9,
+      "title": "Mars Level 9: Methane Sabatier Synthesis",
+      "landingSiteId": "jezero_crater",
+      "missionDurationDays": 270,
+      "startingBudgetCredits": 3900000,
+      "startingSciencePoints": 1500,
+      "availableModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "moxie_oxygen_generator",
+        "inflatable_hab_alpha",
+        "eclss_life_support"
+      ],
+      "objectives": [
+        {
+          "id": "obj_mars_9",
+          "description": "Complete Mars Phase 9 Mission Objectives",
+          "targetCount": 1,
+          "type": "MISSION_OBJECTIVE",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "mars_regional_dust_storm"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 180,
+        "twoStarThresholdDays": 252,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Mars 2020 Perseverance Science at Jezero",
+        "source": "NASA Mars 2020 Mission (Farley et al., Science 2020)",
+        "explanation": "Jezero crater preserves evidence of an ancient river-fed lake. MOXIE demonstrated generating oxygen from the thin 95% CO2 atmosphere."
+      }
+    },
+    {
+      "levelNumber": 10,
+      "title": "Mars Level 10: Mars Ascent Vehicle (MAV) Launch",
+      "landingSiteId": "jezero_crater",
+      "missionDurationDays": 300,
+      "startingBudgetCredits": 4200000,
+      "startingSciencePoints": 1650,
+      "availableModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "moxie_oxygen_generator",
+        "inflatable_hab_alpha",
+        "eclss_life_support"
+      ],
+      "objectives": [
+        {
+          "id": "obj_mars_10",
+          "description": "Complete Mars Phase 10 Mission Objectives",
+          "targetCount": 1,
+          "type": "MISSION_OBJECTIVE",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "mars_regional_dust_storm"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 200,
+        "twoStarThresholdDays": 280,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Mars 2020 Perseverance Science at Jezero",
+        "source": "NASA Mars 2020 Mission (Farley et al., Science 2020)",
+        "explanation": "Jezero crater preserves evidence of an ancient river-fed lake. MOXIE demonstrated generating oxygen from the thin 95% CO2 atmosphere."
+      }
+    }
+  ]
+}

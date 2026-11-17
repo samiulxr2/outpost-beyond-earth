@@ -1,0 +1,508 @@
+{
+  "metadata": {
+    "dataset": "Artemis Base Camp Operational Architecture",
+    "source": "NASA Artemis Plan (NASA SP-2020-5009)",
+    "sourceUrl": "https://www.nasa.gov/artemis-program/",
+    "retrievedOn": "2026-11-17",
+    "dataOrigin": "factsheet-manual",
+    "units": {
+      "budget": "Credits / USD",
+      "time": "Earth Days",
+      "resources": "Kilograms (kg), kWh"
+    }
+  },
+  "seasonId": 1,
+  "seasonName": "Season 1: Artemis Outpost (The Moon)",
+  "destination": "Moon",
+  "bodyId": "moon",
+  "description": "Establish humanity's first permanent base at Shackleton Crater rim, South Pole. Harness permanent polar sunlight, mine shadowed ice, extract regolith oxygen, and withstand solar storms.",
+  "levels": [
+    {
+      "levelNumber": 1,
+      "title": "Level 1: First Footsteps (Tutorial)",
+      "landingSiteId": "shackleton_rim",
+      "missionDurationDays": 14,
+      "startingBudgetCredits": 800000,
+      "startingSciencePoints": 0,
+      "startingResources": {
+        "powerStoredKWh": 20,
+        "oxygenKg": 100,
+        "waterKg": 200,
+        "foodRationsDays": 30,
+        "regolithOreKg": 0,
+        "propellantKg": 500
+      },
+      "availableModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "deep_space_comms_dish"
+      ],
+      "objectives": [
+        {
+          "id": "obj_place_solar",
+          "description": "Deploy 1 Vertical Solar Array (VSAT) on an elevated rim tile",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "vsat_solar_array",
+          "completed": false
+        },
+        {
+          "id": "obj_place_battery",
+          "description": "Install 1 Regenerative Li-Ion Battery Storage System",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "li_ion_battery_bank",
+          "completed": false
+        },
+        {
+          "id": "obj_generate_power",
+          "description": "Achieve net positive power generation (> 8 kW) and store 50 kWh",
+          "targetValue": 50,
+          "type": "RESOURCE_THRESHOLD",
+          "resource": "powerStoredKWh",
+          "completed": false
+        }
+      ],
+      "tutorialSteps": [
+        {
+          "step": 1,
+          "title": "Welcome to Shackleton Crater Rim",
+          "instruction": "Mission Commander, touch down at Shackleton Rim. Notice how the Sun skims the horizon at 1.54 degrees. We need continuous polar power.",
+          "highlightElement": "canvas-grid"
+        },
+        {
+          "step": 2,
+          "title": "Deploying Vertical Solar Array",
+          "instruction": "Open the Build Menu [B] and select the Vertical Solar Array Technology (VSAT). Place it on an elevated plateau tile.",
+          "highlightElement": "btn-build-menu"
+        },
+        {
+          "step": 3,
+          "title": "Energy Storage for Shadow Dips",
+          "instruction": "Sunlight dips when distant peaks cast shadows. Place a Li-Ion Battery Bank next to your solar array to buffer energy.",
+          "highlightElement": "module-battery"
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 5,
+        "twoStarThresholdDays": 9,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Peaks of Eternal Light at Shackleton Rim",
+        "source": "NASA LRO / LOLA Topography Data (Mazarico et al., 2011)",
+        "explanation": "Because the Moon's axis is tilted only 1.54°, high crater rims at the South Pole remain illuminated by the Sun for over 90% of the year. Placing tall vertical solar arrays maximizes power without requiring large batteries."
+      }
+    },
+    {
+      "levelNumber": 2,
+      "title": "Level 2: The Cold Trap",
+      "landingSiteId": "shackleton_rim",
+      "missionDurationDays": 30,
+      "startingBudgetCredits": 1000000,
+      "startingSciencePoints": 100,
+      "startingResources": {
+        "powerStoredKWh": 80,
+        "oxygenKg": 150,
+        "waterKg": 250,
+        "foodRationsDays": 45,
+        "regolithOreKg": 0,
+        "propellantKg": 600
+      },
+      "availableModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "deep_space_comms_dish",
+        "prospecting_rover_garage"
+      ],
+      "objectives": [
+        {
+          "id": "obj_place_garage",
+          "description": "Construct 1 Rover Garage & Charging Bay",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "prospecting_rover_garage",
+          "completed": false
+        },
+        {
+          "id": "obj_rover_recon",
+          "description": "Drive rover 500m down into the permanently shadowed crater floor",
+          "targetValue": 500,
+          "type": "ROVER_DISTANCE_METERS",
+          "completed": false
+        },
+        {
+          "id": "obj_locate_ice",
+          "description": "Detect water ice deposits with neutron spectrometer (> 5 wt%)",
+          "targetValue": 5,
+          "type": "ICE_PROSPECTING_PCT",
+          "completed": false
+        }
+      ],
+      "tutorialSteps": [
+        {
+          "step": 1,
+          "title": "Venturing into Permanent Shadow",
+          "instruction": "The interior of Shackleton crater hasn't seen sunlight in over two billion years. It is cold enough (-240°C / 40K) to trap volatile water ice.",
+          "highlightElement": "btn-build-menu"
+        },
+        {
+          "step": 2,
+          "title": "Deploy Prospecting Rover",
+          "instruction": "Build the Rover Garage. Once powered, deploy your rover down into the shadow zone to locate the highest ice concentration.",
+          "highlightElement": "module-garage"
+        }
+      ],
+      "hazards": [
+        "lunar_night_deep_freeze"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 12,
+        "twoStarThresholdDays": 20,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Permanently Shadowed Regions (PSRs) & Water Ice",
+        "source": "NASA Mini-RF & LCROSS Spectrometry (Colaprete et al., Science 2010)",
+        "explanation": "LCROSS impacted Cabeus crater nearby, kicking up a plume that confirmed 5.5% water ice by weight along with carbon monoxide, methane, and ammonia."
+      }
+    },
+    {
+      "levelNumber": 3,
+      "title": "Level 3: Mining the Shadows",
+      "landingSiteId": "shackleton_rim",
+      "missionDurationDays": 45,
+      "startingBudgetCredits": 1200000,
+      "startingSciencePoints": 250,
+      "startingResources": {
+        "powerStoredKWh": 150,
+        "oxygenKg": 200,
+        "waterKg": 300,
+        "foodRationsDays": 60,
+        "regolithOreKg": 100,
+        "propellantKg": 800
+      },
+      "availableModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "deep_space_comms_dish",
+        "prospecting_rover_garage",
+        "thermal_ice_drill_plant"
+      ],
+      "objectives": [
+        {
+          "id": "obj_build_drill",
+          "description": "Construct 1 Thermal Ice Drill & Condenser Rig in the shadow zone",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "thermal_ice_drill_plant",
+          "completed": false
+        },
+        {
+          "id": "obj_extract_water",
+          "description": "Extract and store 250 kg of pure water from icy regolith",
+          "targetValue": 250,
+          "type": "RESOURCE_ACCUMULATION",
+          "resource": "waterKg",
+          "completed": false
+        },
+        {
+          "id": "obj_power_shadow",
+          "description": "Maintain power supply to the shadow zone drill (>= 4.5 kW)",
+          "targetValue": 4.5,
+          "type": "GRID_POWER_KW",
+          "completed": false
+        }
+      ],
+      "tutorialSteps": [],
+      "hazards": [
+        "lunar_night_deep_freeze"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 20,
+        "twoStarThresholdDays": 32,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Thermal Sublimation Extraction in Hard Vacuum",
+        "source": "NASA PRIME-1 / TRIDENT Drill Specifications (Honeybee Robotics / NASA STMD)",
+        "explanation": "Liquid water cannot exist in a vacuum; it either freezes or boils into steam. Heating icy regolith under a sealed hood causes sublimation directly into vapor, which is condensed into tanks."
+      }
+    },
+    {
+      "levelNumber": 4,
+      "title": "Level 4: Breath of the Regolith",
+      "landingSiteId": "shackleton_rim",
+      "missionDurationDays": 60,
+      "startingBudgetCredits": 1400000,
+      "startingSciencePoints": 350,
+      "availableModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "thermal_ice_drill_plant",
+        "mre_oxygen_smelter"
+      ],
+      "objectives": [
+        {
+          "id": "obj_mre",
+          "description": "Build 1 Molten Regolith Electrolysis Plant",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "mre_oxygen_smelter",
+          "completed": false
+        },
+        {
+          "id": "obj_produce_o2",
+          "description": "Extract 500 kg of oxygen from lunar rock",
+          "targetValue": 500,
+          "type": "RESOURCE_ACCUMULATION",
+          "resource": "oxygenKg",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 30,
+        "twoStarThresholdDays": 45,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Oxygen from Moon Dust",
+        "source": "NASA MSFC MRE Branch",
+        "explanation": "Lunar regolith is ~43% oxygen bound to iron, titanium, and silicon oxides."
+      }
+    },
+    {
+      "levelNumber": 5,
+      "title": "Level 5: Habitat Alpha",
+      "landingSiteId": "shackleton_rim",
+      "missionDurationDays": 90,
+      "startingBudgetCredits": 1800000,
+      "startingSciencePoints": 500,
+      "availableModules": [
+        "inflatable_hab_alpha",
+        "eclss_life_support",
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "thermal_ice_drill_plant",
+        "mre_oxygen_smelter"
+      ],
+      "objectives": [
+        {
+          "id": "obj_hab",
+          "description": "Build 1 Pressurized Surface Habitat and 1 ECLSS Processor",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "inflatable_hab_alpha",
+          "completed": false
+        },
+        {
+          "id": "obj_crew_alive",
+          "description": "Support 4 Artemis astronauts for 30 consecutive days without consumable depletion",
+          "targetValue": 30,
+          "type": "CREW_SURVIVAL_DAYS",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "lunar_night_deep_freeze"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 45,
+        "twoStarThresholdDays": 70,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Human Life Support & Closed Loop ECLSS",
+        "source": "NASA HIDH NASA/SP-2010-3407",
+        "explanation": "Astronauts consume ~0.84 kg O2 and ~27.5 kg water per day, with 93% recovered by ECLSS."
+      }
+    },
+    {
+      "levelNumber": 6,
+      "title": "Level 6: Sintering the Surface",
+      "landingSiteId": "shackleton_rim",
+      "missionDurationDays": 100,
+      "startingBudgetCredits": 2000000,
+      "startingSciencePoints": 600,
+      "availableModules": [
+        "regolith_sintering_printer",
+        "inflatable_hab_alpha",
+        "vsat_solar_array"
+      ],
+      "objectives": [
+        {
+          "id": "obj_sinter_berm",
+          "description": "3D-print a sintered regolith berm (50cm thickness) around Habitat Alpha",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "regolith_sintering_printer",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "micrometeorite_shower"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 50,
+        "twoStarThresholdDays": 80,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Microwave Regolith Sintering",
+        "source": "NASA / ICON Olympus Project",
+        "explanation": "Sintering regolith creates ceramic pavers that prevent lander plume blasts from sandblasting bases."
+      }
+    },
+    {
+      "levelNumber": 7,
+      "title": "Level 7: The Solar Storm",
+      "landingSiteId": "shackleton_rim",
+      "missionDurationDays": 120,
+      "startingBudgetCredits": 2200000,
+      "startingSciencePoints": 700,
+      "availableModules": [
+        "inflatable_hab_alpha",
+        "regolith_sintering_printer",
+        "kilopower_nuclear_reactor"
+      ],
+      "objectives": [
+        {
+          "id": "obj_survive_spe",
+          "description": "Survive a severe X-Class Solar Particle Event with zero astronaut radiation casualties (< 50 mSv)",
+          "targetValue": 50,
+          "type": "MAX_RADIATION_DOSE",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 60,
+        "twoStarThresholdDays": 90,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Solar Particle Events & Regolith Shielding",
+        "source": "NASA CRaTER Instrument on LRO",
+        "explanation": "An 18 cm half-value layer of regolith halves particle radiation; 50 cm blocks >85%."
+      }
+    },
+    {
+      "levelNumber": 8,
+      "title": "Level 8: Gateway Supply Run",
+      "landingSiteId": "shackleton_rim",
+      "missionDurationDays": 140,
+      "startingBudgetCredits": 2500000,
+      "startingSciencePoints": 800,
+      "availableModules": [
+        "cryo_propellant_depot",
+        "thermal_ice_drill_plant",
+        "mre_oxygen_smelter",
+        "kilopower_nuclear_reactor"
+      ],
+      "objectives": [
+        {
+          "id": "obj_depot",
+          "description": "Build 1 Cryogenic Propellant Depot and store 5,000 kg of liquid O2/H2",
+          "targetValue": 5000,
+          "type": "RESOURCE_ACCUMULATION",
+          "resource": "propellantKg",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 70,
+        "twoStarThresholdDays": 110,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Lunar In-Situ Propellant Production (ISPP)",
+        "source": "NASA Glenn CFM Portfolio",
+        "explanation": "Mining water and splitting it into LOX/LH2 turns the Moon into a deep space refueling station."
+      }
+    },
+    {
+      "levelNumber": 9,
+      "title": "Level 9: Long-Range Traverse",
+      "landingSiteId": "malapert_mountain",
+      "missionDurationDays": 160,
+      "startingBudgetCredits": 2800000,
+      "startingSciencePoints": 900,
+      "availableModules": [
+        "prospecting_rover_garage",
+        "deep_space_comms_dish",
+        "kilopower_nuclear_reactor"
+      ],
+      "objectives": [
+        {
+          "id": "obj_malapert_sortie",
+          "description": "Conduct a 20 km rover traverse to Malapert Mountain summit and erect a high-gain dish",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "deep_space_comms_dish",
+          "completed": false
+        }
+      ],
+      "hazards": [],
+      "scoring": {
+        "threeStarThresholdDays": 80,
+        "twoStarThresholdDays": 130,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Malapert Mountain Direct Earth Line-of-Sight",
+        "source": "NASA LOLA Elevation Map",
+        "explanation": "At 5 km altitude, Malapert Mountain has constant visibility of Earth for high-rate communications."
+      }
+    },
+    {
+      "levelNumber": 10,
+      "title": "Level 10: Permanent Settlement",
+      "landingSiteId": "shackleton_rim",
+      "missionDurationDays": 180,
+      "startingBudgetCredits": 3500000,
+      "startingSciencePoints": 1000,
+      "availableModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "kilopower_nuclear_reactor",
+        "inflatable_hab_alpha",
+        "eclss_life_support",
+        "thermal_ice_drill_plant",
+        "mre_oxygen_smelter",
+        "regolith_sintering_printer",
+        "cryo_propellant_depot",
+        "prospecting_rover_garage",
+        "deep_space_comms_dish"
+      ],
+      "objectives": [
+        {
+          "id": "obj_sustain_base",
+          "description": "Support 4 crew through an entire 6-month expedition with 95% closed-loop ECLSS and 10,000 kg propellant in storage",
+          "targetValue": 180,
+          "type": "FULL_EXPEDITION_SUCCESS",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class",
+        "lunar_night_deep_freeze",
+        "micrometeorite_shower"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 120,
+        "twoStarThresholdDays": 170,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Sustained Lunar Architecture",
+        "source": "NASA Artemis Plan (NASA SP-2020-5009)",
+        "explanation": "Completes the Artemis Base Camp demonstration: long-term human presence powered by nuclear/solar and local resources."
+      }
+    }
+  ]
+}

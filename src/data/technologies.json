@@ -1,0 +1,128 @@
+{
+  "metadata": {
+    "dataset": "NASA Space Technology Taxonomy & Technology Readiness Levels (TRL)",
+    "source": "NASA Office of the Chief Technologist (OCT)",
+    "sourceUrl": "https://www.nasa.gov/directorates/stmd/nasa-technology-taxonomy/",
+    "retrievedOn": "2026-11-17",
+    "dataOrigin": "factsheet-manual",
+    "units": {
+      "researchCost": "Science Points",
+      "trl": "1-9 Scale"
+    }
+  },
+  "technologies": [
+    {
+      "id": "tech_vsat_power",
+      "name": "High-Mast Polar Solar (VSAT)",
+      "tier": 1,
+      "trl": 7,
+      "scienceCost": 0,
+      "prerequisites": [],
+      "unlocksModules": [
+        "vsat_solar_array",
+        "li_ion_battery_bank"
+      ],
+      "description": "Telescoping 10m mast solar arrays engineered for low grazing sun elevation over polar crater rims."
+    },
+    {
+      "id": "tech_prospecting_rovers",
+      "name": "Volatile Prospecting Autonomous Rovers",
+      "tier": 1,
+      "trl": 7,
+      "scienceCost": 100,
+      "prerequisites": [
+        "tech_vsat_power"
+      ],
+      "unlocksModules": [
+        "prospecting_rover_garage"
+      ],
+      "description": "Neutron spectrometer and drill-equipped rover chassis capable of traversing cryogenic 40K shadowed terrain."
+    },
+    {
+      "id": "tech_surface_habitation",
+      "name": "Inflatable Multi-Layer Habitats",
+      "tier": 1,
+      "trl": 6,
+      "scienceCost": 150,
+      "prerequisites": [
+        "tech_vsat_power"
+      ],
+      "unlocksModules": [
+        "inflatable_hab_alpha",
+        "eclss_life_support"
+      ],
+      "description": "Deployable Kevlar/Nextel inflatable pressure vessels with integrated micrometeorite and radiation protection."
+    },
+    {
+      "id": "tech_ice_mining",
+      "name": "Cryogenic Sublimation Ice Excavation",
+      "tier": 2,
+      "trl": 6,
+      "scienceCost": 250,
+      "prerequisites": [
+        "tech_prospecting_rovers"
+      ],
+      "unlocksModules": [
+        "thermal_ice_drill_plant"
+      ],
+      "description": "Thermal coring drills and vapor condensation domes to extract water from rock-hard polar regolith."
+    },
+    {
+      "id": "tech_regolith_sintering",
+      "name": "Microwave Regolith 3D Sintering",
+      "tier": 2,
+      "trl": 5,
+      "scienceCost": 350,
+      "prerequisites": [
+        "tech_surface_habitation"
+      ],
+      "unlocksModules": [
+        "regolith_sintering_printer"
+      ],
+      "description": "Electromagnetic sintering of lunar basalt into durable blast pads and radiation berms."
+    },
+    {
+      "id": "tech_mre_oxygen",
+      "name": "Molten Regolith Electrolysis (MRE)",
+      "tier": 2,
+      "trl": 5,
+      "scienceCost": 400,
+      "prerequisites": [
+        "tech_ice_mining"
+      ],
+      "unlocksModules": [
+        "mre_oxygen_smelter"
+      ],
+      "description": "Thermal decomposition of mineral oxides at 1600°C for infinite oxygen and metal construction feedstock."
+    },
+    {
+      "id": "tech_kilopower_nuclear",
+      "name": "Fission Surface Power (Kilopower KRUSTY)",
+      "tier": 3,
+      "trl": 6,
+      "scienceCost": 600,
+      "prerequisites": [
+        "tech_mre_oxygen",
+        "tech_regolith_sintering"
+      ],
+      "unlocksModules": [
+        "kilopower_nuclear_reactor"
+      ],
+      "description": "U-235 cast core with Stirling convertors delivering continuous multi-kilowatt power through 14-day nights."
+    },
+    {
+      "id": "tech_cryo_depot",
+      "name": "Zero-Boil-Off Cryogenic Propellant Depot",
+      "tier": 3,
+      "trl": 5,
+      "scienceCost": 750,
+      "prerequisites": [
+        "tech_kilopower_nuclear"
+      ],
+      "unlocksModules": [
+        "cryo_propellant_depot"
+      ],
+      "description": "Active pulse-tube cryocooling and sunshields for permanent liquid hydrogen/methane/oxygen space storage."
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "metadata": {
+    "dataset": "NASA LRO / LOLA & Mars MOLA Topography and Artemis Candidate Zones",
+    "source": "NASA Artemis Candidate Landing Regions & Mars 2020 Perseverance Science Team",
+    "sourceUrl": "https://www.nasa.gov/artemis-candidate-landing-regions/",
+    "retrievedOn": "2026-11-17",
+    "dataOrigin": "factsheet-manual",
+    "units": {
+      "coordinates": "Degrees (Lat/Long)",
+      "elevation": "Meters relative to lunar/Martian datum",
+      "illuminationAnnual": "Percentage (%)",
+      "slopeMax": "Degrees",
+      "iceWaterEstimateWeightPercent": "Percentage (%)"
+    }
+  },
+  "sites": [
+    {
+      "id": "shackleton_rim",
+      "name": "Shackleton Crater Rim",
+      "bodyId": "moon",
+      "latitudeDeg": -89.9,
+      "longitudeDeg": 0,
+      "elevationMeters": 1250,
+      "illuminationAnnualPct": 92,
+      "slopeMaxDeg": 8.5,
+      "iceWaterEstimatePct": 5.5,
+      "hazardRating": "Moderate (Steep slopes into crater interior)",
+      "missionRelevance": "Prime Artemis landing zone. Features Peaks of Eternal Light with continuous solar power adjacent to permanently shadowed cryogenic ice reserves in the crater floor (40 Kelvin).",
+      "instrument": "LRO LOLA & Mini-RF radar"
+    },
+    {
+      "id": "malapert_mountain",
+      "name": "Malapert Mountain (Peak of Malapert)",
+      "bodyId": "moon",
+      "latitudeDeg": -86,
+      "longitudeDeg": 2.7,
+      "elevationMeters": 5000,
+      "illuminationAnnualPct": 88,
+      "slopeMaxDeg": 5,
+      "iceWaterEstimatePct": 2.1,
+      "hazardRating": "Low (Broad high plateau)",
+      "missionRelevance": "Continuous direct line-of-sight to Earth for uninterruptible high-bandwidth communications, and ideal radio-quiet far side proximity.",
+      "instrument": "LOLA Topographic Profile"
+    },
+    {
+      "id": "nobile_rim",
+      "name": "Nobile Crater Rim 1",
+      "bodyId": "moon",
+      "latitudeDeg": -85.2,
+      "longitudeDeg": 35.8,
+      "elevationMeters": 800,
+      "illuminationAnnualPct": 78,
+      "slopeMaxDeg": 6.2,
+      "iceWaterEstimatePct": 7.2,
+      "hazardRating": "Low-Moderate",
+      "missionRelevance": "NASA VIPER rover primary exploration target for subsurface neutron spectrometer volatile mapping.",
+      "instrument": "LRO CRaTER & LAMP"
+    },
+    {
+      "id": "haworth_crater",
+      "name": "Haworth Crater Interior",
+      "bodyId": "moon",
+      "latitudeDeg": -87.4,
+      "longitudeDeg": -5.1,
+      "elevationMeters": -3800,
+      "illuminationAnnualPct": 0,
+      "slopeMaxDeg": 14,
+      "iceWaterEstimatePct": 11.5,
+      "hazardRating": "High (Total darkness, extreme cryogenic 35K temperature, boulder fields)",
+      "missionRelevance": "Highest water ice concentration in the south polar region. Requires nuclear power or beamed laser power to operate.",
+      "instrument": "LCROSS Impact plume spectrometry & Diviner radiometer"
+    },
+    {
+      "id": "connecting_ridge",
+      "name": "Connecting Ridge (Shackleton-de Gerlache)",
+      "bodyId": "moon",
+      "latitudeDeg": -89.4,
+      "longitudeDeg": -137,
+      "elevationMeters": 1950,
+      "illuminationAnnualPct": 84,
+      "slopeMaxDeg": 7,
+      "iceWaterEstimatePct": 4.8,
+      "hazardRating": "Moderate",
+      "missionRelevance": "Natural transit corridor connecting Shackleton rim and de Gerlache crater for rover logistics.",
+      "instrument": "LRO LROC NAC Stereo Imagery"
+    },
+    {
+      "id": "jezero_crater",
+      "name": "Jezero Crater Delta",
+      "bodyId": "mars",
+      "latitudeDeg": 18.38,
+      "longitudeDeg": 77.58,
+      "elevationMeters": -2500,
+      "illuminationAnnualPct": 43,
+      "slopeMaxDeg": 4.2,
+      "iceWaterEstimatePct": 1.5,
+      "hazardRating": "Moderate (Delta escarpment, sand dunes, thermal inertia variations)",
+      "missionRelevance": "Mars 2020 Perseverance landing site. Ancient lacustrine clay-rich fan delta optimal for sample return and MOXIE atmospheric oxygen extraction.",
+      "instrument": "Mars Reconnaissance Orbiter CRISM & HiRISE"
+    },
+    {
+      "id": "arcadia_planitia",
+      "name": "Arcadia Planitia",
+      "bodyId": "mars",
+      "latitudeDeg": 39.3,
+      "longitudeDeg": 189.7,
+      "elevationMeters": -4000,
+      "illuminationAnnualPct": 41,
+      "slopeMaxDeg": 1.5,
+      "iceWaterEstimatePct": 35,
+      "hazardRating": "Very Low (Extremely flat smooth terrain)",
+      "missionRelevance": "Vast sheets of pure water ice buried just 1-2.5 meters beneath dust cover, easily accessible for SpaceX Starship and human ISRU base.",
+      "instrument": "Mars Odyssey GRS & MRO SHARAD Radar"
+    }
+  ]
+}

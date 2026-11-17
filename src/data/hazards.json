@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "dataset": "NASA DONKI Space Weather Catalog & Mars Weather Environmental Sensors",
+    "source": "NASA Space Weather Database Of Notifications, Knowledge, Information (DONKI) & REMS/MEDA Teams",
+    "sourceUrl": "https://kauai.ccmc.gsfc.nasa.gov/DONKI/",
+    "retrievedOn": "2026-11-17",
+    "dataOrigin": "factsheet-manual",
+    "units": {
+      "flux": "Protons / (cm^2 * s * sr)",
+      "doseRate": "mSv / hour",
+      "temperature": "Kelvin"
+    }
+  },
+  "hazards": [
+    {
+      "id": "solar_particle_event_x_class",
+      "name": "Solar Particle Event (SPE - Coronal Mass Ejection)",
+      "category": "Radiation",
+      "warningTimeHours": 12,
+      "durationHours": 36,
+      "intensityMultiplier": 75,
+      "radiationDoseRateMSvPerHour": 4.5,
+      "damageRatePerHour": 0.015,
+      "mitigationStrategy": "Retreat crew to regolith-shielded bunker (>50cm cover); safe-mode non-essential avionics.",
+      "historicalExample": "Halloween Solar Storms of October 2003 / August 1972 Apollo-era flare.",
+      "formula": "Dose = Integral(Flux(E) * S(E) dE), Sintered regolith HVL = 18 cm",
+      "source": "NASA Space Radiation Analysis Group (SRAG) / DONKI",
+      "sourceUrl": "https://www.nasa.gov/directorates/esdmd/hhp/srag/",
+      "instrumentOrMission": "SOHO LASCO & GOES Space Environment Monitor"
+    },
+    {
+      "id": "lunar_night_deep_freeze",
+      "name": "14-Day Lunar Night Cryogenic Freeze",
+      "category": "Thermal",
+      "warningTimeHours": 48,
+      "durationHours": 354,
+      "ambientTempKelvin": 90,
+      "heatingDemandMultiplier": 3.2,
+      "damageRatePerHour": 0.005,
+      "mitigationStrategy": "Ensure nuclear Kilopower base-load or sufficient battery reserve with multi-layer insulation.",
+      "historicalExample": "Surveyor 1 and Apollo lunar surface experiment packages surviving extreme cold soak.",
+      "formula": "Q_loss = A * (T_int - T_ext) / R_insulation, Heating = max(0, Q_loss - P_internal)",
+      "source": "NASA LRO Diviner Lunar Radiometer Experiment",
+      "sourceUrl": "https://www.diviner.ucla.edu/",
+      "instrumentOrMission": "LRO Diviner"
+    },
+    {
+      "id": "mars_regional_dust_storm",
+      "name": "Mars Regional Atmospheric Dust Storm",
+      "category": "Weather",
+      "warningTimeHours": 24,
+      "durationHours": 168,
+      "opticalDepthTau": 2.8,
+      "solarFluxAttenuatedPct": 82,
+      "abrasionDamageRatePerHour": 0.008,
+      "mitigationStrategy": "Stow sensitive optics, switch to nuclear or battery reserve, deploy electrostatic dust-repulsion shields.",
+      "historicalExample": "Global 2018 dust storm that ended the 15-year Opportunity rover mission.",
+      "formula": "I = I_0 * exp(-tau / cos(theta)), Dust layer reduction factor = (1 - delta_dust)",
+      "source": "NASA Mars 2020 MEDA (Mars Environmental Dynamics Analyzer)",
+      "sourceUrl": "https://mars.nasa.gov/mars2020/spacecraft/instruments/meda/",
+      "instrumentOrMission": "Mars 2020 MEDA & Curiosity REMS"
+    },
+    {
+      "id": "micrometeorite_shower",
+      "name": "Sporadic Hypervelocity Micrometeorite Impact",
+      "category": "Impact",
+      "warningTimeHours": 0,
+      "durationHours": 6,
+      "punctureRiskPctPerHour": 2.5,
+      "damageRatePerHour": 0.04,
+      "mitigationStrategy": "Deploy Whipple shields and sintered regolith berms around pressurized habitats.",
+      "historicalExample": "LDEF (Long Duration Exposure Facility) orbital impact crater surveys.",
+      "formula": "P_penetration ~ v_impact^1.44 * rho_p^0.5 * d_p^1.05 (Christiansen Whipple equation)",
+      "source": "NASA Meteoroid Environment Office (MEO) / Marshall Space Flight Center",
+      "sourceUrl": "https://www.nasa.gov/centers/marshall/capabilities/meteoroid_environment_office.html",
+      "instrumentOrMission": "NASA MEO Meteoroid Stream Models"
+    }
+  ]
+}
