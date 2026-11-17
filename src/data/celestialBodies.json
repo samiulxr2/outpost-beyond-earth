@@ -1,10 +1,10 @@
 {
   "metadata": {
     "dataset": "NASA Planetary Fact Sheets & JPL Horizons Ephemerides",
-    "source": "NASA Goddard Space Flight Center (Dr. David R. Williams)",
-    "sourceUrl": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/",
+    "source": "NASA Jet Propulsion Laboratory (JPL) Horizons API & GSFC",
+    "sourceUrl": "https://ssd.jpl.nasa.gov/api/horizons.api",
     "retrievedOn": "2026-11-17",
-    "dataOrigin": "factsheet-manual",
+    "dataOrigin": "api",
     "units": {
       "mass": "kg",
       "radius": "km",
@@ -71,11 +71,11 @@
       "name": "Mars",
       "type": "Terrestrial Planet",
       "massKg": 6.4171e+23,
-      "radiusKm": 3389.5,
+      "radiusKm": 3389.92,
       "semiMajorAxisAU": 1.52368,
       "semiMajorAxisKm": 227939200,
       "orbitalPeriodDays": 686.98,
-      "rotationPeriodHours": 24.623,
+      "rotationPeriodHours": 24.62296,
       "surfaceGravityMS2": 3.71,
       "meanTempK": 210,
       "minTempK": 130,
@@ -84,7 +84,7 @@
       "atmosphericComposition": "95.3% CO2, 2.6% N2, 1.9% Ar, 0.13% O2",
       "albedo": 0.25,
       "radiationDoseUnshieldedMSvDay": 0.65,
-      "solarFluxWPerM2": 586.2,
+      "solarFluxWPerM2": 589,
       "escapeVelocityKmS": 5.027,
       "axialTiltDeg": 25.19,
       "description": "The Red Planet. Ancient river deltas like Jezero Crater hold biosignature records and resources for in-situ MOXIE oxygen generation."

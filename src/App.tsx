@@ -5,10 +5,10 @@ import { EngineersPanel } from './ui/components/EngineersPanel';
 import { MainMenu } from './ui/screens/MainMenu';
 import { SeasonSelect } from './ui/screens/SeasonSelect';
 import { MissionPlanner } from './ui/screens/MissionPlanner';
+import { LandingSiteSelector } from './ui/screens/LandingSiteSelector';
+import { BaseBuilderView } from './ui/screens/BaseBuilderView';
 import { DataCreditsModal } from './ui/screens/DataCreditsModal';
 import { LevelBriefingModal } from './ui/components/LevelBriefingModal';
-import { sound } from './audio/soundSynth';
-import { ArrowLeft, CheckCircle } from 'lucide-react';
 
 export function App() {
   const {
@@ -56,6 +56,10 @@ export function App() {
         setTimeScale(60);
       } else if (e.key === '4') {
         setTimeScale(1440);
+      } else if (e.key === 'b' || e.key === 'B') {
+        // Toggle build menu or selection
+        const buildBtn = document.querySelector('button:has-text("Build"), button:has-text("Open Build")') as HTMLButtonElement;
+        if (buildBtn) buildBtn.click();
       } else if (e.key === 'e' || e.key === 'E') {
         setEngineerPanelModuleId(engineerPanelModuleId ? null : 'general_telemetry');
       } else if (e.key === 'Escape') {
@@ -88,35 +92,11 @@ export function App() {
 
         {currentScreen === 'MISSION_PLANNER' && <MissionPlanner />}
 
-        {currentScreen === 'DATA_CREDITS' && <DataCreditsModal />}
+        {currentScreen === 'LANDING_SELECTOR' && <LandingSiteSelector />}
 
-        {/* Phase 2 Transit / Base Builder Holding View */}
-        {currentScreen === 'BASE_BUILDER' && (
-          <div className="flex-1 w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-b from-space-darker to-space-darkest space-y-4">
-            <div className="p-4 rounded-full bg-emerald-950/60 border border-emerald-500/40 text-emerald-400">
-              <CheckCircle className="w-12 h-12" />
-            </div>
-            <h2 className="text-2xl font-bold text-white font-mono">
-              PHASE 2 COMPLETE: MISSION TRANSLUNAR INJECTION SUCCESSFUL
-            </h2>
-            <p className="text-sm text-gray-300 max-w-lg leading-relaxed">
-              Spacecraft is on nominal Hohmann transfer trajectory to Shackleton Crater Rim.
-              Base Builder initialization will commence in Phase 3 upon user approval.
-            </p>
-            <div className="pt-2 flex items-center space-x-3">
-              <button
-                onClick={() => {
-                  sound.playClick();
-                  setScreen('MISSION_PLANNER');
-                }}
-                className="py-2.5 px-5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-space-darkest font-bold text-xs uppercase font-mono transition flex items-center space-x-1.5"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Return to Mission Planner</span>
-              </button>
-            </div>
-          </div>
-        )}
+        {currentScreen === 'BASE_BUILDER' && <BaseBuilderView />}
+
+        {currentScreen === 'DATA_CREDITS' && <DataCreditsModal />}
       </main>
 
       {/* Level Briefing Modal Popup */}

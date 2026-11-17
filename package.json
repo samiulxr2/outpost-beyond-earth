@@ -17,7 +17,6 @@
     "@types/three": "^0.187.0",
     "autoprefixer": "^10.6.2",
     "lucide-react": "^1.74.0",
-    "phaser": "^4.2.1",
     "postcss": "^8.5.33",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",

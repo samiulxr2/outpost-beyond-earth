@@ -6,7 +6,6 @@ export type ScreenState =
   | 'MAIN_MENU'
   | 'SEASON_SELECT'
   | 'MISSION_PLANNER'
-  | 'TRANSIT'
   | 'LANDING_SELECTOR'
   | 'BASE_BUILDER'
   | 'MISSION_REPORT'
@@ -23,7 +22,9 @@ export interface PlacedModule {
   durabilityPct: number; // 0 - 100
   isActive: boolean;
   isConstructing: boolean;
-  constructionProgressPct: number;
+  constructionProgressPct: number; // 0 - 100
+  constructionTimeRemainingHours: number;
+  assignedBuilderId?: number;
 }
 
 export interface GridTile {
@@ -34,7 +35,7 @@ export interface GridTile {
   iceWaterContentPct: number; // 0 to 15%
   isObstacle: boolean; // Crater cliff or rock boulder
   regolithThicknessCm: number;
-  occupiedByModuleId?: string;
+  occupiedByInstanceId?: string;
 }
 
 export interface GameResources {
@@ -44,10 +45,10 @@ export interface GameResources {
   maxPowerStorageKWh: number;
   oxygenKg: number;
   waterKg: number;
-  dryFoodKg: number;
+  foodDaysRemaining: number;
   regolithOreKg: number;
   propellantKg: number;
-  credits: number;
+  budgetCredits: number;
   sciencePoints: number;
 }
 
@@ -72,4 +73,11 @@ export interface ActiveHazard {
   intensityMultiplier: number;
   damageRatePerHour: number;
   explanation: string;
+}
+
+export interface BuilderDrone {
+  id: number;
+  name: string;
+  isBusy: boolean;
+  assignedInstanceId: string | null;
 }

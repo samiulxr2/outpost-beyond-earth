@@ -263,7 +263,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   placeModuleOnGrid: (moduleId: string, x: number, y: number) => {
     const { gridTiles, placedModules, budgetCredits } = get();
     const tile = gridTiles.find(t => t.x === x && t.y === y);
-    if (!tile || tile.isObstacle || tile.occupiedByModuleId) {
+    if (!tile || tile.isObstacle || tile.occupiedByInstanceId) {
       return false;
     }
 
@@ -285,10 +285,11 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       isActive: true,
       isConstructing: false,
       constructionProgressPct: 100,
+      constructionTimeRemainingHours: 0,
     };
 
     const updatedTiles = gridTiles.map(t =>
-      t.x === x && t.y === y ? { ...t, occupiedByModuleId: instanceId } : t
+      t.x === x && t.y === y ? { ...t, occupiedByInstanceId: instanceId } : t
     );
 
     set({

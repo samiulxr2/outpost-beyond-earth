@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 
 export const MissionPlanner: React.FC = () => {
-  const { setScreen, loadLevel, selectedSeasonId, selectedLevelNumber, locale, setEngineerPanelModuleId } = useGameStore();
+  const { setScreen, selectedSeasonId, locale, setEngineerPanelModuleId } = useGameStore();
   const t = translations[locale];
 
   // Configurable Flight Parameters
@@ -61,6 +61,7 @@ export const MissionPlanner: React.FC = () => {
         payloadMassKg
       );
 
+      const marginDeltaVKmS = (availableDeltaVMs - requiredDeltaVMs) / 1000;
       const passPayload = payloadMassKg <= maxRatedPayloadKg;
       const passDeltaV = availableDeltaVMs >= requiredDeltaVMs;
       const isPass = passPayload && passDeltaV;
@@ -70,6 +71,7 @@ export const MissionPlanner: React.FC = () => {
         transferTimeDays: 3.5,
         requiredDeltaVKmS: requiredDeltaVMs / 1000,
         availableDeltaVKmS: availableDeltaVMs / 1000,
+        marginDeltaVKmS,
         maxRatedPayloadKg,
         fuelNeededKg: Math.round(fuelNeededKg),
         propellantCapacityKg: upperStage.propellantMassKg,
@@ -99,6 +101,7 @@ export const MissionPlanner: React.FC = () => {
         payloadMassKg
       );
 
+      const marginDeltaVKmS = (availableDeltaVMs - requiredDeltaVMs) / 1000;
       const passPayload = payloadMassKg <= maxRatedPayloadKg;
       const passDeltaV = availableDeltaVMs >= requiredDeltaVMs;
       const isPass = passPayload && passDeltaV;
@@ -108,6 +111,7 @@ export const MissionPlanner: React.FC = () => {
         transferTimeDays: Math.round(marsTransfer.transferTimeDays),
         requiredDeltaVKmS: requiredDeltaVMs / 1000,
         availableDeltaVKmS: availableDeltaVMs / 1000,
+        marginDeltaVKmS,
         maxRatedPayloadKg,
         fuelNeededKg: Math.round(fuelNeededKg),
         propellantCapacityKg: upperStage.propellantMassKg,
@@ -133,8 +137,8 @@ export const MissionPlanner: React.FC = () => {
     setIsLaunching(true);
 
     setTimeout(() => {
-      // Transition to surface base builder for Season 1 Level 1
-      loadLevel(selectedSeasonId, selectedLevelNumber);
+      // Transition to candidate landing site selector
+      setScreen('LANDING_SELECTOR');
     }, 1800);
   };
 
@@ -310,17 +314,25 @@ export const MissionPlanner: React.FC = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
-              <div>
-                <span className="text-gray-400 block">{t.deltaVRequired}:</span>
+            {/* 3-Line Delta-V Breakdown */}
+            <div className="space-y-1.5 pt-1 border-b border-space-border/60 pb-2">
+              <div className="flex justify-between items-center text-[11px]">
+                <span className="text-gray-400">Available &Delta;v (Rocket Capacity):</span>
+                <span className="text-white font-bold">{physicsResult.availableDeltaVKmS.toFixed(2)} km/s</span>
+              </div>
+              <div className="flex justify-between items-center text-[11px]">
+                <span className="text-gray-400">Required &Delta;v (Transfer + Landing):</span>
                 <span className="text-white font-bold">{physicsResult.requiredDeltaVKmS.toFixed(2)} km/s</span>
               </div>
-              <div>
-                <span className="text-gray-400 block">{t.deltaVAvailable}:</span>
-                <span className={`font-bold ${physicsResult.passDeltaV ? 'text-telemetry-emerald' : 'text-telemetry-rose'}`}>
-                  {physicsResult.availableDeltaVKmS.toFixed(2)} km/s
+              <div className="flex justify-between items-center text-[11px] font-bold">
+                <span className="text-gray-300">&Delta;v Margin (Available - Required):</span>
+                <span className={physicsResult.marginDeltaVKmS >= 0 ? 'text-telemetry-emerald' : 'text-telemetry-rose'}>
+                  {physicsResult.marginDeltaVKmS >= 0 ? '+' : ''}{physicsResult.marginDeltaVKmS.toFixed(2)} km/s
                 </span>
               </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
               <div>
                 <span className="text-gray-400 block">{t.fuelRequired}:</span>
                 <span className="text-white font-bold">{physicsResult.fuelNeededKg.toLocaleString()} kg</span>
@@ -329,6 +341,11 @@ export const MissionPlanner: React.FC = () => {
                 <span className="text-gray-400 block">{t.transferTime}:</span>
                 <span className="text-white font-bold">{physicsResult.transferTimeDays} Days</span>
               </div>
+            </div>
+
+            {/* Simplification Note */}
+            <div className="text-[10px] text-amber-300/80 bg-amber-950/20 p-2 rounded border border-amber-500/20">
+              <span className="font-semibold text-telemetry-amber">Simplified for gameplay:</span> Single-stage equivalent burn. The separate descent/lander propulsion stage and orbital rendezvous burns are aggregated into the total mission &Delta;v budget.
             </div>
           </div>
 
