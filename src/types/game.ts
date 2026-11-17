@@ -81,3 +81,22 @@ export interface BuilderDrone {
   isBusy: boolean;
   assignedInstanceId: string | null;
 }
+
+export interface MissionReportData {
+  status: 'VICTORY' | 'DEFEAT';
+  score: number;
+  stars: number;
+  missionSuccessScore: number;
+  crewSafetyScore: number;
+  efficiencyScore: number;
+  sciencePointsEarned: number;
+  realScienceSummary: string;
+  sourceCitation: string;
+  defeatReason?: string;
+}
+
+export interface CampaignProgress {
+  unlockedLevels: number[];
+  levelHighScores: Record<number, { score: number; stars: number; scienceEarned: number }>;
+  totalSciencePoints: number;
+}

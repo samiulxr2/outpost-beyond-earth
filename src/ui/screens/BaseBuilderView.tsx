@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useGameStore } from '../../store/useGameStore';
 import { sound } from '../../audio/soundSynth';
 import { ResourceBarHUD } from '../components/ResourceBarHUD';
 import { IsometricBaseCanvas } from '../../scenes/canvas/IsometricBaseCanvas';
 import { ModuleBuildMenu } from '../components/ModuleBuildMenu';
 import { ModuleInspectorModal } from '../components/ModuleInspectorModal';
-import { stepResourceSimulation } from '../../core/economy/resourceSimulation';
 import type { PlacedModule } from '../../types/game';
 import { 
   Save, 
@@ -25,7 +24,6 @@ export const BaseBuilderView: React.FC = () => {
     missionElapsedSeconds,
     missionElapsedDays,
     powerStoredKWh,
-    maxPowerStorageKWh,
     oxygenKg,
     waterKg,
     foodDaysRemaining,
@@ -98,40 +96,6 @@ export const BaseBuilderView: React.FC = () => {
     }
   };
 
-  // Run the comprehensive resource simulation step on game store tick
-  useEffect(() => {
-    const simResult = stepResourceSimulation(
-      {
-        missionElapsedSeconds,
-        missionElapsedDays,
-        powerStoredKWh,
-        maxPowerStorageKWh,
-        oxygenKg,
-        waterKg,
-        foodDaysRemaining,
-        regolithOreKg,
-        propellantKg,
-        budgetCredits,
-        landingSiteId,
-        crewCount: 4,
-      },
-      placedModules,
-      1.0 // 1-second simulation step
-    );
-
-    useGameStore.setState({
-      powerGeneratedWatts: simResult.powerGeneratedWatts,
-      powerConsumedWatts: simResult.powerConsumedWatts,
-      netPowerWatts: simResult.netPowerWatts,
-      powerStoredKWh: simResult.powerStoredKWh,
-      maxPowerStorageKWh: simResult.maxPowerStorageKWh,
-      oxygenKg: simResult.oxygenKg,
-      waterKg: simResult.waterKg,
-      foodDaysRemaining: simResult.foodDaysRemaining,
-      placedModules: simResult.updatedModules,
-    });
-  }, [missionElapsedSeconds]);
-
   return (
     <div className="flex-1 w-full h-[calc(100vh-3.5rem)] flex flex-col relative overflow-hidden bg-space-darkest text-gray-100">
       {/* Upper Comprehensive Resource Bar HUD */}
@@ -157,17 +121,42 @@ export const BaseBuilderView: React.FC = () => {
           </div>
 
           {showObjectives && (
-            <div className="p-3 space-y-2 max-h-48 overflow-y-auto">
-              {objectives.map((obj, i) => (
-                <div key={i} className="flex items-start space-x-2 text-[11px] leading-snug">
-                  <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${
-                    obj.completed ? 'text-telemetry-emerald' : 'text-gray-500'
-                  }`} />
-                  <span className={obj.completed ? 'text-emerald-300 font-semibold' : 'text-gray-300'}>
-                    {obj.description}
-                  </span>
-                </div>
-              ))}
+            <div className="p-3 space-y-2.5 max-h-56 overflow-y-auto">
+              <div className="flex items-center justify-between text-[10px] font-mono text-gray-400 pb-1 border-b border-space-border/40">
+                <span>Mission Directives</span>
+                <span className="text-cyan-300 font-bold">
+                  {objectives.filter(o => o.completed).length} / {objectives.length} Completed
+                </span>
+              </div>
+              {objectives.map((obj, i) => {
+                const liveProgress = !obj.completed && (
+                  obj.type === 'BUILD_MODULE'
+                    ? `${placedModules.filter(m => m.moduleId === obj.moduleId).length}/${obj.targetCount || 1}`
+                    : obj.resource === 'powerStoredKWh'
+                    ? `${powerStoredKWh.toFixed(0)}/${obj.targetValue} kWh`
+                    : obj.resource === 'waterKg'
+                    ? `${waterKg.toFixed(0)}/${obj.targetValue} kg`
+                    : null
+                );
+
+                return (
+                  <div key={i} className="flex items-start space-x-2 text-[11px] leading-snug">
+                    <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${
+                      obj.completed ? 'text-telemetry-emerald' : 'text-gray-500'
+                    }`} />
+                    <div className="flex-1">
+                      <span className={obj.completed ? 'text-emerald-300 font-semibold' : 'text-gray-300'}>
+                        {obj.description}
+                      </span>
+                      {liveProgress && (
+                        <span className="block text-[10px] font-mono text-cyan-400 mt-0.5">
+                          Progress: {liveProgress}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

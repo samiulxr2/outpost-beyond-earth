@@ -68,7 +68,7 @@ export const EngineersPanel: React.FC = () => {
                 <span>{t.simplifiedForGameplay}</span>
               </div>
               <p className="text-[11px] text-amber-300/80 leading-relaxed">
-                Discrete 1-second simulation tick discretizes continuous thermal and power transients for smooth 60 FPS gameplay.
+                Discrete 1-second simulation tick discretizes continuous thermal, chemical, and electrical transients for responsive 60 FPS gameplay.
               </p>
             </div>
 
@@ -86,6 +86,95 @@ export const EngineersPanel: React.FC = () => {
                 <span>View Official NASA Technical Paper</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
+            </div>
+          </div>
+        ) : engineerPanelModuleId === 'resource_power' ? (
+          /* Resource: Electrical Power & Energy Storage */
+          <div className="space-y-4">
+            <div>
+              <span className="text-[10px] uppercase font-mono tracking-wider px-2 py-0.5 rounded bg-cyan-950/60 border border-cyan-500/30 text-cyan-300">
+                Resource Subsystem
+              </span>
+              <h3 className="text-base font-bold text-white mt-1.5">Electrical Grid & Battery Energy Storage</h3>
+            </div>
+
+            <div className="bg-space-dark/90 p-3 rounded-lg border border-space-border space-y-2">
+              <div className="flex items-center space-x-1.5 text-telemetry-emerald text-xs font-semibold">
+                <Info className="w-3.5 h-3.5" />
+                <span>Why This Is Real</span>
+              </div>
+              <p className="text-xs text-gray-300 leading-relaxed">
+                Power is the master constraint of lunar surface exploration. Vertical solar arrays (VSAT) on crater peaks generate power during low-incident sun angles, while space-rated Li-ion batteries sustain life support through topographic shadow dips.
+              </p>
+            </div>
+
+            <div className="bg-space-darkest p-3 rounded-lg border border-space-border/80 font-mono space-y-1.5">
+              <div className="text-[11px] text-gray-400 uppercase tracking-wider">Governing Formulas</div>
+              <div className="text-xs text-cyan-300 p-2 bg-space-dark rounded border border-cyan-500/20 break-words space-y-1">
+                <div>P_net = &Sigma; P_gen - &Sigma; P_cons</div>
+                <div>E_stored(t) = E_0 + &int; P_net(t) dt</div>
+                <div>&tau;_deplete = E_stored / |P_net|</div>
+              </div>
+            </div>
+
+            <div className="bg-amber-950/30 p-3 rounded-lg border border-amber-500/30 text-amber-200/90 text-xs space-y-1">
+              <div className="flex items-center space-x-1.5 text-telemetry-amber font-semibold">
+                <AlertCircle className="w-3.5 h-3.5" />
+                <span>{t.simplifiedForGameplay}</span>
+              </div>
+              <p className="text-[11px] text-amber-300/80 leading-relaxed">
+                Battery charge/discharge assumes constant round-trip efficiency without modeling temperature-dependent internal impedance or high C-rate heating.
+              </p>
+            </div>
+
+            <div className="border-t border-space-border pt-3 space-y-1 text-xs">
+              <div className="text-gray-400 font-mono text-[10px] uppercase">NASA Citation</div>
+              <div className="text-gray-200 font-medium">NASA Glenn Research Center / Battery Safety Workshop</div>
+              <div className="text-gray-400 text-[11px]">Artemis Base Camp Surface Power Technologies</div>
+            </div>
+          </div>
+        ) : engineerPanelModuleId === 'resource_illumination' ? (
+          /* Resource: Illumination & Day/Night Cycles */
+          <div className="space-y-4">
+            <div>
+              <span className="text-[10px] uppercase font-mono tracking-wider px-2 py-0.5 rounded bg-cyan-950/60 border border-cyan-500/30 text-cyan-300">
+                Planetary Environment
+              </span>
+              <h3 className="text-base font-bold text-white mt-1.5">Solar Illumination & Topographic Shadow</h3>
+            </div>
+
+            <div className="bg-space-dark/90 p-3 rounded-lg border border-space-border space-y-2">
+              <div className="flex items-center space-x-1.5 text-telemetry-emerald text-xs font-semibold">
+                <Info className="w-3.5 h-3.5" />
+                <span>Why This Is Real</span>
+              </div>
+              <p className="text-xs text-gray-300 leading-relaxed">
+                Due to the Moon's small 1.54&deg; axial tilt, polar crater rims remain in sunlight for 80% to 92% of the year with brief shadow dips of hours to days. In contrast, equatorial sites endure a brutal 354-hour continuous night with temperatures plunging below -180&deg;C.
+              </p>
+            </div>
+
+            <div className="bg-space-darkest p-3 rounded-lg border border-space-border/80 font-mono space-y-1.5">
+              <div className="text-[11px] text-gray-400 uppercase tracking-wider">Governing Formulas</div>
+              <div className="text-xs text-cyan-300 p-2 bg-space-dark rounded border border-cyan-500/20 break-words space-y-1">
+                <div>Equatorial Night: T_night = 354.35 h (half of 708.7 h synodic month)</div>
+                <div>Polar Shadow Dip: T_dip = T_cycle &times; (1 - &eta;_illumination)</div>
+              </div>
+            </div>
+
+            <div className="bg-amber-950/30 p-3 rounded-lg border border-amber-500/30 text-amber-200/90 text-xs space-y-1">
+              <div className="flex items-center space-x-1.5 text-telemetry-amber font-semibold">
+                <AlertCircle className="w-3.5 h-3.5" />
+                <span>{t.simplifiedForGameplay}</span>
+              </div>
+              <p className="text-[11px] text-amber-300/80 leading-relaxed">
+                Lunar polar illumination uses periodic topographic shadow dips parameterized by landingSites.json illuminationAnnualPct and latitude rather than full 3D horizon raytracing against LRO LOLA elevation DEMs.
+              </p>
+            </div>
+
+            <div className="border-t border-space-border pt-3 space-y-1 text-xs">
+              <div className="text-gray-400 font-mono text-[10px] uppercase">NASA Citation</div>
+              <div className="text-gray-200 font-medium">NASA LRO LOLA Topography Data (Mazarico et al., 2011)</div>
+              <div className="text-gray-400 text-[11px]">Illumination conditions of the lunar polar regions</div>
             </div>
           </div>
         ) : (

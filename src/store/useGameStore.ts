@@ -1,7 +1,31 @@
 import { create } from 'zustand';
-import type { ScreenState, TimeScale, PlacedModule, GridTile, MissionObjective, ActiveHazard } from '../types/game';
+import type { 
+  ScreenState, 
+  TimeScale, 
+  PlacedModule, 
+  GridTile, 
+  MissionObjective, 
+  ActiveHazard, 
+  MissionReportData, 
+  CampaignProgress 
+} from '../types/game';
 import season1Data from '../data/seasons/season1_moon.json';
 import modulesData from '../data/modules.json';
+import { stepResourceSimulation, calculateSiteIllumination } from '../core/economy/resourceSimulation';
+
+function loadCampaignProgress(): CampaignProgress {
+  try {
+    const raw = localStorage.getItem('outpost_campaign_progression');
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { unlockedLevels: [1], levelHighScores: {}, totalSciencePoints: 0 };
+}
+
+function saveCampaignProgress(data: CampaignProgress) {
+  try {
+    localStorage.setItem('outpost_campaign_progression', JSON.stringify(data));
+  } catch {}
+}
 
 export interface GameStoreState {
   currentScreen: ScreenState;
@@ -48,6 +72,13 @@ export interface GameStoreState {
   activeHazards: ActiveHazard[];
   engineerPanelModuleId: string | null;
 
+  // Campaign Progression & Persistence
+  unlockedLevels: number[];
+  levelHighScores: Record<number, { score: number; stars: number; scienceEarned: number }>;
+  missionReport: MissionReportData | null;
+  hasExperiencedNight: boolean;
+  consecutiveBlackoutSeconds: number;
+
   // i18n & Settings
   locale: 'en' | 'bn';
   soundEnabled: boolean;
@@ -59,6 +90,8 @@ export interface GameStoreState {
   fastForwardDays: (days: number) => void;
   tickMissionTime: (deltaRealSeconds: number) => void;
   loadLevel: (seasonId: number, levelNumber: number) => void;
+  triggerMissionReport: (report: MissionReportData) => void;
+  triggerDefeat: (reason: string) => void;
   selectModuleForBuild: (moduleId: string | null) => void;
   placeModuleOnGrid: (moduleId: string, x: number, y: number) => boolean;
   driveRover: (distanceMeters: number, icePct: number) => void;
@@ -107,6 +140,8 @@ function generateInitialGrid(size: number = 16): GridTile[] {
   return tiles;
 }
 
+const initialProg = loadCampaignProgress();
+
 export const useGameStore = create<GameStoreState>((set, get) => ({
   currentScreen: 'MAIN_MENU',
   selectedSeasonId: 1,
@@ -120,7 +155,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   landingSiteId: "shackleton_rim",
   missionDurationDays: 14,
   budgetCredits: 800000,
-  sciencePoints: 0,
+  sciencePoints: initialProg.totalSciencePoints || 0,
   objectives: [],
   tutorialStepIndex: 0,
   tutorialCompleted: false,
@@ -147,6 +182,12 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   activeHazards: [],
   engineerPanelModuleId: null,
 
+  unlockedLevels: initialProg.unlockedLevels || [1],
+  levelHighScores: initialProg.levelHighScores || {},
+  missionReport: null,
+  hasExperiencedNight: false,
+  consecutiveBlackoutSeconds: 0,
+
   locale: 'en',
   soundEnabled: true,
 
@@ -165,17 +206,84 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
 
   fastForwardDays: (days: number) => {
     const secondsToAdd = days * 86400;
-    const newSeconds = get().missionElapsedSeconds + secondsToAdd;
-    set({
-      missionElapsedSeconds: newSeconds,
-      missionElapsedDays: Math.floor(newSeconds / 86400),
-    });
-    // Immediately calculate progression and check objectives
+    const { 
+      missionElapsedSeconds, 
+      powerStoredKWh, 
+      maxPowerStorageKWh, 
+      oxygenKg, 
+      waterKg, 
+      foodDaysRemaining, 
+      regolithOreKg, 
+      propellantKg, 
+      budgetCredits, 
+      landingSiteId, 
+      placedModules,
+      currentScreen 
+    } = get();
+
+    const newSeconds = missionElapsedSeconds + secondsToAdd;
+    const newDays = Math.floor(newSeconds / 86400);
+
+    if (currentScreen === 'BASE_BUILDER') {
+      const sim = stepResourceSimulation(
+        {
+          missionElapsedSeconds: newSeconds,
+          missionElapsedDays: newDays,
+          powerStoredKWh,
+          maxPowerStorageKWh,
+          oxygenKg,
+          waterKg,
+          foodDaysRemaining,
+          regolithOreKg,
+          propellantKg,
+          budgetCredits,
+          landingSiteId,
+          crewCount: 4,
+        },
+        placedModules,
+        secondsToAdd
+      );
+
+      set({
+        missionElapsedSeconds: newSeconds,
+        missionElapsedDays: newDays,
+        powerGeneratedWatts: sim.powerGeneratedWatts,
+        powerConsumedWatts: sim.powerConsumedWatts,
+        netPowerWatts: sim.netPowerWatts,
+        powerStoredKWh: sim.powerStoredKWh,
+        maxPowerStorageKWh: sim.maxPowerStorageKWh,
+        oxygenKg: sim.oxygenKg,
+        waterKg: sim.waterKg,
+        foodDaysRemaining: sim.foodDaysRemaining,
+        placedModules: sim.updatedModules,
+      });
+    } else {
+      set({
+        missionElapsedSeconds: newSeconds,
+        missionElapsedDays: newDays,
+      });
+    }
+
     get().checkObjectives();
   },
 
   tickMissionTime: (deltaRealSeconds: number) => {
-    const { gameTimeScale, missionElapsedSeconds } = get();
+    const { 
+      gameTimeScale, 
+      missionElapsedSeconds, 
+      powerStoredKWh,
+      maxPowerStorageKWh,
+      oxygenKg,
+      waterKg,
+      foodDaysRemaining,
+      regolithOreKg,
+      propellantKg,
+      budgetCredits,
+      landingSiteId,
+      placedModules,
+      currentScreen 
+    } = get();
+
     if (gameTimeScale === 0) return;
 
     // gameTimeScale: 1 = 60x real time (1s = 1m), 10 = 600x, 60 = 3600x (1s = 1h), 1440 = 86400x (1s = 1d)
@@ -184,36 +292,45 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     const newSeconds = missionElapsedSeconds + elapsedGameSeconds;
     const newDays = Math.floor(newSeconds / 86400);
 
-    // Calculate real-time module generation & consumption
-    const { placedModules } = get();
-    let totalGenWatts = 0;
-    let totalConsWatts = 0;
-    let storageCap = 50;
+    if (currentScreen === 'BASE_BUILDER') {
+      const sim = stepResourceSimulation(
+        {
+          missionElapsedSeconds: newSeconds,
+          missionElapsedDays: newDays,
+          powerStoredKWh,
+          maxPowerStorageKWh,
+          oxygenKg,
+          waterKg,
+          foodDaysRemaining,
+          regolithOreKg,
+          propellantKg,
+          budgetCredits,
+          landingSiteId,
+          crewCount: 4,
+        },
+        placedModules,
+        elapsedGameSeconds
+      );
 
-    for (const p of placedModules) {
-      const modDef = modulesData.modules.find(m => m.id === p.moduleId);
-      if (!modDef) continue;
-      if (modDef.powerGenerationWatts) totalGenWatts += modDef.powerGenerationWatts;
-      if (modDef.powerConsumptionWatts) totalConsWatts += modDef.powerConsumptionWatts;
-      if (modDef.storageCapacityKWh) storageCap += modDef.storageCapacityKWh;
+      set({
+        missionElapsedSeconds: newSeconds,
+        missionElapsedDays: newDays,
+        powerGeneratedWatts: sim.powerGeneratedWatts,
+        powerConsumedWatts: sim.powerConsumedWatts,
+        netPowerWatts: sim.netPowerWatts,
+        powerStoredKWh: sim.powerStoredKWh,
+        maxPowerStorageKWh: sim.maxPowerStorageKWh,
+        oxygenKg: sim.oxygenKg,
+        waterKg: sim.waterKg,
+        foodDaysRemaining: sim.foodDaysRemaining,
+        placedModules: sim.updatedModules,
+      });
+    } else {
+      set({
+        missionElapsedSeconds: newSeconds,
+        missionElapsedDays: newDays,
+      });
     }
-
-    const netWatts = totalGenWatts - totalConsWatts;
-    // Energy delta in kWh: Watts * hours / 1000
-    const deltaHours = elapsedGameSeconds / 3600;
-    const deltaKWh = (netWatts * deltaHours) / 1000;
-    const currentStored = get().powerStoredKWh;
-    const updatedStored = Math.min(storageCap, Math.max(0, currentStored + deltaKWh));
-
-    set({
-      missionElapsedSeconds: newSeconds,
-      missionElapsedDays: newDays,
-      powerGeneratedWatts: totalGenWatts,
-      powerConsumedWatts: totalConsWatts,
-      netPowerWatts: netWatts,
-      powerStoredKWh: Math.round(updatedStored * 10) / 10,
-      maxPowerStorageKWh: storageCap,
-    });
 
     get().checkObjectives();
   },
@@ -252,6 +369,9 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       foodDaysRemaining: level.startingResources?.foodRationsDays ?? 30,
       regolithOreKg: level.startingResources?.regolithOreKg ?? 0,
       propellantKg: level.startingResources?.propellantKg ?? 500,
+      hasExperiencedNight: false,
+      consecutiveBlackoutSeconds: 0,
+      missionReport: null,
       currentScreen: 'BASE_BUILDER',
     });
   },
@@ -330,8 +450,49 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     set({ tutorialStepIndex: tutorialStepIndex + 1 });
   },
 
+  triggerMissionReport: (report: MissionReportData) => {
+    set({
+      currentScreen: 'MISSION_REPORT',
+      missionReport: report,
+    });
+  },
+
+  triggerDefeat: (reason: string) => {
+    const { selectedLevelNumber } = get();
+    const levelData = season1Data.levels.find(l => l.levelNumber === selectedLevelNumber) || season1Data.levels[0];
+    set({
+      currentScreen: 'MISSION_REPORT',
+      missionReport: {
+        status: 'DEFEAT',
+        score: 350,
+        stars: 0,
+        missionSuccessScore: 0,
+        crewSafetyScore: 100,
+        efficiencyScore: 150,
+        sciencePointsEarned: 25,
+        realScienceSummary: levelData.realDataReference.explanation,
+        sourceCitation: levelData.realDataReference.source,
+        defeatReason: reason,
+      },
+    });
+  },
+
   checkObjectives: () => {
-    const { objectives, placedModules, powerStoredKWh, netPowerWatts, roverDistanceTraversedMeters, iceProspectingDetectedPct, waterKg } = get();
+    const { 
+      objectives, 
+      placedModules, 
+      powerStoredKWh, 
+      netPowerWatts, 
+      roverDistanceTraversedMeters, 
+      iceProspectingDetectedPct, 
+      waterKg,
+      oxygenKg,
+      budgetCredits,
+      landingSiteId,
+      missionElapsedSeconds,
+      selectedLevelNumber,
+      hasExperiencedNight
+    } = get();
 
     let allCompleted = true;
     const updated = objectives.map(obj => {
@@ -341,6 +502,13 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         if (count >= (obj.targetCount || 1)) isDone = true;
       } else if (obj.type === 'RESOURCE_THRESHOLD') {
         if (obj.resource === 'powerStoredKWh' && powerStoredKWh >= (obj.targetValue || 50)) {
+          isDone = true;
+        } else if (obj.resource === 'oxygenKg' && oxygenKg >= (obj.targetValue || 50)) {
+          isDone = true;
+        }
+      } else if (obj.type === 'SURVIVE_NIGHT') {
+        const siteIllum = calculateSiteIllumination(landingSiteId, missionElapsedSeconds);
+        if (hasExperiencedNight && siteIllum.isDaylight && powerStoredKWh > 0) {
           isDone = true;
         }
       } else if (obj.type === 'ROVER_DISTANCE_METERS') {
@@ -360,11 +528,49 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     set({ objectives: updated });
 
     if (allCompleted && updated.length > 0 && get().currentScreen === 'BASE_BUILDER') {
-      // Award science points for level completion
-      const currentLevel = get().selectedLevelNumber;
-      if (currentLevel <= 3) {
-        set({ sciencePoints: get().sciencePoints + 150 });
-      }
+      const levelData = season1Data.levels.find(l => l.levelNumber === selectedLevelNumber) || season1Data.levels[0];
+      const safetyScore = Math.min(500, Math.round(oxygenKg * 2.5 + waterKg * 1.0));
+      const efficiencyScore = Math.min(500, Math.round(budgetCredits * 0.0004 + powerStoredKWh * 2));
+      const score = 1000 + safetyScore + efficiencyScore;
+      const stars = score >= 1800 ? 3 : score >= 1400 ? 2 : 1;
+      const scienceEarned = selectedLevelNumber === 1 ? 150 : selectedLevelNumber === 2 ? 250 : 350;
+
+      const currentUnlocked = get().unlockedLevels;
+      const nextLvl = selectedLevelNumber + 1;
+      const newUnlocked = Array.from(new Set([...currentUnlocked, nextLvl]));
+      const updatedScores = {
+        ...get().levelHighScores,
+        [selectedLevelNumber]: { score, stars, scienceEarned }
+      };
+      const totalSP = get().sciencePoints + scienceEarned;
+
+      saveCampaignProgress({
+        unlockedLevels: newUnlocked,
+        levelHighScores: updatedScores,
+        totalSciencePoints: totalSP,
+      });
+
+      set({
+        unlockedLevels: newUnlocked,
+        levelHighScores: updatedScores,
+        sciencePoints: totalSP,
+        currentScreen: 'MISSION_REPORT',
+        missionReport: {
+          status: 'VICTORY',
+          score,
+          stars,
+          missionSuccessScore: 1000,
+          crewSafetyScore: safetyScore,
+          efficiencyScore,
+          sciencePointsEarned: scienceEarned,
+          realScienceSummary: levelData.realDataReference.explanation,
+          sourceCitation: levelData.realDataReference.source,
+        }
+      });
     }
   },
 }));
+
+if (typeof window !== 'undefined') {
+  (window as unknown as { __GAME_STORE__: typeof useGameStore }).__GAME_STORE__ = useGameStore;
+}

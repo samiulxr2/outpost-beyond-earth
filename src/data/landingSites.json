@@ -85,6 +85,20 @@
       "instrument": "LRO LROC NAC Stereo Imagery"
     },
     {
+      "id": "mare_tranquillitatis",
+      "name": "Mare Tranquillitatis (Apollo 11 Base)",
+      "bodyId": "moon",
+      "latitudeDeg": 0.67,
+      "longitudeDeg": 23.47,
+      "elevationMeters": -1200,
+      "illuminationAnnualPct": 50,
+      "slopeMaxDeg": 2.1,
+      "iceWaterEstimatePct": 0.05,
+      "hazardRating": "High (354-hour continuous lunar night, -180°C deep freeze)",
+      "missionRelevance": "Historical Apollo 11 landing site. Represents typical lunar equatorial maria, subjected to brutal 14-day days and 14-day nights requiring massive battery or nuclear systems.",
+      "instrument": "Apollo Lunar Surface Experiments Package (ALSEP) & LRO LROC"
+    },
+    {
       "id": "jezero_crater",
       "name": "Jezero Crater Delta",
       "bodyId": "mars",

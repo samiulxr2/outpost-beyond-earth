@@ -11,6 +11,7 @@
 
 import type { PlacedModule } from '../../types/game';
 import modulesData from '../../data/modules.json';
+import landingSitesData from '../../data/landingSites.json';
 import { METABOLIC_RATES_PER_CREW_DAY } from '../physics/lifesupport';
 
 export interface SimulationState {
@@ -50,46 +51,57 @@ export interface SimulationStepResult {
 /**
  * Calculates current lunar solar illumination fraction at the landing site.
  * Lunar synodic day is 29.53 Earth days (~708.7 hours: ~354h daylight, ~354h night).
- * Polar crater rims (Shackleton) experience ~92% continuous light with occasional dips.
+ * Equatorial sites (Mare Tranquillitatis) experience full 354h daylight and 354h night.
+ * Polar crater rims (Shackleton) experience ~92% continuous light with short periodic dips (~9.6h).
  * Permanently shadowed regions (Haworth) experience 0% light.
+ *
+ * Simplification note:
+ * Simplified for gameplay: Lunar polar illumination uses periodic topographic shadow dips
+ * parameterized by landingSites.json illuminationAnnualPct and latitude rather than full 3D
+ * horizon raytracing against LRO LOLA elevation DEMs.
  */
 export function calculateSiteIllumination(
   landingSiteId: string,
   missionElapsedSeconds: number
 ): { isDaylight: boolean; illuminationFraction: number; hoursUntilNextTransition: number } {
   const missionHours = missionElapsedSeconds / 3600;
+  const site = landingSitesData.sites.find(s => s.id === landingSiteId);
 
-  if (landingSiteId.includes('haworth')) {
-    // Permanently Shadowed Region: Cold Trap (0% sunlight)
+  // Default to Shackleton Rim if site not found
+  const illuminationPct = site ? site.illuminationAnnualPct : 92;
+  const latitude = site ? site.latitudeDeg : -89.9;
+
+  // 1. Permanently Shadowed Region (Cold Trap)
+  if (illuminationPct <= 0 || landingSiteId.includes('haworth')) {
     return { isDaylight: false, illuminationFraction: 0, hoursUntilNextTransition: 9999 };
   }
 
-  if (landingSiteId.includes('shackleton')) {
-    // Shackleton Rim Peak of Eternal Light: 90% - 92% light with brief dips
-    const dipCycleHours = 120; // 5-day orbital shadow precession
-    const cyclePhase = (missionHours % dipCycleHours) / dipCycleHours;
-    const isDip = cyclePhase > 0.88; // 12% shadow dip
-    const hoursUntilNext = isDip ? (1.0 - cyclePhase) * dipCycleHours : (0.88 - cyclePhase) * dipCycleHours;
+  // 2. Equatorial / Mid-Latitude Site (|lat| < 65°): Full 354.35h day / 354.35h night
+  if (Math.abs(latitude) < 65) {
+    const lunarDayHours = 708.7; // 29.53 days
+    const hourInCycle = missionHours % lunarDayHours;
+    const isDay = hourInCycle < 354.35;
+    const hoursUntil = isDay ? 354.35 - hourInCycle : lunarDayHours - hourInCycle;
+    const sunAngle = isDay ? Math.sin((hourInCycle / 354.35) * Math.PI) : 0;
 
     return {
-      isDaylight: !isDip,
-      illuminationFraction: isDip ? 0.05 : 0.92,
-      hoursUntilNextTransition: Math.max(1, Math.round(hoursUntilNext)),
+      isDaylight: isDay,
+      illuminationFraction: Math.max(0, sunAngle),
+      hoursUntilNextTransition: Math.max(1, Math.round(hoursUntil)),
     };
   }
 
-  // Standard Lunar Equatorial Day/Night (14.75 days day, 14.75 days night)
-  const lunarDayHours = 708.7; // 29.53 days
-  const hourInCycle = missionHours % lunarDayHours;
-  const isDay = hourInCycle < 354.35;
-  const hoursUntil = isDay ? 354.35 - hourInCycle : lunarDayHours - hourInCycle;
-
-  // Sine curve during daytime
-  const sunAngle = isDay ? Math.sin((hourInCycle / 354.35) * Math.PI) : 0;
+  // 3. Polar High-Illumination Site (|lat| >= 65°): Precession cycle with short shadow dips
+  const cycleHours = 120; // 5-day solar precession sweep around polar crater rims
+  const shadowFraction = Math.max(0.04, 1.0 - (illuminationPct / 100));
+  const daylightHours = cycleHours * (1.0 - shadowFraction);
+  const hourInCycle = missionHours % cycleHours;
+  const isDay = hourInCycle < daylightHours;
+  const hoursUntil = isDay ? daylightHours - hourInCycle : cycleHours - hourInCycle;
 
   return {
     isDaylight: isDay,
-    illuminationFraction: Math.max(0, sunAngle),
+    illuminationFraction: isDay ? 0.95 : 0.0,
     hoursUntilNextTransition: Math.max(1, Math.round(hoursUntil)),
   };
 }
@@ -205,11 +217,13 @@ export function stepResourceSimulation(
   if (newStoredKWh <= 0 && netPowerWatts < 0) {
     alerts.push("CRITICAL BLACKOUT: Battery reserves exhausted! Non-essential systems offline.");
   } else if (batteryHoursRemaining < 24 && batteryHoursRemaining !== Infinity) {
-    alerts.push(`WARNING: Low power reserve! Batteries depleted in ${batteryHoursRemaining.toFixed(1)} hours.`);
+    alerts.push(`WARNING: Low power reserve! Stored: ${newStoredKWh.toFixed(1)} kWh. Depleted in ${batteryHoursRemaining.toFixed(1)} hours.`);
   }
 
   if (!isDaylight) {
-    alerts.push(`LUNAR NIGHT IN PROGRESS: Solar output 0%. Relying on battery & nuclear reserves (${hoursUntilNextTransition}h to sunrise).`);
+    const netDrawKW = (Math.abs(netPowerWatts) / 1000).toFixed(1);
+    const reserveStr = batteryHoursRemaining === Infinity ? 'Surplus' : `${batteryHoursRemaining.toFixed(1)}h`;
+    alerts.push(`LUNAR NIGHT IN PROGRESS: Solar output 0 kW. Net draw: -${netDrawKW} kW. Battery reserve: ${reserveStr} (${hoursUntilNextTransition}h to sunrise).`);
   } else if (hoursUntilNextTransition < 12) {
     alerts.push(`SUNSET IMMINENT: Shadow begins in ${hoursUntilNextTransition} hours. Ensure batteries are fully charged!`);
   }
@@ -222,11 +236,11 @@ export function stepResourceSimulation(
     powerGeneratedWatts: Math.round(totalPowerGenWatts),
     powerConsumedWatts: Math.round(totalPowerConsWatts),
     netPowerWatts: Math.round(netPowerWatts),
-    powerStoredKWh: Math.round(newStoredKWh * 10) / 10,
+    powerStoredKWh: newStoredKWh,
     maxPowerStorageKWh: totalBatteryCapacityKWh,
-    oxygenKg: Math.round(newO2Kg * 10) / 10,
-    waterKg: Math.round(newWaterKg * 10) / 10,
-    foodDaysRemaining: Math.round(newFoodDays * 10) / 10,
+    oxygenKg: newO2Kg,
+    waterKg: newWaterKg,
+    foodDaysRemaining: newFoodDays,
     regolithOreKg: state.regolithOreKg,
     propellantKg: state.propellantKg,
     isDaylight,

@@ -7,8 +7,10 @@ import { SeasonSelect } from './ui/screens/SeasonSelect';
 import { MissionPlanner } from './ui/screens/MissionPlanner';
 import { LandingSiteSelector } from './ui/screens/LandingSiteSelector';
 import { BaseBuilderView } from './ui/screens/BaseBuilderView';
+import { MissionReport } from './ui/screens/MissionReport';
 import { DataCreditsModal } from './ui/screens/DataCreditsModal';
 import { LevelBriefingModal } from './ui/components/LevelBriefingModal';
+import { InteractiveTutorialOverlay } from './ui/components/InteractiveTutorialOverlay';
 
 export function App() {
   const {
@@ -96,8 +98,13 @@ export function App() {
 
         {currentScreen === 'BASE_BUILDER' && <BaseBuilderView />}
 
+        {currentScreen === 'MISSION_REPORT' && <MissionReport />}
+
         {currentScreen === 'DATA_CREDITS' && <DataCreditsModal />}
       </main>
+
+      {/* Flight Director Interactive Tutorial Overlay */}
+      <InteractiveTutorialOverlay />
 
       {/* Level Briefing Modal Popup */}
       {briefingLevelNumber !== null && (

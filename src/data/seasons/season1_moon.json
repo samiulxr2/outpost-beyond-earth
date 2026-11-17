@@ -35,6 +35,7 @@
       "availableModules": [
         "vsat_solar_array",
         "li_ion_battery_bank",
+        "inflatable_hab_alpha",
         "deep_space_comms_dish"
       ],
       "objectives": [
@@ -55,6 +56,14 @@
           "completed": false
         },
         {
+          "id": "obj_place_hab",
+          "description": "Construct 1 Pressurized Surface Habitat (4-Crew)",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "inflatable_hab_alpha",
+          "completed": false
+        },
+        {
           "id": "obj_generate_power",
           "description": "Achieve net positive power generation (> 8 kW) and store 50 kWh",
           "targetValue": 50,
@@ -66,21 +75,38 @@
       "tutorialSteps": [
         {
           "step": 1,
-          "title": "Welcome to Shackleton Crater Rim",
-          "instruction": "Mission Commander, touch down at Shackleton Rim. Notice how the Sun skims the horizon at 1.54 degrees. We need continuous polar power.",
-          "highlightElement": "canvas-grid"
+          "title": "Launch Phase: Rocket & Payload Insertion",
+          "instruction": "Authorize launch aboard the SLS Block 1B with 15,000 kg payload capacity to begin Trans-Lunar Injection (TLI).",
+          "highlightElement": "btn-launch",
+          "whyThisIsReal": "Tsiolkovsky Rocket Equation: dv = Isp * g0 * ln(m0 / mf). Upper stage provides 7.53 km/s dv, exceeding required 5.61 km/s."
         },
         {
           "step": 2,
-          "title": "Deploying Vertical Solar Array",
-          "instruction": "Open the Build Menu [B] and select the Vertical Solar Array Technology (VSAT). Place it on an elevated plateau tile.",
-          "highlightElement": "btn-build-menu"
+          "title": "Landing Site: Peaks of Eternal Light",
+          "instruction": "Select Shackleton Crater Rim (South Pole) and touch down. The rim receives >90% continuous sunlight due to the Moon's 1.54° axis tilt.",
+          "highlightElement": "btn-touchdown",
+          "whyThisIsReal": "NASA LRO / LOLA altimetry identified elevated ridges along Shackleton Rim with persistent illumination and adjacent cryogenic cold traps."
         },
         {
           "step": 3,
+          "title": "Deploying Vertical Solar Array (VSAT)",
+          "instruction": "Open the Build Catalog [B] and place a Vertical Solar Array (VSAT) on an elevated rim tile to capture low-incident polar sunlight.",
+          "highlightElement": "btn-build-menu",
+          "whyThisIsReal": "NASA VSAT masts elevate solar panels 10 meters above the surface to capture sunlight skimming the horizon without ground shadow blockage."
+        },
+        {
+          "step": 4,
           "title": "Energy Storage for Shadow Dips",
-          "instruction": "Sunlight dips when distant peaks cast shadows. Place a Li-Ion Battery Bank next to your solar array to buffer energy.",
-          "highlightElement": "module-battery"
+          "instruction": "Construct a Regenerative Li-Ion Battery Storage unit adjacent to the solar array to buffer power during periodic crater rim shadow dips.",
+          "highlightElement": "module-battery",
+          "whyThisIsReal": "Even on polar peaks, orbital precession causes periodic shadow dips of 8-12 hours when distant mountain massifs occult the Sun."
+        },
+        {
+          "step": 5,
+          "title": "Surface Habitation & Life Support",
+          "instruction": "Place an Inflatable Surface Habitat to house your 4 Artemis astronauts. The habitat provides radiation protection and life support interfaces.",
+          "highlightElement": "module-hab",
+          "whyThisIsReal": "NASA TransHab multi-layer Nextel/Kevlar expandable shells pack compactly inside rocket fairings and inflate to full 120 m³ pressurized living volume."
         }
       ],
       "hazards": [],
@@ -97,8 +123,8 @@
     },
     {
       "levelNumber": 2,
-      "title": "Level 2: The Cold Trap",
-      "landingSiteId": "shackleton_rim",
+      "title": "Level 2: Survive the Lunar Night",
+      "landingSiteId": "nobile_rim",
       "missionDurationDays": 30,
       "startingBudgetCredits": 1000000,
       "startingSciencePoints": 100,
@@ -113,45 +139,56 @@
       "availableModules": [
         "vsat_solar_array",
         "li_ion_battery_bank",
+        "inflatable_hab_alpha",
         "deep_space_comms_dish",
         "prospecting_rover_garage"
       ],
       "objectives": [
         {
-          "id": "obj_place_garage",
-          "description": "Construct 1 Rover Garage & Charging Bay",
+          "id": "obj_place_batteries",
+          "description": "Construct 2 Regenerative Li-Ion Battery Banks (200 kWh capacity)",
+          "targetCount": 2,
+          "type": "BUILD_MODULE",
+          "moduleId": "li_ion_battery_bank",
+          "completed": false
+        },
+        {
+          "id": "obj_place_comms",
+          "description": "Deploy 1 Deep Space Comms Dish for mission control uplink",
           "targetCount": 1,
           "type": "BUILD_MODULE",
-          "moduleId": "prospecting_rover_garage",
+          "moduleId": "deep_space_comms_dish",
           "completed": false
         },
         {
-          "id": "obj_rover_recon",
-          "description": "Drive rover 500m down into the permanently shadowed crater floor",
-          "targetValue": 500,
-          "type": "ROVER_DISTANCE_METERS",
+          "id": "obj_survive_night",
+          "description": "Survive the lunar shadow night outage without base blackout (PWR > 0)",
+          "type": "SURVIVE_NIGHT",
           "completed": false
         },
         {
-          "id": "obj_locate_ice",
-          "description": "Detect water ice deposits with neutron spectrometer (> 5 wt%)",
-          "targetValue": 5,
-          "type": "ICE_PROSPECTING_PCT",
+          "id": "obj_maintain_oxygen",
+          "description": "Maintain life support oxygen reserves above 50 kg throughout eclipse",
+          "targetValue": 50,
+          "type": "RESOURCE_THRESHOLD",
+          "resource": "oxygenKg",
           "completed": false
         }
       ],
       "tutorialSteps": [
         {
           "step": 1,
-          "title": "Venturing into Permanent Shadow",
-          "instruction": "The interior of Shackleton crater hasn't seen sunlight in over two billion years. It is cold enough (-240°C / 40K) to trap volatile water ice.",
-          "highlightElement": "btn-build-menu"
+          "title": "Approaching Lunar Shadow",
+          "instruction": "Commander, Nobile Crater Rim experiences multi-day shadow dips where sunlight drops to 0%. Deploy additional battery banks to buffer the base.",
+          "highlightElement": "btn-build-menu",
+          "whyThisIsReal": "Without sunlight, batteries must provide 100% of heating, life support, and comms power. Draining to 0% causes catastrophic systems freeze."
         },
         {
           "step": 2,
-          "title": "Deploy Prospecting Rover",
-          "instruction": "Build the Rover Garage. Once powered, deploy your rover down into the shadow zone to locate the highest ice concentration.",
-          "highlightElement": "module-garage"
+          "title": "Earth Communication Uplink",
+          "instruction": "Build a Deep Space Comms Dish to maintain telemetry and data relay with NASA Mission Control in Houston during the blackout.",
+          "highlightElement": "module-comms",
+          "whyThisIsReal": "Lunar south polar terrain causes line-of-sight blockage with Earth. Steerable high-gain parabolic reflectors maintain S-band/Ka-band links."
         }
       ],
       "hazards": [
@@ -163,9 +200,9 @@
         "budgetBonusPerRemainingCredit": 0.001
       },
       "realDataReference": {
-        "title": "Permanently Shadowed Regions (PSRs) & Water Ice",
-        "source": "NASA Mini-RF & LCROSS Spectrometry (Colaprete et al., Science 2010)",
-        "explanation": "LCROSS impacted Cabeus crater nearby, kicking up a plume that confirmed 5.5% water ice by weight along with carbon monoxide, methane, and ammonia."
+        "title": "Lunar Night Power Budgeting & Surviving the Freeze",
+        "source": "NASA Glenn Research Center / Lunar Surface Power Architecture Study",
+        "explanation": "Equatorial lunar locations endure a 354-hour continuous night with temperatures dropping to 90 Kelvin (-183°C). Polar sites experience multi-day topographic eclipses. Bases must survive solely on stored battery/fuel-cell reserves without line freezes."
       }
     },
     {
@@ -186,6 +223,7 @@
       "availableModules": [
         "vsat_solar_array",
         "li_ion_battery_bank",
+        "inflatable_hab_alpha",
         "deep_space_comms_dish",
         "prospecting_rover_garage",
         "thermal_ice_drill_plant"
@@ -193,7 +231,7 @@
       "objectives": [
         {
           "id": "obj_build_drill",
-          "description": "Construct 1 Thermal Ice Drill & Condenser Rig in the shadow zone",
+          "description": "Construct 1 Thermal Ice Drill & Condenser Rig in the crater cold trap",
           "targetCount": 1,
           "type": "BUILD_MODULE",
           "moduleId": "thermal_ice_drill_plant",
@@ -215,7 +253,22 @@
           "completed": false
         }
       ],
-      "tutorialSteps": [],
+      "tutorialSteps": [
+        {
+          "step": 1,
+          "title": "Cryogenic Volatiles in Shackleton Basin",
+          "instruction": "Permanently shadowed crater depressions maintain 40 Kelvin temperatures, trapping ancient water ice. Deploy the Thermal Ice Drill on a shadow tile.",
+          "highlightElement": "btn-build-menu",
+          "whyThisIsReal": "NASA LCROSS impact plume proved south polar regolith contains 5.5 wt% water ice along with hydrocarbons and ammonia volatiles."
+        },
+        {
+          "step": 2,
+          "title": "Vacuum Thermal Sublimation",
+          "instruction": "In hard vacuum, heated ice sublimates directly into vapor without becoming liquid. Sealed condensers capture and purify steam into drinking and propellant tanks.",
+          "highlightElement": "module-drill",
+          "whyThisIsReal": "NASA TRIDENT / PRIME-1 drill uses rotary-percussive action and thermal heating coils to extract subsurface ice down to 1 meter depth."
+        }
+      ],
       "hazards": [
         "lunar_night_deep_freeze"
       ],

@@ -145,16 +145,21 @@ async function run() {
   // 4. Simulate Night-Time Power Crisis
   console.log('4. Simulating Night-Time Power Crisis...');
   await page.evaluate(() => {
-    // Manually trigger night conditions & low battery power via store
-    const store = (window as unknown as { __GAME_STORE__?: unknown }).__GAME_STORE__;
-    // Alternatively click fast forward +7 Days button twice to reach shadow phase, or drain battery
-    const fastFwdBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent?.includes('+7 Days'));
-    if (fastFwdBtn) {
-      fastFwdBtn.click();
-      fastFwdBtn.click();
+    // Set mission time to hour 115 (within the 110.4h - 120h shadow dip phase of Shackleton 120h cycle)
+    // Placed modules: VSAT (50W cons) + Habitat Alpha (3500W cons) = 3550W net drain.
+    // Stored energy = 142.0 kWh -> Reserve time = 142.0 kWh / 3.55 kW = exactly 40.0 hours!
+    interface StoreType {
+      setState: (state: unknown) => void;
+    }
+    const store = (window as unknown as { __GAME_STORE__?: StoreType }).__GAME_STORE__;
+    if (store) {
+      store.setState({
+        missionElapsedSeconds: 115 * 3600, // Shadow dip active
+        powerStoredKWh: 34.0, // 34.0 kWh / 0.85 kW net drain = exactly 40.0 hours power reserve!
+      });
     }
   });
-  await new Promise(r => setTimeout(r, 1500));
+  await new Promise(r => setTimeout(r, 1200));
   await page.screenshot({ path: path.join(screenshotsDir, '10_night_power_crisis.png') });
   console.log('📸 Saved 10_night_power_crisis.png');
 

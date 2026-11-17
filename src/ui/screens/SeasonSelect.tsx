@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useGameStore } from '../../store/useGameStore';
 import { translations } from '../i18n';
 import { sound } from '../../audio/soundSynth';
-import { ArrowLeft, Lock, ChevronRight, Globe } from 'lucide-react';
+import { ArrowLeft, Lock, ChevronRight, Globe, Star } from 'lucide-react';
 import season1Data from '../../data/seasons/season1_moon.json';
 
 interface SeasonSelectProps {
@@ -10,7 +10,7 @@ interface SeasonSelectProps {
 }
 
 export const SeasonSelect: React.FC<SeasonSelectProps> = ({ onSelectLevelBriefing }) => {
-  const { setScreen, selectedSeasonId, locale } = useGameStore();
+  const { setScreen, selectedSeasonId, locale, unlockedLevels, levelHighScores } = useGameStore();
   const t = translations[locale];
   const [activeTabSeasonId, setActiveTabSeasonId] = useState<number>(selectedSeasonId || 1);
 
@@ -96,13 +96,14 @@ export const SeasonSelect: React.FC<SeasonSelectProps> = ({ onSelectLevelBriefin
             {/* Level Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {season1Data.levels.map((lvl) => {
-                const isPlayable = lvl.levelNumber <= 3;
+                const isUnlocked = (unlockedLevels || [1]).includes(lvl.levelNumber);
+                const highScore = levelHighScores?.[lvl.levelNumber];
 
                 return (
                   <div
                     key={lvl.levelNumber}
                     onClick={() => {
-                      if (isPlayable) {
+                      if (isUnlocked) {
                         sound.playClick();
                         onSelectLevelBriefing(lvl.levelNumber);
                       } else {
@@ -110,7 +111,7 @@ export const SeasonSelect: React.FC<SeasonSelectProps> = ({ onSelectLevelBriefin
                       }
                     }}
                     className={`p-4 rounded-lg border text-left transition relative flex flex-col justify-between ${
-                      isPlayable
+                      isUnlocked
                         ? 'bg-space-card hover:bg-space-muted border-cyan-500/40 cursor-pointer hover:border-cyan-400 shadow-sm'
                         : 'bg-space-dark/40 border-space-border/60 opacity-60 cursor-not-allowed'
                     }`}
@@ -120,13 +121,28 @@ export const SeasonSelect: React.FC<SeasonSelectProps> = ({ onSelectLevelBriefin
                         <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-space-darkest text-cyan-300 border border-cyan-500/20">
                           SOL {lvl.missionDurationDays} EXPEDITION
                         </span>
-                        {isPlayable ? (
-                          <span className="text-[10px] font-mono text-emerald-400 flex items-center space-x-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                            <span>PLAYABLE</span>
-                          </span>
+                        {isUnlocked ? (
+                          <div className="flex items-center space-x-1.5">
+                            {highScore && highScore.stars > 0 && (
+                              <div className="flex space-x-0.5">
+                                {[1, 2, 3].map(s => (
+                                  <Star
+                                    key={s}
+                                    className={`w-3 h-3 ${s <= highScore.stars ? 'text-yellow-400 fill-yellow-400' : 'text-gray-600'}`}
+                                  />
+                                ))}
+                              </div>
+                            )}
+                            <span className="text-[10px] font-mono text-emerald-400 flex items-center space-x-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                              <span>{highScore ? 'CLEARED' : 'UNLOCKED'}</span>
+                            </span>
+                          </div>
                         ) : (
-                          <Lock className="w-3.5 h-3.5 text-gray-500" />
+                          <span className="flex items-center space-x-1 text-gray-500 text-[10px] font-mono">
+                            <Lock className="w-3 h-3" />
+                            <span>LOCKED</span>
+                          </span>
                         )}
                       </div>
 
@@ -140,13 +156,13 @@ export const SeasonSelect: React.FC<SeasonSelectProps> = ({ onSelectLevelBriefin
 
                     <div className="pt-3 border-t border-space-border/60 mt-3 flex items-center justify-between text-[11px] font-mono">
                       <span className="text-gray-400">${(lvl.startingBudgetCredits / 1000).toFixed(0)}k Budget</span>
-                      {isPlayable ? (
+                      {isUnlocked ? (
                         <span className="text-cyan-400 flex items-center space-x-1 font-semibold">
                           <span>Briefing</span>
                           <ChevronRight className="w-3 h-3" />
                         </span>
                       ) : (
-                        <span className="text-gray-500">Locked</span>
+                        <span className="text-gray-500 text-[10px]">Clear L{lvl.levelNumber - 1}</span>
                       )}
                     </div>
                   </div>

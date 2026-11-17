@@ -30,6 +30,7 @@ export const ResourceBarHUD: React.FC = () => {
     placedModules,
     missionElapsedSeconds,
     landingSiteId,
+    setEngineerPanelModuleId,
   } = useGameStore();
 
   // Active builders count
@@ -92,7 +93,11 @@ export const ResourceBarHUD: React.FC = () => {
       {/* Upper Telemetry Bar: All 7 Resources + Builders */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         {/* Power */}
-        <div className="flex items-center space-x-1.5 bg-space-darkest px-2.5 py-1 rounded border border-space-border/80">
+        <div 
+          onClick={() => setEngineerPanelModuleId('resource_power')}
+          title="Click to view Electrical & Battery Physics in Engineer's Panel"
+          className="flex items-center space-x-1.5 bg-space-darkest px-2.5 py-1 rounded border border-space-border/80 cursor-pointer hover:border-cyan-500/50 hover:bg-space-dark/80 transition"
+        >
           <Zap className={`w-3.5 h-3.5 ${isDraining ? 'text-telemetry-rose' : 'text-telemetry-cyan'}`} />
           <div>
             <span className="text-gray-400">PWR: </span>
@@ -106,7 +111,11 @@ export const ResourceBarHUD: React.FC = () => {
         </div>
 
         {/* Oxygen */}
-        <div className="flex items-center space-x-1.5 bg-space-darkest px-2.5 py-1 rounded border border-space-border/80">
+        <div 
+          onClick={() => setEngineerPanelModuleId('eclss_life_support')}
+          title="Click to view NASA HIDH Oxygen consumption in Engineer's Panel"
+          className="flex items-center space-x-1.5 bg-space-darkest px-2.5 py-1 rounded border border-space-border/80 cursor-pointer hover:border-blue-500/50 hover:bg-space-dark/80 transition"
+        >
           <Wind className="w-3.5 h-3.5 text-blue-400" />
           <div>
             <span className="text-gray-400">O&sup2;: </span>
@@ -115,7 +124,11 @@ export const ResourceBarHUD: React.FC = () => {
         </div>
 
         {/* Water */}
-        <div className="flex items-center space-x-1.5 bg-space-darkest px-2.5 py-1 rounded border border-space-border/80">
+        <div 
+          onClick={() => setEngineerPanelModuleId('thermal_ice_drill_plant')}
+          title="Click to view Water Ice Extraction Physics in Engineer's Panel"
+          className="flex items-center space-x-1.5 bg-space-darkest px-2.5 py-1 rounded border border-space-border/80 cursor-pointer hover:border-cyan-500/50 hover:bg-space-dark/80 transition"
+        >
           <Droplets className="w-3.5 h-3.5 text-cyan-400" />
           <div>
             <span className="text-gray-400">H&sup2;O: </span>
@@ -170,7 +183,11 @@ export const ResourceBarHUD: React.FC = () => {
       </div>
 
       {/* Lower Environmental Warning / Day-Night Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] bg-space-dark/80 px-3 py-1 rounded border border-space-border/60">
+      <div 
+        onClick={() => setEngineerPanelModuleId('resource_illumination')}
+        title="Click to view Solar Illumination & Day/Night physics in Engineer's Panel"
+        className="flex flex-wrap items-center justify-between gap-2 text-[11px] bg-space-dark/80 hover:bg-space-dark px-3 py-1 rounded border border-space-border/60 hover:border-cyan-500/40 cursor-pointer transition"
+      >
         <div className="flex items-center space-x-2">
           {isDaylight ? (
             <Sun className="w-3.5 h-3.5 text-telemetry-amber animate-spin-slow" />
