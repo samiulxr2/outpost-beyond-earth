@@ -637,6 +637,13 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     const modDef = modulesData.modules.find(m => m.id === moduleId);
     if (!modDef) return false;
 
+    // Enforce level authorized module restrictions
+    const season = selectedSeasonId === 1 ? season1Data : (selectedSeasonId === 2 ? season2Data : null);
+    const currentLevel = season?.levels.find(l => l.levelNumber === get().selectedLevelNumber);
+    if (currentLevel?.availableModules && !currentLevel.availableModules.includes(moduleId)) {
+      return false; // Unauthorized module for this mission level
+    }
+
     if (budgetCredits < modDef.costCredits) {
       return false; // Insufficient budget
     }
@@ -700,6 +707,10 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   },
 
   driveRover: (distanceMeters: number, icePct: number) => {
+    // Enforce that rover sortie requires an operational rover garage
+    const hasGarage = get().placedModules.some(m => m.moduleId === 'prospecting_rover_garage' && m.isActive);
+    if (!hasGarage) return;
+
     const isMars = get().selectedSeasonId === 2 || get().landingSiteId.includes('jezero');
     if (isMars) {
       const { oneWayLightTimeSeconds } = calculateEarthMarsDistanceAndDelay(get().missionElapsedDays);

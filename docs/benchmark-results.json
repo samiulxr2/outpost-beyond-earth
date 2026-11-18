@@ -1,0 +1,11 @@
+{
+  "framesSampled": 119,
+  "avgFrameTimeMs": 42.4,
+  "medianFrameTimeMs": 49.9,
+  "p95FrameTimeMs": 66.6,
+  "p99FrameTimeMs": 66.6,
+  "minFrameTimeMs": 16.6,
+  "maxFrameTimeMs": 66.7,
+  "effectiveFps": 23.6,
+  "simSpeedMultiplier": 1440
+}

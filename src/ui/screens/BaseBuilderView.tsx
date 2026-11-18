@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useGameStore } from '../../store/useGameStore';
 import { sound } from '../../audio/soundSynth';
+import { translations, getLocalizedLevelTitle, getLocalizedObjectiveDescription } from '../i18n';
 import { ResourceBarHUD } from '../components/ResourceBarHUD';
 import { IsometricBaseCanvas } from '../../scenes/canvas/IsometricBaseCanvas';
 import { ModuleBuildMenu } from '../components/ModuleBuildMenu';
@@ -34,7 +35,11 @@ export const BaseBuilderView: React.FC = () => {
     landingSiteId,
     objectives,
     levelTitle,
+    locale,
+    selectedSeasonId,
+    selectedLevelNumber,
   } = useGameStore();
+  const t = translations[locale];
   const [selectedModule, setSelectedModule] = useState<PlacedModule | null>(null);
   const [showObjectives, setShowObjectives] = useState<boolean>(true);
   const [saveNotification, setSaveNotification] = useState<string | null>(null);
@@ -115,7 +120,7 @@ export const BaseBuilderView: React.FC = () => {
             <div className="flex items-center space-x-2">
               <Target className="w-4 h-4 text-telemetry-cyan" />
               <span className="font-bold text-white font-mono uppercase text-[11px] truncate">
-                {levelTitle}
+                {getLocalizedLevelTitle(selectedSeasonId || 1, selectedLevelNumber, levelTitle, locale)}
               </span>
             </div>
             {showObjectives ? <ChevronUp className="w-3.5 h-3.5 text-gray-400" /> : <ChevronDown className="w-3.5 h-3.5 text-gray-400" />}
@@ -124,9 +129,9 @@ export const BaseBuilderView: React.FC = () => {
           {showObjectives && (
             <div className="p-3 space-y-2.5 max-h-56 overflow-y-auto">
               <div className="flex items-center justify-between text-[10px] font-mono text-gray-400 pb-1 border-b border-space-border/40">
-                <span>Mission Directives</span>
+                <span>{t.missionDirectives}</span>
                 <span className="text-cyan-300 font-bold">
-                  {objectives.filter(o => o.completed).length} / {objectives.length} Completed
+                  {objectives.filter(o => o.completed).length} / {objectives.length} {t.completed}
                 </span>
               </div>
               {objectives.map((obj, i) => {
@@ -147,11 +152,11 @@ export const BaseBuilderView: React.FC = () => {
                     }`} />
                     <div className="flex-1">
                       <span className={obj.completed ? 'text-emerald-300 font-semibold' : 'text-gray-300'}>
-                        {obj.description}
+                        {getLocalizedObjectiveDescription(obj.id, obj.description, locale)}
                       </span>
                       {liveProgress && (
                         <span className="block text-[10px] font-mono text-cyan-400 mt-0.5">
-                          Progress: {liveProgress}
+                          {t.progress}: {liveProgress}
                         </span>
                       )}
                     </div>
@@ -170,7 +175,7 @@ export const BaseBuilderView: React.FC = () => {
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-space-darker/90 hover:bg-space-card border border-space-border text-gray-300 hover:text-white backdrop-blur shadow-md transition"
           >
             <Save className="w-3.5 h-3.5 text-telemetry-cyan" />
-            <span className="hidden sm:inline">Save Base</span>
+            <span className="hidden sm:inline">{t.saveBase}</span>
           </button>
 
           <button
@@ -179,7 +184,7 @@ export const BaseBuilderView: React.FC = () => {
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-space-darker/90 hover:bg-space-card border border-space-border text-gray-300 hover:text-white backdrop-blur shadow-md transition"
           >
             <Download className="w-3.5 h-3.5 text-telemetry-emerald" />
-            <span className="hidden sm:inline">Load Base</span>
+            <span className="hidden sm:inline">{t.loadBase}</span>
           </button>
 
           <button
@@ -191,7 +196,7 @@ export const BaseBuilderView: React.FC = () => {
             className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-space-darker/90 hover:bg-space-card border border-space-border text-gray-400 hover:text-white backdrop-blur shadow-md transition"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Planner</span>
+            <span className="hidden md:inline">{locale === 'bn' ? 'প্ল্যানার' : 'Planner'}</span>
           </button>
         </div>
 

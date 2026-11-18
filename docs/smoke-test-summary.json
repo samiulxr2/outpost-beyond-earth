@@ -1,0 +1,57 @@
+[
+  {
+    "step": "Step 0: Initialize Fresh localStorage",
+    "result": "PASS",
+    "details": "LocalStorage cleared; clean boot from Level 1 on MAIN_MENU"
+  },
+  {
+    "step": "Step 1: Main Menu -> Season Select Click",
+    "result": "PASS",
+    "details": "Clicked button \"Start Artemis Mission\" -> Screen: SEASON_SELECT"
+  },
+  {
+    "step": "Step 2: Select Level 1 -> Briefing Modal",
+    "result": "PASS",
+    "details": "Clicked Level 1 card -> NASA Mission Directive Briefing Modal displayed"
+  },
+  {
+    "step": "Step 3: Briefing Modal -> Mission Planner",
+    "result": "PASS",
+    "details": "Clicked \"Mission Planner & Trajectory\" -> Screen: MISSION_PLANNER (3D Solar System + Hohmann Arc)"
+  },
+  {
+    "step": "Step 4: Authorize Launch & Transit Burn",
+    "result": "PASS",
+    "details": "Clicked \"Authorize Launch & Transit\" -> TLI burn nominal -> Screen: LANDING_SELECTOR"
+  },
+  {
+    "step": "Step 5: Powered Touchdown -> Base Builder",
+    "result": "PASS",
+    "details": "Clicked \"Initiate Touchdown & Deploy Outpost Grid\" -> Screen: BASE_BUILDER"
+  },
+  {
+    "step": "Step 6: Place VSAT at Tile (6, 6)",
+    "result": "PASS",
+    "details": "Build Catalog -> VSAT Construct -> Real canvas click at (6, 6) -> VSAT placed"
+  },
+  {
+    "step": "Step 7: Place Battery Bank at Tile (6, 7)",
+    "result": "PASS",
+    "details": "Build Catalog -> Battery Construct -> Real canvas click at (6, 7) -> Battery placed"
+  },
+  {
+    "step": "Step 8: Place Habitat at Tile (7, 6)",
+    "result": "PASS",
+    "details": "Build Catalog -> Habitat Construct -> Real canvas click at (7, 6) -> Habitat placed"
+  },
+  {
+    "step": "Step 9: Bangla (BN) Locale & Glyph Verification",
+    "result": "PASS",
+    "details": "Switched to BN via header button -> Verified Noto Sans Bengali font -> Saved 24_bangla_screen.png"
+  },
+  {
+    "step": "Step 10: Canvas Frame Time Benchmark at 1440x",
+    "result": "PASS",
+    "details": "Avg: 42.4ms (23.6 FPS), p95: 66.6ms at 1440x during 354h night"
+  }
+]

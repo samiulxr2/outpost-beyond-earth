@@ -1,7 +1,7 @@
 import React from 'react';
 import { useGameStore } from '../../store/useGameStore';
 import { sound } from '../../audio/soundSynth';
-import { translations } from '../i18n';
+import { translations, getLocalizedLevelTitle } from '../i18n';
 import { 
   Trophy, 
   AlertOctagon, 
@@ -99,11 +99,11 @@ export const MissionReport: React.FC = () => {
               {isVictory ? t.missionVictory : t.missionDefeat}
             </h1>
             <p className="text-sm text-gray-300 mt-1 font-mono">
-              {levelData.title} • {levelData.landingSiteId.replace('_', ' ').toUpperCase()}
+              {getLocalizedLevelTitle(selectedSeasonId || 1, levelData.levelNumber, levelData.title, locale)} • {levelData.landingSiteId.replace('_', ' ').toUpperCase()}
             </p>
             {!isVictory && missionReport?.defeatReason && (
               <p className="text-xs text-rose-300 mt-2 font-mono bg-rose-950/80 p-2 rounded border border-rose-500/40 inline-block">
-                Cause: {missionReport.defeatReason}
+                {t.cause}: {missionReport.defeatReason}
               </p>
             )}
           </div>
@@ -128,15 +128,15 @@ export const MissionReport: React.FC = () => {
         {/* Telemetry Scoring Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono">
           <div className="bg-space-darker p-3.5 rounded-xl border border-space-border flex flex-col justify-between">
-            <span className="text-[10px] text-gray-400 uppercase">Total Score</span>
+            <span className="text-[10px] text-gray-400 uppercase">{t.totalScore}</span>
             <div className="text-xl font-bold text-white mt-1">{totalScore}</div>
-            <span className="text-[10px] text-cyan-400">Flight Evaluation</span>
+            <span className="text-[10px] text-cyan-400">{t.flightEvaluation}</span>
           </div>
 
           <div className="bg-space-darker p-3.5 rounded-xl border border-space-border flex flex-col justify-between">
             <div className="flex items-center space-x-1 text-[10px] text-gray-400 uppercase">
               <ShieldCheck className="w-3 h-3 text-emerald-400" />
-              <span>Crew Safety</span>
+              <span>{t.crewSafety}</span>
             </div>
             <div className="text-xl font-bold text-emerald-400 mt-1">
               +{crewSafetyScore}
@@ -147,37 +147,37 @@ export const MissionReport: React.FC = () => {
           <div className="bg-space-darker p-3.5 rounded-xl border border-space-border flex flex-col justify-between">
             <div className="flex items-center space-x-1 text-[10px] text-gray-400 uppercase">
               <Zap className="w-3 h-3 text-amber-400" />
-              <span>Efficiency</span>
+              <span>{t.efficiency}</span>
             </div>
             <div className="text-xl font-bold text-amber-400 mt-1">
               +{efficiencyScore}
             </div>
-            <span className="text-[10px] text-gray-400">Power & Budget</span>
+            <span className="text-[10px] text-gray-400">{t.powerAndBudget}</span>
           </div>
 
           <div className="bg-space-darker p-3.5 rounded-xl border border-space-border flex flex-col justify-between">
             <div className="flex items-center space-x-1 text-[10px] text-gray-400 uppercase">
               <Sparkles className="w-3 h-3 text-telemetry-purple" />
-              <span>Science Earned</span>
+              <span>{t.scienceEarned}</span>
             </div>
             <div className="text-xl font-bold text-purple-300 mt-1">
               +{scienceEarned} SP
             </div>
-            <span className="text-[10px] text-purple-400">Tech Unlocks</span>
+            <span className="text-[10px] text-purple-400">{t.techUnlocks}</span>
           </div>
         </div>
 
         {/* Space Weather & Hazard Survival Telemetry (Phase 5) */}
         <div className="bg-space-darker p-4 rounded-xl border border-space-border grid grid-cols-3 gap-2 text-center font-mono">
           <div className="p-2 rounded bg-space-dark border border-space-border/60">
-            <div className="text-[10px] text-gray-400 uppercase">Storms Endured</div>
+            <div className="text-[10px] text-gray-400 uppercase">{t.stormsEndured}</div>
             <div className="text-base font-bold text-cyan-300 mt-0.5">
               {missionReport?.hazardsSurvivedCount ?? 0}
             </div>
             <div className="text-[9px] text-gray-500">DONKI SPE / MM</div>
           </div>
           <div className="p-2 rounded bg-space-dark border border-space-border/60">
-            <div className="text-[10px] text-gray-400 uppercase">Total Rad Dose</div>
+            <div className="text-[10px] text-gray-400 uppercase">{t.totalRadDose}</div>
             <div className="text-base font-bold text-emerald-400 mt-0.5">
               {(missionReport?.cumulativeDoseMSv ?? 0).toFixed(1)} <span className="text-[10px]">mSv</span>
             </div>
@@ -196,7 +196,7 @@ export const MissionReport: React.FC = () => {
         <div className="bg-space-darker p-5 rounded-2xl border border-space-border space-y-3 font-sans">
           <div className="flex items-center space-x-2 text-cyan-400 font-mono text-xs font-bold uppercase tracking-wider">
             <BookOpen className="w-4 h-4" />
-            <span>Mission Debrief: What Was Real (NASA Science)</span>
+            <span>{locale === 'bn' ? 'মিশন পর্যালোচনা: বিজ্ঞানের সত্যতা (নাসা গবেষণা)' : 'Mission Debrief: What Was Real (NASA Science)'}</span>
           </div>
 
           <div>

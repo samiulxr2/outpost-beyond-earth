@@ -21,6 +21,7 @@ export const ModuleBuildMenu: React.FC = () => {
     selectedLevelNumber,
     unlockedTechnologies,
     setScreen,
+    locale,
   } = useGameStore();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [activeCategory, setActiveCategory] = useState<string>('All');
@@ -62,7 +63,8 @@ export const ModuleBuildMenu: React.FC = () => {
           <div className="flex items-center space-x-2 bg-cyan-950/90 border border-cyan-400 px-4 py-2 rounded-full shadow-2xl backdrop-blur-md animate-bounce">
             <Hammer className="w-4 h-4 text-cyan-300" />
             <span className="text-xs font-mono font-bold text-white">
-              CLICK TILE TO CONSTRUCT: {modulesData.modules.find(m => m.id === selectedModuleIdForBuild)?.name}
+              {locale === 'bn' ? 'নির্মাণ করতে টালিতে ক্লিক করুন: ' : 'CLICK TILE TO CONSTRUCT: '}
+              {modulesData.modules.find(m => m.id === selectedModuleIdForBuild)?.name}
             </span>
             <button
               onClick={() => {
@@ -83,7 +85,7 @@ export const ModuleBuildMenu: React.FC = () => {
             className="flex items-center space-x-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-space-darkest font-extrabold text-xs uppercase font-mono tracking-wider shadow-xl shadow-cyan-500/25 transition transform hover:-translate-y-0.5 cursor-pointer"
           >
             <Hammer className="w-4 h-4" />
-            <span>Open Build Catalog [B]</span>
+            <span>{locale === 'bn' ? 'বিল্ড ক্যাটালগ [B]' : 'Open Build Catalog [B]'}</span>
           </button>
         )}
       </div>
@@ -194,7 +196,7 @@ export const ModuleBuildMenu: React.FC = () => {
                             className="flex-1 py-1.5 px-3 rounded-lg text-[11px] font-mono font-bold uppercase transition bg-purple-950/40 hover:bg-purple-900/60 border border-purple-500/40 text-purple-300 flex items-center justify-center space-x-1"
                           >
                             <Lock className="w-3 h-3 text-purple-400" />
-                            <span>Unlock in Tech Tree</span>
+                            <span>{locale === 'bn' ? 'টেক ট্রিতে আনলক করুন' : 'Unlock in Tech Tree'}</span>
                           </button>
                         ) : (
                           <button
@@ -206,7 +208,7 @@ export const ModuleBuildMenu: React.FC = () => {
                                 : 'bg-gray-800 text-gray-500 cursor-not-allowed'
                             }`}
                           >
-                            {canAfford ? 'Construct' : 'Need Funds'}
+                            {canAfford ? (locale === 'bn' ? 'নির্মাণ' : 'Construct') : (locale === 'bn' ? 'তহবিল নেই' : 'Need Funds')}
                           </button>
                         )}
                         <button

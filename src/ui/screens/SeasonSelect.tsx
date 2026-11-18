@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../../store/useGameStore';
-import { translations } from '../i18n';
+import { translations, getLocalizedLevelTitle, getLocalizedObjectiveDescription, getLocalizedSeasonTitle } from '../i18n';
 import { sound } from '../../audio/soundSynth';
 import { ArrowLeft, Lock, ChevronRight, Globe, Star } from 'lucide-react';
 import season1Data from '../../data/seasons/season1_moon.json';
@@ -87,7 +87,9 @@ export const SeasonSelect: React.FC<SeasonSelectProps> = ({ onSelectLevelBriefin
                 <span className="text-xs font-mono uppercase text-telemetry-emerald tracking-wider font-semibold">
                   Artemis Campaign • 10 Levels
                 </span>
-                <h2 className="text-xl font-bold text-white mt-0.5">{season1Data.seasonName}</h2>
+                <h2 className="text-xl font-bold text-white mt-0.5">
+                  {getLocalizedSeasonTitle(1, season1Data.seasonName, locale)}
+                </h2>
                 <p className="text-xs text-gray-400 mt-1 max-w-2xl leading-relaxed">
                   {season1Data.description}
                 </p>
@@ -148,22 +150,22 @@ export const SeasonSelect: React.FC<SeasonSelectProps> = ({ onSelectLevelBriefin
                       </div>
 
                       <h3 className="text-sm font-bold text-white mt-2 font-sans">
-                        {lvl.title}
+                        {getLocalizedLevelTitle(1, lvl.levelNumber, lvl.title, locale)}
                       </h3>
                       <p className="text-[11px] text-gray-400 mt-1 line-clamp-2">
-                        {lvl.objectives[0]?.description}
+                        {lvl.objectives[0] ? getLocalizedObjectiveDescription(lvl.objectives[0].id, lvl.objectives[0].description, locale) : ''}
                       </p>
                     </div>
 
                     <div className="pt-3 border-t border-space-border/60 mt-3 flex items-center justify-between text-[11px] font-mono">
-                      <span className="text-gray-400">${(lvl.startingBudgetCredits / 1000).toFixed(0)}k Budget</span>
+                      <span className="text-gray-400">${(lvl.startingBudgetCredits / 1000).toFixed(0)}k {t.budget}</span>
                       {isUnlocked ? (
                         <span className="text-cyan-400 flex items-center space-x-1 font-semibold">
-                          <span>Briefing</span>
+                          <span>{t.briefing}</span>
                           <ChevronRight className="w-3 h-3" />
                         </span>
                       ) : (
-                        <span className="text-gray-500 text-[10px]">Clear L{lvl.levelNumber - 1}</span>
+                        <span className="text-gray-500 text-[10px]">{t.locked}</span>
                       )}
                     </div>
                   </div>
@@ -179,14 +181,16 @@ export const SeasonSelect: React.FC<SeasonSelectProps> = ({ onSelectLevelBriefin
                 <span className="text-xs font-mono uppercase text-red-400 tracking-wider font-semibold">
                   Mars Exploration Campaign • Level 1 Playable (Levels 2-10 Scaffolded)
                 </span>
-                <h2 className="text-xl font-bold text-white mt-0.5">{season2Data.seasonName}</h2>
+                <h2 className="text-xl font-bold text-white mt-0.5">
+                  {getLocalizedSeasonTitle(2, season2Data.seasonName, locale)}
+                </h2>
                 <p className="text-xs text-gray-400 mt-1 max-w-2xl leading-relaxed">
                   {season2Data.description}
                 </p>
               </div>
               <div className="text-right">
                 <span className="text-[11px] font-mono text-cyan-300 bg-cyan-950/60 px-2 py-1 rounded border border-cyan-500/30">
-                  Light-Lag: 3.0 to 22.3 min
+                  {t.lightLag}: 3.0 to 22.3 min
                 </span>
               </div>
             </div>
@@ -222,33 +226,33 @@ export const SeasonSelect: React.FC<SeasonSelectProps> = ({ onSelectLevelBriefin
                         {isPlayable ? (
                           <span className="text-[10px] font-mono text-emerald-400 flex items-center space-x-1">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                            <span>PLAYABLE</span>
+                            <span>{t.unlocked}</span>
                           </span>
                         ) : (
                           <span className="flex items-center space-x-1 text-gray-500 text-[10px] font-mono">
                             <Lock className="w-3 h-3" />
-                            <span>SCAFFOLD</span>
+                            <span>{t.locked}</span>
                           </span>
                         )}
                       </div>
 
                       <h3 className="text-sm font-bold text-white mt-2 font-sans">
-                        {lvl.title}
+                        {getLocalizedLevelTitle(2, lvl.levelNumber, lvl.title, locale)}
                       </h3>
                       <p className="text-[11px] text-gray-400 mt-1 line-clamp-2">
-                        {lvl.objectives[0]?.description}
+                        {lvl.objectives[0] ? getLocalizedObjectiveDescription(lvl.objectives[0].id, lvl.objectives[0].description, locale) : ''}
                       </p>
                     </div>
 
                     <div className="pt-3 border-t border-space-border/60 mt-3 flex items-center justify-between text-[11px] font-mono">
-                      <span className="text-gray-400">${(lvl.startingBudgetCredits / 1000).toFixed(0)}k Budget</span>
+                      <span className="text-gray-400">${(lvl.startingBudgetCredits / 1000).toFixed(0)}k {t.budget}</span>
                       {isPlayable ? (
                         <span className="text-red-400 flex items-center space-x-1 font-semibold">
-                          <span>Briefing</span>
+                          <span>{t.briefing}</span>
                           <ChevronRight className="w-3 h-3" />
                         </span>
                       ) : (
-                        <span className="text-gray-500 text-[10px]">Scaffolded JSON</span>
+                        <span className="text-gray-500 text-[10px]">{t.locked}</span>
                       )}
                     </div>
                   </div>

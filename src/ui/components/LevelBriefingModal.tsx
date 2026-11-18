@@ -1,7 +1,7 @@
 import React from 'react';
 import { sound } from '../../audio/soundSynth';
 import { useGameStore } from '../../store/useGameStore';
-import { translations } from '../i18n';
+import { translations, getLocalizedLevelTitle, getLocalizedObjectiveDescription } from '../i18n';
 import { X, Rocket, Target, CheckCircle2, BookOpen, Sparkles } from 'lucide-react';
 import season1Data from '../../data/seasons/season1_moon.json';
 import season2Data from '../../data/seasons/season2_mars.json';
@@ -47,29 +47,33 @@ export const LevelBriefingModal: React.FC<LevelBriefingModalProps> = ({
         {/* Content */}
         <div className="p-5 space-y-4 text-xs font-sans text-gray-200 overflow-y-auto max-h-[75vh]">
           <div>
-            <h2 className="text-xl font-bold text-white font-sans">{level.title}</h2>
+            <h2 className="text-xl font-bold text-white font-sans">
+              {getLocalizedLevelTitle(selectedSeasonId || 1, level.levelNumber, level.title, locale)}
+            </h2>
             <div className="flex items-center space-x-3 mt-1 text-gray-400 font-mono text-[11px]">
               <span className="flex items-center space-x-1">
                 <Target className="w-3.5 h-3.5 text-telemetry-cyan" />
                 <span>Shackleton Crater Rim (89.9&deg;S)</span>
               </span>
               <span>&bull;</span>
-              <span>Duration: {level.missionDurationDays} Days</span>
+              <span>{t.duration}: {level.missionDurationDays} {t.days}</span>
               <span>&bull;</span>
-              <span className="text-emerald-400 font-semibold">${(level.startingBudgetCredits / 1000).toFixed(0)}k Budget</span>
+              <span className="text-emerald-400 font-semibold">${(level.startingBudgetCredits / 1000).toFixed(0)}k {t.budget}</span>
             </div>
           </div>
 
           {/* Mission Objectives */}
           <div className="bg-space-darkest p-3.5 rounded-lg border border-space-border/80 space-y-2">
             <div className="text-[10px] uppercase font-mono text-cyan-400 font-bold tracking-wider">
-              Primary Flight Objectives
+              {t.primaryObjectives}
             </div>
             <ul className="space-y-2">
               {level.objectives.map((obj, i) => (
                 <li key={i} className="flex items-start space-x-2 text-[11px]">
                   <CheckCircle2 className="w-3.5 h-3.5 text-telemetry-emerald shrink-0 mt-0.5" />
-                  <span className="text-gray-300 leading-snug">{obj.description}</span>
+                  <span className="text-gray-300 leading-snug">
+                    {getLocalizedObjectiveDescription(obj.id, obj.description, locale)}
+                  </span>
                 </li>
               ))}
             </ul>

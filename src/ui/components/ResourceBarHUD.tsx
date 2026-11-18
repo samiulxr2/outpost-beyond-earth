@@ -41,6 +41,7 @@ export const ResourceBarHUD: React.FC = () => {
     toggleCrewShelter,
     regolithBermThicknessCm,
     buildRegolithBerm,
+    locale,
   } = useGameStore();
 
   // Active builders count
@@ -61,13 +62,13 @@ export const ResourceBarHUD: React.FC = () => {
   const isHaworth = landingSiteId.includes('haworth');
 
   let isDaylight = true;
-  let statusText = "☀ DAYLIGHT: Continuous Polar Sun";
-  let statusSubtext = "Solar generation nominal (>90% illumination)";
+  let statusText = locale === 'bn' ? "☀ সূর্যালোক: নিরবচ্ছিন্ন মেরু সূর্যালোক" : "☀ DAYLIGHT: Continuous Polar Sun";
+  let statusSubtext = locale === 'bn' ? "সৌর বিদ্যুৎ উৎপাদন স্বাভাবিক (>৯০% সূর্যালোক)" : "Solar generation nominal (>90% illumination)";
 
   if (isHaworth) {
     isDaylight = false;
-    statusText = "🌙 PERMANENT SHADOW (Cold Trap)";
-    statusSubtext = "Zero sunlight (40K). Relying 100% on battery / nuclear power";
+    statusText = locale === 'bn' ? "🌙 স্থায়ী অন্ধকার ছায়া (কোল্ড ট্র্যাপ)" : "🌙 PERMANENT SHADOW (Cold Trap)";
+    statusSubtext = locale === 'bn' ? "শূন্য সূর্যালোক (৪০ কেলভিন)। ব্যাটারি ও পারমাণবিক শক্তিতে নির্ভরশীল" : "Zero sunlight (40K). Relying 100% on battery / nuclear power";
   } else if (isShackleton) {
     const dipCycleHours = 120;
     const cyclePhase = (missionHours % dipCycleHours) / dipCycleHours;
@@ -75,11 +76,11 @@ export const ResourceBarHUD: React.FC = () => {
     const hoursToDip = Math.max(1, Math.round((0.88 - cyclePhase) * dipCycleHours));
     if (isDip) {
       isDaylight = false;
-      statusText = "🌙 PEAK SHADOW DIP";
-      statusSubtext = "Temporary crater rim eclipse. Batteries active";
+      statusText = locale === 'bn' ? "🌙 তীব্র ছায়া গ্রহন" : "🌙 PEAK SHADOW DIP";
+      statusSubtext = locale === 'bn' ? "ক্রেটার রীমে অস্থায়ী গ্রহন। ব্যাটারি সক্রিয়" : "Temporary crater rim eclipse. Batteries active";
     } else {
-      statusText = "☀ PEAK OF ETERNAL LIGHT";
-      statusSubtext = `Next shadow dip in ${hoursToDip} hours`;
+      statusText = locale === 'bn' ? "☀ চিরন্তন আলোক শৃঙ্গ" : "☀ PEAK OF ETERNAL LIGHT";
+      statusSubtext = locale === 'bn' ? `পরবর্তী ছায়া ${hoursToDip} ঘণ্টায়` : `Next shadow dip in ${hoursToDip} hours`;
     }
   } else {
     // Standard lunar night
@@ -89,12 +90,12 @@ export const ResourceBarHUD: React.FC = () => {
     isDaylight = isDay;
     if (isDay) {
       const hoursToNight = Math.round(354.35 - hourInCycle);
-      statusText = "☀ LUNAR DAY";
-      statusSubtext = `14-day night begins in ${hoursToNight} hours`;
+      statusText = locale === 'bn' ? "☀ চন্দ্র দিবস" : "☀ LUNAR DAY";
+      statusSubtext = locale === 'bn' ? `১৪ দিনের রাত শুরু হবে ${hoursToNight} ঘণ্টায়` : `14-day night begins in ${hoursToNight} hours`;
     } else {
       const hoursToSunrise = Math.round(lunarDayHours - hourInCycle);
-      statusText = "🌙 14-DAY LUNAR NIGHT IN PROGRESS";
-      statusSubtext = `Solar output 0%. ${hoursToSunrise} hours to sunrise`;
+      statusText = locale === 'bn' ? "🌙 ১৪ দিনের চন্দ্র রজনী চলছে" : "🌙 14-DAY LUNAR NIGHT IN PROGRESS";
+      statusSubtext = locale === 'bn' ? `সৌর উৎপাদন ০%। সূর্যোদয়ে বাকি ${hoursToSunrise} ঘণ্টা` : `Solar output 0%. ${hoursToSunrise} hours to sunrise`;
     }
   }
 
@@ -186,8 +187,10 @@ export const ResourceBarHUD: React.FC = () => {
         <div className="flex items-center space-x-1.5 bg-space-darkest px-2.5 py-1 rounded border border-space-border/80">
           <HardHat className="w-3.5 h-3.5 text-yellow-400" />
           <div>
-            <span className="text-gray-400">BUILDERS: </span>
-            <span className="text-yellow-400 font-bold">{activeBuilders}/{maxBuilders} Active</span>
+            <span className="text-gray-400">{locale === 'bn' ? 'বিল্ডার: ' : 'BUILDERS: '}</span>
+            <span className="text-yellow-400 font-bold">
+              {activeBuilders}/{maxBuilders} {locale === 'bn' ? 'সক্রিয়' : 'Active'}
+            </span>
           </div>
         </div>
 
@@ -238,12 +241,13 @@ export const ResourceBarHUD: React.FC = () => {
             }`}>
               <AlertTriangle className="w-3 h-3" />
               <span>
-                Power Reserve: {batteryReserveHours === Infinity ? 'Infinite' : `${batteryReserveHours.toFixed(1)} h`}
+                {locale === 'bn' ? 'বিদ্যুৎ মজুদ: ' : 'Power Reserve: '}
+                {batteryReserveHours === Infinity ? (locale === 'bn' ? 'অসীম' : 'Infinite') : `${batteryReserveHours.toFixed(1)} h`}
               </span>
             </span>
           ) : (
             <span className="text-telemetry-emerald flex items-center space-x-1">
-              <span>Power Net Positive (+{(netPowerWatts / 1000).toFixed(1)} kW)</span>
+              <span>{locale === 'bn' ? `নেট পজিটিভ বিদ্যুৎ (+${(netPowerWatts / 1000).toFixed(1)} kW)` : `Power Net Positive (+${(netPowerWatts / 1000).toFixed(1)} kW)`}</span>
             </span>
           )}
         </div>
