@@ -2,10 +2,10 @@ import React from 'react';
 import { useGameStore } from '../../store/useGameStore';
 import { translations } from '../i18n';
 import { sound } from '../../audio/soundSynth';
-import { Rocket, Compass, BookOpen, ShieldCheck } from 'lucide-react';
+import { Rocket, Compass, BookOpen, ShieldCheck, RotateCcw } from 'lucide-react';
 
 export const MainMenu: React.FC = () => {
-  const { setScreen, locale } = useGameStore();
+  const { setScreen, resetGame, locale } = useGameStore();
   const t = translations[locale];
 
   return (
@@ -67,6 +67,20 @@ export const MainMenu: React.FC = () => {
           >
             <BookOpen className="w-4 h-4 text-telemetry-emerald" />
             <span>{t.credits}</span>
+          </button>
+
+          <button
+            onClick={() => {
+              if (window.confirm("Reset all game data and start a completely fresh campaign from Level 1?")) {
+                sound.playSuccess();
+                resetGame();
+              }
+            }}
+            title="Clear all saved progress and reset to Level 1 fresh state"
+            className="w-full py-2 px-6 rounded-lg bg-red-950/30 hover:bg-red-900/40 border border-red-500/30 hover:border-red-500/60 text-red-300 font-mono text-[11px] uppercase tracking-wider flex items-center justify-center space-x-2 transition"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-red-400" />
+            <span>Reset Game (Fresh Start)</span>
           </button>
         </div>
 

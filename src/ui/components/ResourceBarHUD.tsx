@@ -11,7 +11,10 @@ import {
   HardHat, 
   Sun, 
   Moon, 
-  AlertTriangle 
+  AlertTriangle,
+  Radio,
+  ShieldAlert,
+  ShieldCheck
 } from 'lucide-react';
 
 export const ResourceBarHUD: React.FC = () => {
@@ -31,6 +34,13 @@ export const ResourceBarHUD: React.FC = () => {
     missionElapsedSeconds,
     landingSiteId,
     setEngineerPanelModuleId,
+    cumulativeRadiationDoseMSv,
+    hourlyDoseRateMSv,
+    activeHazards,
+    crewSheltered,
+    toggleCrewShelter,
+    regolithBermThicknessCm,
+    buildRegolithBerm,
   } = useGameStore();
 
   // Active builders count
@@ -180,6 +190,26 @@ export const ResourceBarHUD: React.FC = () => {
             <span className="text-yellow-400 font-bold">{activeBuilders}/{maxBuilders} Active</span>
           </div>
         </div>
+
+        {/* Radiation Dosimetry Pill (Phase 5) */}
+        <div 
+          onClick={() => setEngineerPanelModuleId('radiation_protection')}
+          title="NASA Astronaut Radiation Dosimetry (Click for SRAG career limits & shielding)"
+          className={`flex items-center space-x-1.5 px-2.5 py-1 rounded border cursor-pointer transition font-mono ${
+            cumulativeRadiationDoseMSv > 150 
+              ? 'bg-red-950/70 border-red-500 text-red-200 animate-pulse' 
+              : cumulativeRadiationDoseMSv > 25 
+              ? 'bg-amber-950/60 border-amber-500 text-amber-200' 
+              : 'bg-space-darkest border-space-border/80 text-gray-300 hover:border-cyan-500/50'
+          }`}
+        >
+          <Radio className={`w-3.5 h-3.5 ${cumulativeRadiationDoseMSv > 25 ? 'text-red-400 animate-spin-slow' : 'text-purple-400'}`} />
+          <div>
+            <span className="text-gray-400">RAD: </span>
+            <span className="font-bold">{cumulativeRadiationDoseMSv.toFixed(1)} mSv</span>
+            <span className="text-[9px] text-gray-400 ml-1">({(hourlyDoseRateMSv * 1000).toFixed(0)} μSv/h)</span>
+          </div>
+        </div>
       </div>
 
       {/* Lower Environmental Warning / Day-Night Banner */}
@@ -218,6 +248,87 @@ export const ResourceBarHUD: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Space Weather & Environmental Hazards Early Warning Banner (Phase 5) */}
+      {activeHazards.length > 0 && (
+        <div className="space-y-1">
+          {activeHazards.map(h => {
+            const isWarning = h.status === 'WARNING';
+            const remainingHours = isWarning 
+              ? (h.warningTimeRemainingSeconds / 3600).toFixed(1)
+              : (h.durationRemainingSeconds / 3600).toFixed(1);
+
+            return (
+              <div 
+                key={h.instanceId}
+                className={`flex flex-wrap items-center justify-between gap-2 p-2 rounded-lg border font-mono text-xs transition animate-in fade-in ${
+                  isWarning 
+                    ? 'bg-amber-950/40 border-amber-500/50 text-amber-200' 
+                    : 'bg-red-950/60 border-red-500/70 text-red-100 animate-pulse'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  {isWarning ? (
+                    <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
+                  ) : (
+                    <Radio className="w-4 h-4 text-red-400 shrink-0 animate-spin-slow" />
+                  )}
+                  <div>
+                    <span className="font-bold uppercase tracking-wider">
+                      {isWarning ? '⚠️ EARLY WARNING: ' : '🚨 ACTIVE HAZARD: '}
+                    </span>
+                    <span className="font-sans font-bold">{h.name}</span>
+                    <span className="text-[11px] text-gray-300 ml-2">
+                      {isWarning ? `[Shock Arrival in ${remainingHours}h]` : `[Duration Remaining: ${remainingHours}h]`}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Mitigation Controls */}
+                <div className="flex items-center space-x-2">
+                  {/* Regolith Berm Status */}
+                  <div className="text-[10px] text-gray-300 hidden md:block">
+                    Berm Shielding: <span className="text-cyan-300 font-bold">{regolithBermThicknessCm} cm</span>
+                  </div>
+
+                  {/* Build Berm Shortcut (if printer exists) */}
+                  {placedModules.some(m => m.moduleId === 'regolith_sintering_printer') && (
+                    <button
+                      onClick={() => buildRegolithBerm(18)}
+                      title="Sinter 18 cm regolith berm using 3D printer (Costs 180kg ore + $25k credits)"
+                      className="px-2 py-1 rounded bg-cyan-950 hover:bg-cyan-900 border border-cyan-500/50 text-cyan-200 text-[10px] font-bold uppercase transition"
+                    >
+                      + Sinter Berm (+18cm)
+                    </button>
+                  )}
+
+                  {/* Crew Shelter Toggle */}
+                  <button
+                    onClick={toggleCrewShelter}
+                    className={`px-2.5 py-1 rounded text-[11px] font-bold uppercase transition flex items-center space-x-1 ${
+                      crewSheltered
+                        ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                        : 'bg-red-600 hover:bg-red-500 text-white animate-bounce'
+                    }`}
+                  >
+                    {crewSheltered ? (
+                      <>
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        <span>SHELTERED IN BUNKER</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShieldAlert className="w-3.5 h-3.5" />
+                        <span>SEEK RADIATION SHELTER</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

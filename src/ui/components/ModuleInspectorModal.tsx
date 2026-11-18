@@ -2,6 +2,7 @@ import React from 'react';
 import { useGameStore } from '../../store/useGameStore';
 import { sound } from '../../audio/soundSynth';
 import modulesData from '../../data/modules.json';
+import { calculateRepairCost } from '../../core/economy/hazardEngine';
 import type { PlacedModule } from '../../types/game';
 import { 
   X, 
@@ -21,6 +22,7 @@ export const ModuleInspectorModal: React.FC<ModuleInspectorModalProps> = ({ modu
   const {
     budgetCredits,
     setEngineerPanelModuleId,
+    repairModule,
   } = useGameStore();
 
   if (!module) return null;
@@ -28,7 +30,7 @@ export const ModuleInspectorModal: React.FC<ModuleInspectorModalProps> = ({ modu
   const def = modulesData.modules.find(m => m.id === module.moduleId);
   if (!def) return null;
 
-  const repairCost = 5000;
+  const repairCost = calculateRepairCost(def.costCredits, module.durabilityPct);
   const speedUpCost = 10000;
   const deconstructRefund = Math.round(def.costCredits * 0.5);
 
@@ -37,13 +39,12 @@ export const ModuleInspectorModal: React.FC<ModuleInspectorModalProps> = ({ modu
       sound.playWarning();
       return;
     }
-    sound.playSuccess();
-    useGameStore.setState(state => ({
-      budgetCredits: state.budgetCredits - repairCost,
-      placedModules: state.placedModules.map(m =>
-        m.instanceId === module.instanceId ? { ...m, durabilityPct: 100 } : m
-      ),
-    }));
+    const success = repairModule(module.instanceId);
+    if (success) {
+      sound.playSuccess();
+    } else {
+      sound.playWarning();
+    }
   };
 
   const handleSpeedUp = () => {

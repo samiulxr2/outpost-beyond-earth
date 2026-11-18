@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { useGameStore } from '../../store/useGameStore';
 import { sound } from '../../audio/soundSynth';
 import modulesData from '../../data/modules.json';
+import technologiesData from '../../data/technologies.json';
+import season1Data from '../../data/seasons/season1_moon.json';
 import { 
   Hammer, 
   X, 
-  Info
+  Info,
+  Lock
 } from 'lucide-react';
 
 export const ModuleBuildMenu: React.FC = () => {
@@ -15,11 +18,28 @@ export const ModuleBuildMenu: React.FC = () => {
     budgetCredits,
     placedModules,
     setEngineerPanelModuleId,
+    selectedLevelNumber,
+    unlockedTechnologies,
+    setScreen,
   } = useGameStore();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [activeCategory, setActiveCategory] = useState<string>('All');
 
   const categories = ['All', 'Power', 'Habitation', 'LifeSupport', 'ISRU', 'Logistics'];
+
+  const currentLevel = season1Data.levels.find(l => l.levelNumber === selectedLevelNumber);
+  const levelModules = currentLevel?.availableModules || [];
+
+  const techUnlockedModules = new Set<string>();
+  technologiesData.technologies.forEach(tech => {
+    if (unlockedTechnologies.includes(tech.id)) {
+      tech.unlocksModules.forEach(mid => techUnlockedModules.add(mid));
+    }
+  });
+
+  const isModuleUnlocked = (moduleId: string) => {
+    return levelModules.includes(moduleId) || techUnlockedModules.has(moduleId);
+  };
 
   const filteredModules = modulesData.modules.filter(m => 
     activeCategory === 'All' ? true : m.category.toLowerCase() === activeCategory.toLowerCase()
@@ -117,13 +137,16 @@ export const ModuleBuildMenu: React.FC = () => {
             {/* Module Cards Grid */}
             <div className="p-4 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {filteredModules.map(mod => {
+                const unlocked = isModuleUnlocked(mod.id);
                 const canAfford = budgetCredits >= mod.costCredits;
 
                 return (
                   <div
                     key={mod.id}
                     className={`p-3.5 rounded-xl border text-left transition flex flex-col justify-between ${
-                      canAfford
+                      !unlocked
+                        ? 'bg-space-dark/20 border-space-border/30 opacity-50'
+                        : canAfford
                         ? 'bg-space-card hover:bg-space-muted border-space-border hover:border-cyan-400'
                         : 'bg-space-dark/40 border-space-border/50 opacity-60'
                     }`}
@@ -160,17 +183,32 @@ export const ModuleBuildMenu: React.FC = () => {
                       </div>
 
                       <div className="flex items-center space-x-2 pt-1">
-                        <button
-                          onClick={() => handleSelectModule(mod.id)}
-                          disabled={!canAfford}
-                          className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-mono font-bold uppercase transition ${
-                            canAfford
-                              ? 'bg-cyan-500 hover:bg-cyan-400 text-space-darkest cursor-pointer'
-                              : 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                          }`}
-                        >
-                          {canAfford ? 'Construct' : 'Need Funds'}
-                        </button>
+                        {!unlocked ? (
+                          <button
+                            onClick={() => {
+                              sound.playClick();
+                              setIsOpen(false);
+                              setScreen('TECH_TREE');
+                            }}
+                            title="Unlock this technology using Science Points in the Tech Tree"
+                            className="flex-1 py-1.5 px-3 rounded-lg text-[11px] font-mono font-bold uppercase transition bg-purple-950/40 hover:bg-purple-900/60 border border-purple-500/40 text-purple-300 flex items-center justify-center space-x-1"
+                          >
+                            <Lock className="w-3 h-3 text-purple-400" />
+                            <span>Unlock in Tech Tree</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleSelectModule(mod.id)}
+                            disabled={!canAfford}
+                            className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-mono font-bold uppercase transition ${
+                              canAfford
+                                ? 'bg-cyan-500 hover:bg-cyan-400 text-space-darkest cursor-pointer'
+                                : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                            }`}
+                          >
+                            {canAfford ? 'Construct' : 'Need Funds'}
+                          </button>
+                        )}
                         <button
                           onClick={() => {
                             sound.playClick();

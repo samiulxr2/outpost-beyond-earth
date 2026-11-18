@@ -11,7 +11,9 @@ import {
   Globe, 
   Cpu, 
   ChevronRight,
-  Clock
+  Clock,
+  RotateCcw,
+  Atom
 } from 'lucide-react';
 import type { TimeScale } from '../../types/game';
 
@@ -29,6 +31,10 @@ export const HeaderHUD: React.FC = () => {
     toggleSound,
     setEngineerPanelModuleId,
     engineerPanelModuleId,
+    resetGame,
+    currentScreen,
+    setScreen,
+    sciencePoints,
   } = useGameStore();
 
   const t = translations[locale];
@@ -158,6 +164,32 @@ export const HeaderHUD: React.FC = () => {
 
       {/* Right: Controls & Engineer's Panel */}
       <div className="flex items-center space-x-2">
+        {/* Tech Tree Trigger */}
+        <button
+          onClick={() => {
+            sound.playClick();
+            if (currentScreen === 'TECH_TREE') {
+              setScreen('BASE_BUILDER');
+            } else {
+              setScreen('TECH_TREE');
+            }
+          }}
+          title="Open NASA Technology Readiness Level (TRL) Tree"
+          className={`flex items-center space-x-1 text-xs px-2.5 py-1 rounded border transition font-mono ${
+            currentScreen === 'TECH_TREE'
+              ? 'bg-purple-500/20 border-purple-400 text-purple-300'
+              : 'bg-space-dark hover:bg-space-card border-space-border text-gray-300'
+          }`}
+        >
+          <Atom className="w-3.5 h-3.5 text-telemetry-purple" />
+          <span className="hidden sm:inline">TECH TREE</span>
+          {sciencePoints > 0 && (
+            <span className="text-[10px] bg-purple-900/60 text-purple-200 px-1 rounded font-bold">
+              {sciencePoints}
+            </span>
+          )}
+        </button>
+
         {/* Engineer's Panel Trigger */}
         <button
           onClick={handleToggleEngineer}
@@ -192,6 +224,20 @@ export const HeaderHUD: React.FC = () => {
         >
           <Globe className="w-3.5 h-3.5 text-telemetry-purple" />
           <span className="font-bold">{locale.toUpperCase()}</span>
+        </button>
+
+        {/* Reset Game / Return to Menu */}
+        <button
+          onClick={() => {
+            if (window.confirm("Reset game data and return to Main Menu?")) {
+              sound.playClick();
+              resetGame();
+            }
+          }}
+          title="Reset Game (Clear Save & Return to Menu)"
+          className="p-1.5 rounded bg-space-dark hover:bg-red-950/40 border border-space-border hover:border-red-500/40 text-gray-400 hover:text-red-300 transition"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
         </button>
       </div>
     </header>

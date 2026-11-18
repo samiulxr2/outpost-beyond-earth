@@ -32,16 +32,60 @@ async function fetchJPLHorizons(command: string) {
 }
 
 async function fetchDONKISolarFlares() {
+  console.log('Testing NASA DONKI endpoints with DEMO_KEY...');
+  
+  // Note: /DONKI/FLR returns HTTP 404 Not Found on api.nasa.gov gateway:
+  // {"timestamp":"...","status":404,"error":"Not Found","path":"/DONKI-API/get/FLR/"}
   try {
-    const url = `https://api.nasa.gov/DONKI/FLR?startDate=2021-01-01&endDate=2026-01-01&api_key=DEMO_KEY`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    return data;
+    const testFlr = await fetch(`https://api.nasa.gov/DONKI/FLR?startDate=2024-01-01&endDate=2024-01-20&api_key=DEMO_KEY`, { signal: AbortSignal.timeout(6000) });
+    if (!testFlr.ok) {
+      console.warn(`NASA DONKI /DONKI/FLR returned exact HTTP error: ${testFlr.status} ${testFlr.statusText} (path /DONKI-API/get/FLR/ is unrouted on gateway)`);
+    }
   } catch (err) {
-    console.warn(`NASA DONKI fetch failed:`, (err as Error).message);
-    return null;
+    console.warn(`NASA DONKI /DONKI/FLR check exception: ${(err as Error).message}`);
   }
+
+  // Active, live endpoints for space weather hazards are /DONKI/SEP (Solar Energetic Particles) and /DONKI/CME (Coronal Mass Ejections)
+  // NASA API limits date ranges to <= 60 days per request. We sample active solar cycle periods (May 2024 superstorm and Jan 2024):
+  const intervals = [
+    { start: '2024-05-01', end: '2024-05-25', desc: 'Solar Cycle 25 May 2024 Superstorm (G5/S3 Event)' },
+    { start: '2024-01-01', end: '2024-01-20', desc: 'Solar Cycle 25 January 2024 M/X Flare Series' }
+  ];
+
+  const liveEvents: any[] = [];
+
+  for (const interval of intervals) {
+    try {
+      const sepUrl = `https://api.nasa.gov/DONKI/SEP?startDate=${interval.start}&endDate=${interval.end}&api_key=DEMO_KEY`;
+      const cmeUrl = `https://api.nasa.gov/DONKI/CME?startDate=${interval.start}&endDate=${interval.end}&api_key=DEMO_KEY`;
+
+      console.log(`Fetching DONKI SEP & CME for ${interval.desc}...`);
+      const [sepRes, cmeRes] = await Promise.all([
+        fetch(sepUrl, { signal: AbortSignal.timeout(8000) }),
+        fetch(cmeUrl, { signal: AbortSignal.timeout(8000) })
+      ]);
+
+      if (sepRes.ok) {
+        const seps = await sepRes.json();
+        if (Array.isArray(seps)) {
+          console.log(`  -> Retrieved ${seps.length} live SEP events from SOHO/COSTEP`);
+          liveEvents.push(...seps.map((s: any) => ({ type: 'SEP', ...s })));
+        }
+      }
+
+      if (cmeRes.ok) {
+        const cmes = await cmeRes.json();
+        if (Array.isArray(cmes)) {
+          console.log(`  -> Retrieved ${cmes.length} live CME events from SOHO LASCO`);
+          liveEvents.push(...cmes.slice(0, 5).map((c: any) => ({ type: 'CME', ...c })));
+        }
+      }
+    } catch (err) {
+      console.warn(`DONKI window ${interval.start} failed: ${(err as Error).message}`);
+    }
+  }
+
+  return liveEvents.length > 0 ? liveEvents : null;
 }
 
 async function main() {
@@ -298,7 +342,7 @@ async function main() {
       dataset: "NASA DONKI Space Weather Catalog & Mars Weather Environmental Sensors",
       source: "NASA Space Weather Database Of Notifications, Knowledge, Information (DONKI) & REMS/MEDA Teams",
       sourceUrl: "https://kauai.ccmc.gsfc.nasa.gov/DONKI/",
-      retrievedOn: "2026-11-17",
+      retrievedOn: "2026-11-18",
       dataOrigin: donkiSuccess ? "api" : "factsheet-manual",
       units: {
         flux: "Protons / (cm^2 * s * sr)",
@@ -306,6 +350,7 @@ async function main() {
         temperature: "Kelvin"
       }
     },
+    observedEvents: donkiFlares || [],
     hazards: [
       {
         id: "solar_particle_event_x_class",

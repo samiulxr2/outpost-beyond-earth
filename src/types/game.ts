@@ -9,6 +9,7 @@ export type ScreenState =
   | 'LANDING_SELECTOR'
   | 'BASE_BUILDER'
   | 'MISSION_REPORT'
+  | 'TECH_TREE'
   | 'DATA_CREDITS';
 
 export type TimeScale = 0 | 1 | 10 | 60 | 1440; // 0 = Paused, 1 = 1m/s, 10 = 10m/s, 60 = 1h/s, 1440 = 1d/s
@@ -66,13 +67,23 @@ export interface MissionObjective {
 }
 
 export interface ActiveHazard {
-  id: string;
+  instanceId: string;
+  hazardId: string;
   name: string;
-  severity: 'WARNING' | 'CRITICAL';
+  category: 'Radiation' | 'Impact' | 'Mechanical' | 'Thermal' | 'Weather';
+  status: 'WARNING' | 'IMPACTING' | 'RESOLVED';
+  warningTimeRemainingSeconds: number;
   durationRemainingSeconds: number;
+  totalDurationSeconds: number;
   intensityMultiplier: number;
+  radiationDoseRateMSvPerHour: number;
   damageRatePerHour: number;
-  explanation: string;
+  affectedModuleInstanceId?: string;
+  affectedModuleName?: string;
+  mitigationActionTaken?: boolean;
+  earlyWarningDescription: string;
+  sourceDonkiEventId?: string;
+  realScienceExplanation: string;
 }
 
 export interface BuilderDrone {
@@ -93,6 +104,10 @@ export interface MissionReportData {
   realScienceSummary: string;
   sourceCitation: string;
   defeatReason?: string;
+  hazardsSurvivedCount?: number;
+  peakRadiationDoseRateMSvPerHour?: number;
+  cumulativeDoseMSv?: number;
+  repairsPerformedCount?: number;
 }
 
 export interface CampaignProgress {

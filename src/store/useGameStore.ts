@@ -12,6 +12,9 @@ import type {
 import season1Data from '../data/seasons/season1_moon.json';
 import modulesData from '../data/modules.json';
 import { stepResourceSimulation, calculateSiteIllumination } from '../core/economy/resourceSimulation';
+import { calculateMissionScore } from '../core/economy/scoring';
+import { stepHazardSimulation, sampleSolarParticleEvent, sampleMicrometeoriteImpact, calculateRepairCost } from '../core/economy/hazardEngine';
+import technologiesData from '../data/technologies.json';
 
 function loadCampaignProgress(): CampaignProgress {
   try {
@@ -71,6 +74,13 @@ export interface GameStoreState {
   // Hazards & Alerts
   activeHazards: ActiveHazard[];
   engineerPanelModuleId: string | null;
+  crewSheltered: boolean;
+  regolithBermThicknessCm: number;
+  cumulativeRadiationDoseMSv: number;
+  hourlyDoseRateMSv: number;
+  hazardsSurvivedCount: number;
+  repairsPerformedCount: number;
+  unlockedTechnologies: string[];
 
   // Campaign Progression & Persistence
   unlockedLevels: number[];
@@ -100,6 +110,13 @@ export interface GameStoreState {
   toggleSound: () => void;
   nextTutorialStep: () => void;
   checkObjectives: () => void;
+  resetGame: () => void;
+  toggleCrewShelter: () => void;
+  buildRegolithBerm: (additionalCm?: number) => boolean;
+  repairModule: (instanceId: string) => boolean;
+  unlockTechnology: (techId: string) => boolean;
+  triggerSolarParticleEvent: () => void;
+  triggerMicrometeoriteImpact: () => void;
 }
 
 // Generate base terrain for Shackleton Rim (elevated rim with craters & ice deposits)
@@ -181,6 +198,13 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
 
   activeHazards: [],
   engineerPanelModuleId: null,
+  crewSheltered: false,
+  regolithBermThicknessCm: 0,
+  cumulativeRadiationDoseMSv: 0,
+  hourlyDoseRateMSv: 0.058,
+  hazardsSurvivedCount: 0,
+  repairsPerformedCount: 0,
+  unlockedTechnologies: ['tech_vsat_power'],
 
   unlockedLevels: initialProg.unlockedLevels || [1],
   levelHighScores: initialProg.levelHighScores || {},
@@ -244,6 +268,18 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         secondsToAdd
       );
 
+      // Step Environmental Hazards & Radiation Exposure (Phase 5)
+      const hazardStep = stepHazardSimulation(
+        get().activeHazards,
+        sim.updatedModules,
+        secondsToAdd,
+        get().crewSheltered,
+        get().regolithBermThicknessCm
+      );
+      const newCumulativeDose = get().cumulativeRadiationDoseMSv + hazardStep.newDoseMSv;
+      const resolvedCount = get().activeHazards.length - hazardStep.updatedHazards.length;
+      const newSurvivedCount = get().hazardsSurvivedCount + (resolvedCount > 0 ? resolvedCount : 0);
+
       set({
         missionElapsedSeconds: newSeconds,
         missionElapsedDays: newDays,
@@ -255,8 +291,36 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         oxygenKg: sim.oxygenKg,
         waterKg: sim.waterKg,
         foodDaysRemaining: sim.foodDaysRemaining,
-        placedModules: sim.updatedModules,
+        placedModules: hazardStep.updatedModules,
+        activeHazards: hazardStep.updatedHazards,
+        cumulativeRadiationDoseMSv: newCumulativeDose,
+        hourlyDoseRateMSv: hazardStep.hourlyDoseRateMSv,
+        hazardsSurvivedCount: newSurvivedCount,
       });
+
+      // Acute radiation sickness defeat check (250 mSv 30-day limit)
+      if (newCumulativeDose >= 250) {
+        get().triggerDefeat("Acute Radiation Sickness: Astronaut radiation exposure exceeded NASA 30-day limits (250 mSv). Inadequate regolith shielding.");
+        return;
+      }
+
+      // Check loss conditions during active base operations
+      if (sim.oxygenKg <= 0) {
+        get().triggerDefeat("Oxygen depletion: ECLSS atmospheric revitalization failed.");
+        return;
+      }
+      if (sim.waterKg <= 0) {
+        get().triggerDefeat("Dehydration: Potable water reserves exhausted.");
+        return;
+      }
+      if (sim.foodDaysRemaining <= 0) {
+        get().triggerDefeat("Starvation: Crew food rations exhausted.");
+        return;
+      }
+      if (newDays >= get().missionDurationDays && !get().objectives.every(o => o.completed)) {
+        get().triggerDefeat("Mission expired: Scheduled operational duration ended before completing objectives.");
+        return;
+      }
     } else {
       set({
         missionElapsedSeconds: newSeconds,
@@ -312,6 +376,18 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         elapsedGameSeconds
       );
 
+      // Step Environmental Hazards & Radiation Exposure (Phase 5)
+      const hazardStep = stepHazardSimulation(
+        get().activeHazards,
+        sim.updatedModules,
+        elapsedGameSeconds,
+        get().crewSheltered,
+        get().regolithBermThicknessCm
+      );
+      const newCumulativeDose = get().cumulativeRadiationDoseMSv + hazardStep.newDoseMSv;
+      const resolvedCount = get().activeHazards.length - hazardStep.updatedHazards.length;
+      const newSurvivedCount = get().hazardsSurvivedCount + (resolvedCount > 0 ? resolvedCount : 0);
+
       set({
         missionElapsedSeconds: newSeconds,
         missionElapsedDays: newDays,
@@ -323,8 +399,36 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         oxygenKg: sim.oxygenKg,
         waterKg: sim.waterKg,
         foodDaysRemaining: sim.foodDaysRemaining,
-        placedModules: sim.updatedModules,
+        placedModules: hazardStep.updatedModules,
+        activeHazards: hazardStep.updatedHazards,
+        cumulativeRadiationDoseMSv: newCumulativeDose,
+        hourlyDoseRateMSv: hazardStep.hourlyDoseRateMSv,
+        hazardsSurvivedCount: newSurvivedCount,
       });
+
+      // Acute radiation sickness defeat check (250 mSv 30-day limit)
+      if (newCumulativeDose >= 250) {
+        get().triggerDefeat("Acute Radiation Sickness: Astronaut radiation exposure exceeded NASA 30-day limits (250 mSv). Inadequate regolith shielding.");
+        return;
+      }
+
+      // Check loss conditions during active base operations
+      if (sim.oxygenKg <= 0) {
+        get().triggerDefeat("Oxygen depletion: ECLSS atmospheric revitalization failed.");
+        return;
+      }
+      if (sim.waterKg <= 0) {
+        get().triggerDefeat("Dehydration: Potable water reserves exhausted.");
+        return;
+      }
+      if (sim.foodDaysRemaining <= 0) {
+        get().triggerDefeat("Starvation: Crew food rations exhausted.");
+        return;
+      }
+      if (newDays >= get().missionDurationDays && !get().objectives.every(o => o.completed)) {
+        get().triggerDefeat("Mission expired: Scheduled operational duration ended before completing objectives.");
+        return;
+      }
     } else {
       set({
         missionElapsedSeconds: newSeconds,
@@ -359,7 +463,13 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       placedModules: [],
       gridTiles: initialTiles,
       selectedModuleIdForBuild: null,
-      activeHazards: [],
+      activeHazards: levelNumber === 5 ? [sampleSolarParticleEvent(0)] : [],
+      crewSheltered: false,
+      regolithBermThicknessCm: 0,
+      cumulativeRadiationDoseMSv: 0,
+      hourlyDoseRateMSv: 0.058,
+      hazardsSurvivedCount: 0,
+      repairsPerformedCount: 0,
       roverDistanceTraversedMeters: 0,
       iceProspectingDetectedPct: 0,
       powerStoredKWh: level.startingResources?.powerStoredKWh ?? 20,
@@ -458,18 +568,43 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   },
 
   triggerDefeat: (reason: string) => {
-    const { selectedLevelNumber } = get();
+    const { 
+      selectedLevelNumber, 
+      missionDurationDays, 
+      missionElapsedDays,
+      oxygenKg, 
+      waterKg, 
+      foodDaysRemaining, 
+      budgetCredits, 
+      powerStoredKWh, 
+      maxPowerStorageKWh 
+    } = get();
     const levelData = season1Data.levels.find(l => l.levelNumber === selectedLevelNumber) || season1Data.levels[0];
+    const scoreRes = calculateMissionScore({
+      status: 'DEFEAT',
+      levelNumber: selectedLevelNumber,
+      missionDurationDays,
+      elapsedDays: missionElapsedDays,
+      oxygenKg,
+      waterKg,
+      foodDaysRemaining,
+      budgetCreditsRemaining: budgetCredits,
+      startingBudgetCredits: levelData.startingBudgetCredits || 800000,
+      powerStoredKWh,
+      maxPowerStorageKWh,
+      crewCount: 4,
+    });
+
     set({
       currentScreen: 'MISSION_REPORT',
       missionReport: {
         status: 'DEFEAT',
-        score: 350,
+        score: scoreRes.totalScore,
         stars: 0,
         missionSuccessScore: 0,
-        crewSafetyScore: 100,
-        efficiencyScore: 150,
-        sciencePointsEarned: 25,
+        crewSafetyScore: scoreRes.crewSafetyScore,
+        efficiencyScore: scoreRes.efficiencyScore,
+        sciencePointsEarned: scoreRes.sciencePointsEarned,
         realScienceSummary: levelData.realDataReference.explanation,
         sourceCitation: levelData.realDataReference.source,
         defeatReason: reason,
@@ -511,14 +646,27 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         if (hasExperiencedNight && siteIllum.isDaylight && powerStoredKWh > 0) {
           isDone = true;
         }
+      } else if (obj.type === 'POWER_SURVIVAL_PREP') {
+        const hasNuclear = placedModules.some(m => m.moduleId === 'kilopower_nuclear_reactor');
+        const hasBatteryCapacity = get().maxPowerStorageKWh >= (obj.targetValue || 400);
+        if (hasNuclear || hasBatteryCapacity) {
+          isDone = true;
+        }
       } else if (obj.type === 'ROVER_DISTANCE_METERS') {
         if (roverDistanceTraversedMeters >= (obj.targetValue || 500)) isDone = true;
       } else if (obj.type === 'ICE_PROSPECTING_PCT') {
         if (iceProspectingDetectedPct >= (obj.targetValue || 5.0)) isDone = true;
       } else if (obj.type === 'RESOURCE_ACCUMULATION') {
         if (obj.resource === 'waterKg' && waterKg >= (obj.targetValue || 250)) isDone = true;
+        if (obj.resource === 'oxygenKg' && oxygenKg >= (obj.targetValue || 500)) isDone = true;
       } else if (obj.type === 'GRID_POWER_KW') {
         if (netPowerWatts >= (obj.targetValue || 4.5) * 1000) isDone = true;
+      } else if (obj.type === 'REGOLITH_BERM_THICKNESS') {
+        if (get().regolithBermThicknessCm >= (obj.targetValue || 36)) isDone = true;
+      } else if (obj.type === 'RADIATION_SAFETY_MAX_MSV') {
+        if (get().cumulativeRadiationDoseMSv <= (obj.targetValue || 25) && (get().hazardsSurvivedCount >= 1 || get().missionElapsedDays >= 20)) {
+          isDone = true;
+        }
       }
 
       if (!isDone) allCompleted = false;
@@ -529,20 +677,35 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
 
     if (allCompleted && updated.length > 0 && get().currentScreen === 'BASE_BUILDER') {
       const levelData = season1Data.levels.find(l => l.levelNumber === selectedLevelNumber) || season1Data.levels[0];
-      const safetyScore = Math.min(500, Math.round(oxygenKg * 2.5 + waterKg * 1.0));
-      const efficiencyScore = Math.min(500, Math.round(budgetCredits * 0.0004 + powerStoredKWh * 2));
-      const score = 1000 + safetyScore + efficiencyScore;
-      const stars = score >= 1800 ? 3 : score >= 1400 ? 2 : 1;
-      const scienceEarned = selectedLevelNumber === 1 ? 150 : selectedLevelNumber === 2 ? 250 : 350;
+      const scoreRes = calculateMissionScore({
+        status: 'VICTORY',
+        levelNumber: selectedLevelNumber,
+        missionDurationDays: get().missionDurationDays,
+        elapsedDays: get().missionElapsedDays,
+        oxygenKg,
+        waterKg,
+        foodDaysRemaining: get().foodDaysRemaining,
+        budgetCreditsRemaining: budgetCredits,
+        startingBudgetCredits: levelData.startingBudgetCredits || 800000,
+        powerStoredKWh,
+        maxPowerStorageKWh: get().maxPowerStorageKWh,
+        crewCount: 4,
+        cumulativeRadiationDoseMSv: get().cumulativeRadiationDoseMSv,
+        hazardsSurvivedCount: get().hazardsSurvivedCount,
+      });
 
       const currentUnlocked = get().unlockedLevels;
       const nextLvl = selectedLevelNumber + 1;
       const newUnlocked = Array.from(new Set([...currentUnlocked, nextLvl]));
       const updatedScores = {
         ...get().levelHighScores,
-        [selectedLevelNumber]: { score, stars, scienceEarned }
+        [selectedLevelNumber]: { 
+          score: scoreRes.totalScore, 
+          stars: scoreRes.stars, 
+          scienceEarned: scoreRes.sciencePointsEarned 
+        }
       };
-      const totalSP = get().sciencePoints + scienceEarned;
+      const totalSP = get().sciencePoints + scoreRes.sciencePointsEarned;
 
       saveCampaignProgress({
         unlockedLevels: newUnlocked,
@@ -557,16 +720,146 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         currentScreen: 'MISSION_REPORT',
         missionReport: {
           status: 'VICTORY',
-          score,
-          stars,
-          missionSuccessScore: 1000,
-          crewSafetyScore: safetyScore,
-          efficiencyScore,
-          sciencePointsEarned: scienceEarned,
+          score: scoreRes.totalScore,
+          stars: scoreRes.stars,
+          missionSuccessScore: scoreRes.missionSuccessScore,
+          crewSafetyScore: scoreRes.crewSafetyScore,
+          efficiencyScore: scoreRes.efficiencyScore,
+          sciencePointsEarned: scoreRes.sciencePointsEarned,
           realScienceSummary: levelData.realDataReference.explanation,
           sourceCitation: levelData.realDataReference.source,
+          hazardsSurvivedCount: get().hazardsSurvivedCount,
+          peakRadiationDoseRateMSvPerHour: get().hourlyDoseRateMSv,
+          cumulativeDoseMSv: get().cumulativeRadiationDoseMSv,
+          repairsPerformedCount: get().repairsPerformedCount,
         }
       });
+    }
+  },
+
+  resetGame: () => {
+    try {
+      localStorage.removeItem('outpost_base_save');
+      localStorage.removeItem('outpost_campaign_progression');
+    } catch {
+      // Ignore if localStorage unavailable
+    }
+    const initialTiles = generateInitialGrid(16);
+    const l1 = season1Data.levels[0];
+    set({
+      currentScreen: 'MAIN_MENU',
+      selectedSeasonId: 1,
+      selectedLevelNumber: 1,
+      unlockedLevels: [1],
+      levelHighScores: {},
+      levelTitle: l1.title,
+      landingSiteId: l1.landingSiteId,
+      missionDurationDays: l1.missionDurationDays,
+      budgetCredits: l1.startingBudgetCredits,
+      sciencePoints: 0,
+      objectives: (l1.objectives || []).map(o => ({ ...o, completed: false })),
+      tutorialStepIndex: 0,
+      tutorialCompleted: false,
+      missionElapsedSeconds: 0,
+      missionElapsedDays: 0,
+      placedModules: [],
+      gridTiles: initialTiles,
+      selectedModuleIdForBuild: null,
+      activeHazards: [],
+      crewSheltered: false,
+      regolithBermThicknessCm: 0,
+      cumulativeRadiationDoseMSv: 0,
+      hourlyDoseRateMSv: 0.058,
+      hazardsSurvivedCount: 0,
+      repairsPerformedCount: 0,
+      unlockedTechnologies: ['tech_vsat_power'],
+      roverDistanceTraversedMeters: 0,
+      iceProspectingDetectedPct: 0,
+      powerStoredKWh: l1.startingResources?.powerStoredKWh ?? 20,
+      maxPowerStorageKWh: 50,
+      oxygenKg: l1.startingResources?.oxygenKg ?? 100,
+      waterKg: l1.startingResources?.waterKg ?? 200,
+      foodDaysRemaining: l1.startingResources?.foodRationsDays ?? 30,
+      regolithOreKg: 0,
+      propellantKg: 500,
+      hasExperiencedNight: false,
+      consecutiveBlackoutSeconds: 0,
+      missionReport: null,
+      engineerPanelModuleId: null,
+    });
+  },
+
+  toggleCrewShelter: () => {
+    set(state => ({ crewSheltered: !state.crewSheltered }));
+  },
+
+  buildRegolithBerm: (additionalCm: number = 18) => {
+    const { placedModules, regolithOreKg, budgetCredits, regolithBermThicknessCm } = get();
+    const hasPrinter = placedModules.some(m => m.moduleId === 'regolith_sintering_printer');
+    if (!hasPrinter) return false;
+    const regolithCost = additionalCm * 10;
+    const creditCost = 25000;
+    if (regolithOreKg < regolithCost || budgetCredits < creditCost) return false;
+
+    set({
+      regolithBermThicknessCm: regolithBermThicknessCm + additionalCm,
+      regolithOreKg: regolithOreKg - regolithCost,
+      budgetCredits: budgetCredits - creditCost,
+    });
+    get().checkObjectives();
+    return true;
+  },
+
+  repairModule: (instanceId: string) => {
+    const { placedModules, budgetCredits, repairsPerformedCount } = get();
+    const mod = placedModules.find(m => m.instanceId === instanceId);
+    if (!mod || mod.durabilityPct >= 100) return false;
+    const def = modulesData.modules.find(m => m.id === mod.moduleId);
+    if (!def) return false;
+    const cost = calculateRepairCost(def.costCredits, mod.durabilityPct);
+    if (budgetCredits < cost) return false;
+
+    const updated = placedModules.map(m =>
+      m.instanceId === instanceId ? { ...m, durabilityPct: 100 } : m
+    );
+
+    set({
+      placedModules: updated,
+      budgetCredits: budgetCredits - cost,
+      repairsPerformedCount: repairsPerformedCount + 1,
+    });
+    return true;
+  },
+
+  unlockTechnology: (techId: string) => {
+    const { sciencePoints, unlockedTechnologies } = get();
+    const tech = technologiesData.technologies.find(t => t.id === techId);
+    if (!tech) return false;
+    if (unlockedTechnologies.includes(techId)) return false;
+    if (sciencePoints < tech.scienceCost) return false;
+    const prereqsMet = tech.prerequisites.every(p => unlockedTechnologies.includes(p));
+    if (!prereqsMet) return false;
+
+    set({
+      sciencePoints: sciencePoints - tech.scienceCost,
+      unlockedTechnologies: [...unlockedTechnologies, techId],
+    });
+    return true;
+  },
+
+  triggerSolarParticleEvent: () => {
+    const spe = sampleSolarParticleEvent(get().missionElapsedDays);
+    set(state => ({
+      activeHazards: [...state.activeHazards, spe]
+    }));
+  },
+
+  triggerMicrometeoriteImpact: () => {
+    const mm = sampleMicrometeoriteImpact(get().placedModules);
+    if (mm) {
+      set(state => ({
+        activeHazards: [...state.activeHazards, mm]
+      }));
     }
   },
 }));

@@ -27,14 +27,16 @@ export const MissionReport: React.FC = () => {
   const levelData = season1Data.levels.find(l => l.levelNumber === selectedLevelNumber) || season1Data.levels[0];
 
   const isVictory = missionReport?.status === 'VICTORY';
-  const stars = missionReport?.stars || (isVictory ? 3 : 0);
-  const totalScore = missionReport?.score || (isVictory ? 2450 : 350);
-  const scienceEarned = missionReport?.sciencePointsEarned || (isVictory ? 150 : 25);
+  const stars = missionReport?.stars ?? (isVictory ? 3 : 0);
+  const totalScore = missionReport?.score ?? (isVictory ? 2350 : 350);
+  const scienceEarned = missionReport?.sciencePointsEarned ?? (isVictory ? 150 : 25);
+  const crewSafetyScore = missionReport?.crewSafetyScore ?? (isVictory ? 480 : 100);
+  const efficiencyScore = missionReport?.efficiencyScore ?? (isVictory ? 420 : 150);
 
   const handleNextLevel = () => {
     sound.playClick();
     const nextLvl = selectedLevelNumber + 1;
-    if (nextLvl <= 3) {
+    if (nextLvl <= 5) {
       loadLevel(1, nextLvl);
     } else {
       setScreen('SEASON_SELECT');
@@ -122,7 +124,7 @@ export const MissionReport: React.FC = () => {
               <span>Crew Safety</span>
             </div>
             <div className="text-xl font-bold text-emerald-400 mt-1">
-              +{missionReport?.crewSafetyScore || 480}
+              +{crewSafetyScore}
             </div>
             <span className="text-[10px] text-gray-400">HIDH Compliant</span>
           </div>
@@ -133,7 +135,7 @@ export const MissionReport: React.FC = () => {
               <span>Efficiency</span>
             </div>
             <div className="text-xl font-bold text-amber-400 mt-1">
-              +{missionReport?.efficiencyScore || 420}
+              +{efficiencyScore}
             </div>
             <span className="text-[10px] text-gray-400">Power & Budget</span>
           </div>
@@ -147,6 +149,31 @@ export const MissionReport: React.FC = () => {
               +{scienceEarned} SP
             </div>
             <span className="text-[10px] text-purple-400">Tech Unlocks</span>
+          </div>
+        </div>
+
+        {/* Space Weather & Hazard Survival Telemetry (Phase 5) */}
+        <div className="bg-space-darker p-4 rounded-xl border border-space-border grid grid-cols-3 gap-2 text-center font-mono">
+          <div className="p-2 rounded bg-space-dark border border-space-border/60">
+            <div className="text-[10px] text-gray-400 uppercase">Storms Endured</div>
+            <div className="text-base font-bold text-cyan-300 mt-0.5">
+              {missionReport?.hazardsSurvivedCount ?? 0}
+            </div>
+            <div className="text-[9px] text-gray-500">DONKI SPE / MM</div>
+          </div>
+          <div className="p-2 rounded bg-space-dark border border-space-border/60">
+            <div className="text-[10px] text-gray-400 uppercase">Total Rad Dose</div>
+            <div className="text-base font-bold text-emerald-400 mt-0.5">
+              {(missionReport?.cumulativeDoseMSv ?? 0).toFixed(1)} <span className="text-[10px]">mSv</span>
+            </div>
+            <div className="text-[9px] text-gray-500">&lt;600 mSv Career Limit</div>
+          </div>
+          <div className="p-2 rounded bg-space-dark border border-space-border/60">
+            <div className="text-[10px] text-gray-400 uppercase">Base Repairs</div>
+            <div className="text-base font-bold text-amber-300 mt-0.5">
+              {missionReport?.repairsPerformedCount ?? 0}
+            </div>
+            <div className="text-[9px] text-gray-500">Integrity Restored</div>
           </div>
         </div>
 
@@ -194,7 +221,7 @@ export const MissionReport: React.FC = () => {
               <span>Retry Mission</span>
             </button>
 
-            {isVictory && selectedLevelNumber < 3 && (
+            {isVictory && selectedLevelNumber < 5 && (
               <button
                 onClick={handleNextLevel}
                 className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-space-darkest font-bold uppercase shadow-lg shadow-emerald-950/60 transition"

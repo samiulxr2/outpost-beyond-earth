@@ -15,7 +15,7 @@ export const SeasonSelect: React.FC<SeasonSelectProps> = ({ onSelectLevelBriefin
   const [activeTabSeasonId, setActiveTabSeasonId] = useState<number>(selectedSeasonId || 1);
 
   const seasonsList = [
-    { id: 1, name: "Season 1: Artemis Outpost", target: "The Moon", status: "ACTIVE (Levels 1-3 Playable)", color: "from-blue-500/20 to-cyan-500/20", borderColor: "border-cyan-500/50" },
+    { id: 1, name: "Season 1: Artemis Outpost", target: "The Moon", status: "ACTIVE (Levels 1-5 Playable)", color: "from-blue-500/20 to-cyan-500/20", borderColor: "border-cyan-500/50" },
     { id: 2, name: "Season 2: The Red Frontier", target: "Mars", status: "PLAYABLE PREVIEW", color: "from-red-500/20 to-amber-500/20", borderColor: "border-red-500/30" },
     { id: 3, name: "Season 3: Asteroid Belt", target: "Ceres & Psyche", status: "SCAFFOLDED (Data Cached)", color: "from-purple-500/20 to-pink-500/20", borderColor: "border-purple-500/30" },
     { id: 4, name: "Season 4: Thermal Extremes", target: "Venus & Mercury", status: "SCAFFOLDED (Data Cached)", color: "from-amber-500/20 to-yellow-500/20", borderColor: "border-amber-500/30" },

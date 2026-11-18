@@ -133,6 +133,58 @@ export const EngineersPanel: React.FC = () => {
               <div className="text-gray-400 text-[11px]">Artemis Base Camp Surface Power Technologies</div>
             </div>
           </div>
+        ) : engineerPanelModuleId === 'radiation_protection' ? (
+          /* Resource: Space Radiation, Dosimetry & Berm Shielding */
+          <div className="space-y-4">
+            <div>
+              <span className="text-[10px] uppercase font-mono tracking-wider px-2 py-0.5 rounded bg-purple-950/60 border border-purple-500/30 text-purple-300">
+                Space Radiopathology & Shielding
+              </span>
+              <h3 className="text-base font-bold text-white mt-1.5">Astronaut Radiation Dosimetry & Regolith HVL</h3>
+            </div>
+
+            <div className="bg-space-dark/90 p-3 rounded-lg border border-space-border space-y-2">
+              <div className="flex items-center space-x-1.5 text-telemetry-emerald text-xs font-semibold">
+                <Info className="w-3.5 h-3.5" />
+                <span>Why This Is Real</span>
+              </div>
+              <p className="text-xs text-gray-300 leading-relaxed">
+                The airless Moon receives ~1.40 mSv/day (~60 &mu;Sv/hr) of unshielded Galactic Cosmic Radiation (GCR), confirmed by China's Chang'e 4 lunar lander. During episodic Solar Particle Events (SPEs), coronal mass ejection shock waves blast relativistic protons that can deliver lethal doses (&gt;1000 mSv) in days without shielding.
+              </p>
+            </div>
+
+            <div className="bg-space-darkest p-3 rounded-lg border border-space-border/80 font-mono space-y-1.5">
+              <div className="text-[11px] text-gray-400 uppercase tracking-wider">Exponential Attenuation Formula</div>
+              <div className="text-xs text-cyan-300 p-2 bg-space-dark rounded border border-cyan-500/20 break-words space-y-1">
+                <div>I = I_0 &times; 2^(-thickness / HVL)</div>
+                <div>Lunar Regolith HVL: 18.0 cm (Density ~1.6 g/cm&sup3;)</div>
+                <div>36 cm Berm: 75% attenuation; 54 cm Berm: 87.5% attenuation</div>
+              </div>
+            </div>
+
+            <div className="bg-space-darkest p-3 rounded-lg border border-space-border/80 font-mono space-y-1.5 text-xs text-gray-300">
+              <div className="text-[11px] text-gray-400 uppercase tracking-wider">NASA Exposure Limits (NASA-STD-3001)</div>
+              <div>&bull; Astronaut Career Dose Limit: <span className="text-cyan-400 font-bold">600 mSv</span></div>
+              <div>&bull; 30-Day Emergency Limit: <span className="text-amber-400 font-bold">250 mSv</span></div>
+              <div>&bull; Normal Artemis 30-Day Dose (Shielded): <span className="text-emerald-400 font-bold">&lt; 15 mSv</span></div>
+            </div>
+
+            <div className="bg-amber-950/30 p-3 rounded-lg border border-amber-500/30 text-amber-200/90 text-xs space-y-1">
+              <div className="flex items-center space-x-1.5 text-telemetry-amber font-semibold">
+                <AlertCircle className="w-3.5 h-3.5" />
+                <span>{t.simplifiedForGameplay}</span>
+              </div>
+              <p className="text-[11px] text-amber-300/80 leading-relaxed">
+                Uses uniform exponential half-value layer (HVL) attenuation for primary ionizing protons. Secondary spallation neutron cascades and Bremsstrahlung from heavy relativistic iron nuclei striking dense structural walls are approximated into the bulk effective half-value coefficient.
+              </p>
+            </div>
+
+            <div className="border-t border-space-border pt-3 space-y-1 text-xs">
+              <div className="text-gray-400 font-mono text-[10px] uppercase">NASA Citation</div>
+              <div className="text-gray-200 font-medium">NASA Space Radiation Analysis Group (SRAG) / LRO CRaTER & Chang'e 4 LND</div>
+              <div className="text-gray-400 text-[11px]">NASA-STD-3001 Vol 1 Crew Health and Medical Operations</div>
+            </div>
+          </div>
         ) : engineerPanelModuleId === 'resource_illumination' ? (
           /* Resource: Illumination & Day/Night Cycles */
           <div className="space-y-4">
