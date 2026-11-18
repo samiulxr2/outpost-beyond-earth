@@ -153,13 +153,48 @@ export const EngineersPanel: React.FC = () => {
               </p>
             </div>
 
+            {/* DONKI Event Statistics Cited */}
+            <div className="bg-space-darkest p-3 rounded-lg border border-space-border/80 font-mono space-y-1.5 text-xs">
+              <div className="text-[11px] text-cyan-400 font-bold uppercase tracking-wider">NASA DONKI Event Telemetry (AR3664)</div>
+              <div className="space-y-1 text-gray-300 text-[11px]">
+                <div>&bull; Event ID: <span className="text-cyan-300 font-bold">2024-05-10T12:59:00-SEP-001</span> (verified in hazards.json)</div>
+                <div>&bull; Linked CME ID: <span className="text-cyan-300 font-bold">2024-05-10T07:12:00-CME-001</span> (verified in hazards.json)</div>
+                <div>&bull; Instrument: <span className="text-cyan-300 font-bold">SOHO: COSTEP 15.8-39.8 MeV</span> (verified in hazards.json)</div>
+                <div>&bull; Model Dose Rate: <span className="text-cyan-300 font-bold">4.5 mSv/h</span> (verified in hazards.json: solar_particle_event_x_class)</div>
+                <div>&bull; Proton Flux (&gt;10 MeV): <span className="text-amber-400 font-bold">210 pfu (Illustrative NOAA SWPC report; peak dose rate ~12.5 mSv/h)</span></div>
+              </div>
+            </div>
+
+            {/* Shielding Formula */}
             <div className="bg-space-darkest p-3 rounded-lg border border-space-border/80 font-mono space-y-1.5">
               <div className="text-[11px] text-gray-400 uppercase tracking-wider">Exponential Attenuation Formula</div>
               <div className="text-xs text-cyan-300 p-2 bg-space-dark rounded border border-cyan-500/20 break-words space-y-1">
                 <div>I = I_0 &times; 2^(-thickness / HVL)</div>
-                <div>Lunar Regolith HVL: 18.0 cm (Density ~1.6 g/cm&sup3;)</div>
-                <div>36 cm Berm: 75% attenuation; 54 cm Berm: 87.5% attenuation</div>
+                <div>Lunar Regolith HVL: 18.0 cm (Bulk Density ~1.6 g/cm&sup3;)</div>
+                <div>36 cm Berm: 75% attenuation (2 HVL); 54 cm: 87.5% (3 HVL)</div>
               </div>
+            </div>
+
+            {/* HVL Simplification Note */}
+            <div className="bg-amber-950/30 p-3 rounded-lg border border-amber-500/30 text-amber-200/90 text-xs space-y-1">
+              <div className="flex items-center space-x-1.5 text-telemetry-amber font-semibold">
+                <AlertCircle className="w-3.5 h-3.5" />
+                <span>{t.simplifiedForGameplay}: HVL Shielding Model</span>
+              </div>
+              <p className="text-[11px] text-amber-300/80 leading-relaxed">
+                Uses uniform exponential half-value layer (HVL) attenuation for primary ionizing protons. Secondary spallation neutron cascades and Bremsstrahlung from heavy relativistic iron nuclei striking dense structural walls are approximated into the bulk effective half-value coefficient rather than simulating full Monte Carlo particle transport (e.g. GEANT4 / HZETRN).
+              </p>
+            </div>
+
+            {/* Warning Time Simplification Note */}
+            <div className="bg-amber-950/30 p-3 rounded-lg border border-amber-500/30 text-amber-200/90 text-xs space-y-1">
+              <div className="flex items-center space-x-1.5 text-telemetry-amber font-semibold">
+                <AlertCircle className="w-3.5 h-3.5" />
+                <span>{t.simplifiedForGameplay}: SPE Warning Time</span>
+              </div>
+              <p className="text-[11px] text-amber-300/80 leading-relaxed">
+                The game provides a fixed 12&ndash;24 hour advance warning upon coronagraph detection. In reality, prompt relativistic protons (&gt;100 MeV) traveling along Parker spiral magnetic field lines can arrive at 1 AU within 30 to 120 minutes of solar flare onset, whereas the shock-accelerated bulk particle flux and coronal plasma arrive 15 to 48 hours later.
+              </p>
             </div>
 
             <div className="bg-space-darkest p-3 rounded-lg border border-space-border/80 font-mono space-y-1.5 text-xs text-gray-300">
@@ -169,20 +204,11 @@ export const EngineersPanel: React.FC = () => {
               <div>&bull; Normal Artemis 30-Day Dose (Shielded): <span className="text-emerald-400 font-bold">&lt; 15 mSv</span></div>
             </div>
 
-            <div className="bg-amber-950/30 p-3 rounded-lg border border-amber-500/30 text-amber-200/90 text-xs space-y-1">
-              <div className="flex items-center space-x-1.5 text-telemetry-amber font-semibold">
-                <AlertCircle className="w-3.5 h-3.5" />
-                <span>{t.simplifiedForGameplay}</span>
-              </div>
-              <p className="text-[11px] text-amber-300/80 leading-relaxed">
-                Uses uniform exponential half-value layer (HVL) attenuation for primary ionizing protons. Secondary spallation neutron cascades and Bremsstrahlung from heavy relativistic iron nuclei striking dense structural walls are approximated into the bulk effective half-value coefficient.
-              </p>
-            </div>
-
             <div className="border-t border-space-border pt-3 space-y-1 text-xs">
-              <div className="text-gray-400 font-mono text-[10px] uppercase">NASA Citation</div>
-              <div className="text-gray-200 font-medium">NASA Space Radiation Analysis Group (SRAG) / LRO CRaTER & Chang'e 4 LND</div>
+              <div className="text-gray-400 font-mono text-[10px] uppercase">NASA Citation & Data Origin</div>
+              <div className="text-gray-200 font-medium">NASA Space Radiation Analysis Group (SRAG) & DONKI System</div>
               <div className="text-gray-400 text-[11px]">NASA-STD-3001 Vol 1 Crew Health and Medical Operations</div>
+              <div className="text-gray-400 text-[11px]">DONKI SEP Catalog Event: 2024-05-10T12:59:00-SEP-001 (verified in hazards.json)</div>
             </div>
           </div>
         ) : engineerPanelModuleId === 'resource_illumination' ? (

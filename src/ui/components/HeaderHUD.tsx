@@ -159,6 +159,17 @@ export const HeaderHUD: React.FC = () => {
             <FastForward className="w-3 h-3 text-telemetry-amber" />
             <span className="font-mono text-[11px]">{t.skip7Days}</span>
           </button>
+
+          <button
+            onClick={() => {
+              sound.playSuccess();
+              useGameStore.getState().startDemoMode();
+            }}
+            title="Instant 2-Minute Demo Run (?demo=true)"
+            className="flex items-center space-x-1 text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-2 py-1 rounded transition font-mono font-bold"
+          >
+            <span>⚡ Demo</span>
+          </button>
         </div>
       </div>
 

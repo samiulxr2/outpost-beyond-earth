@@ -218,4 +218,158 @@ describe('Resource Simulation & Conservation Laws', () => {
     // Hours until sunrise in dip: 120 - 115 = 5 hours
     expect(polarNight.hoursUntilNextTransition).toBe(5);
   });
+
+  it('Level 2 equatorial night simulation: 400 kWh battery fails, Kilopower survives full 354.35h night', () => {
+    // Continuous night duration at Mare Tranquillitatis: 354.35 hours
+    const nightDurationSeconds = 354.35 * 3600;
+    // Base modules: 1 Inflatable Hab (3.5 kW) + 1 ECLSS (2.2 kW) = 5.7 kW total continuous draw
+    const habModule: PlacedModule = {
+      instanceId: 'hab_1',
+      moduleId: 'inflatable_hab_alpha',
+      x: 5,
+      y: 5,
+      constructedAtMissionDay: 1,
+      durabilityPct: 100,
+      isActive: true,
+      isConstructing: false,
+      constructionProgressPct: 100,
+      constructionTimeRemainingHours: 0
+    };
+    const eclssModule: PlacedModule = {
+      instanceId: 'eclss_1',
+      moduleId: 'eclss_life_support',
+      x: 6,
+      y: 5,
+      constructedAtMissionDay: 1,
+      durabilityPct: 100,
+      isActive: true,
+      isConstructing: false,
+      constructionProgressPct: 100,
+      constructionTimeRemainingHours: 0
+    };
+
+    // CASE A: Old battery threshold (400 kWh storage, 0 nuclear)
+    // Starting at hour 355 (beginning of lunar night at Mare Tranquillitatis)
+    const batteryOnlyState: SimulationState = {
+      ...baseInitialState,
+      landingSiteId: 'mare_tranquillitatis',
+      missionElapsedSeconds: 355 * 3600,
+      powerStoredKWh: 400,
+      maxPowerStorageKWh: 400,
+    };
+
+    // Step across full 354.35h night
+    const batteryResult = stepResourceSimulation(
+      batteryOnlyState,
+      [habModule, eclssModule],
+      nightDurationSeconds
+    );
+
+    // Theoretical depletion: 400 kWh / 5.7 kW = ~70.18 hours
+    // Over 354.35h, 400 kWh battery is completely exhausted to 0 and base blackouts
+    expect(batteryResult.powerStoredKWh).toBe(0);
+    expect(batteryResult.alerts.some(a => a.includes('CRITICAL BLACKOUT'))).toBe(true);
+
+    // CASE B: Stated Solution: Kilopower KRUSTY Nuclear Fission Reactor (10 kWe)
+    const kilopowerModule: PlacedModule = {
+      instanceId: 'kilo_1',
+      moduleId: 'kilopower_nuclear_reactor',
+      x: 4,
+      y: 4,
+      constructedAtMissionDay: 1,
+      durabilityPct: 100,
+      isActive: true,
+      isConstructing: false,
+      constructionProgressPct: 100,
+      constructionTimeRemainingHours: 0
+    };
+    const batteryPackModule: PlacedModule = {
+      instanceId: 'bat_1',
+      moduleId: 'li_ion_battery_bank',
+      x: 3,
+      y: 4,
+      constructedAtMissionDay: 1,
+      durabilityPct: 100,
+      isActive: true,
+      isConstructing: false,
+      constructionProgressPct: 100,
+      constructionTimeRemainingHours: 0
+    };
+
+    const nuclearState: SimulationState = {
+      ...baseInitialState,
+      landingSiteId: 'mare_tranquillitatis',
+      missionElapsedSeconds: 355 * 3600,
+      powerStoredKWh: 100,
+      maxPowerStorageKWh: 150,
+    };
+
+    const nuclearResult = stepResourceSimulation(
+      nuclearState,
+      [habModule, eclssModule, kilopowerModule, batteryPackModule],
+      nightDurationSeconds
+    );
+
+    // Net power: 10 kW (Kilopower) - 5.7 kW (Hab + ECLSS) = +4.3 kW net positive
+    expect(nuclearResult.powerGeneratedWatts).toBe(10000);
+    expect(nuclearResult.powerConsumedWatts).toBe(5700);
+    expect(nuclearResult.netPowerWatts).toBe(4300);
+    // Stored power remains charged to max capacity (150 kWh) by the 4.3 kW continuous surplus
+    expect(nuclearResult.powerStoredKWh).toBe(150);
+    expect(nuclearResult.alerts.some(a => a.includes('CRITICAL BLACKOUT'))).toBe(false);
+  });
+
+  it('performance benchmark: 1440x time-scale simulation of 354-hour night executes in under 50ms', () => {
+    let state: SimulationState = {
+      ...baseInitialState,
+      landingSiteId: 'mare_tranquillitatis',
+      missionElapsedSeconds: 355 * 3600,
+      powerStoredKWh: 100,
+      maxPowerStorageKWh: 150,
+    };
+
+    const modules: PlacedModule[] = [
+      {
+        instanceId: 'hab_1',
+        moduleId: 'inflatable_hab_alpha',
+        x: 2,
+        y: 2,
+        constructedAtMissionDay: 1,
+        durabilityPct: 100,
+        isActive: true,
+        isConstructing: false,
+        constructionProgressPct: 100,
+        constructionTimeRemainingHours: 0
+      },
+      {
+        instanceId: 'kilo_1',
+        moduleId: 'kilopower_nuclear_reactor',
+        x: 3,
+        y: 3,
+        constructedAtMissionDay: 1,
+        durabilityPct: 100,
+        isActive: true,
+        isConstructing: false,
+        constructionProgressPct: 100,
+        constructionTimeRemainingHours: 0
+      }
+    ];
+
+    const startTime = performance.now();
+    // Simulate 1000 frames at 1440x (1s real = 1440s game time)
+    const stepGameSeconds = 1440;
+    for (let frame = 0; frame < 1000; frame++) {
+      const res = stepResourceSimulation(state, modules, stepGameSeconds);
+      state = {
+        ...state,
+        missionElapsedSeconds: state.missionElapsedSeconds + stepGameSeconds,
+        powerStoredKWh: res.powerStoredKWh,
+        oxygenKg: res.oxygenKg,
+        waterKg: res.waterKg,
+        foodDaysRemaining: res.foodDaysRemaining,
+      };
+    }
+    const elapsedMs = performance.now() - startTime;
+    expect(elapsedMs).toBeLessThan(50);
+  });
 });

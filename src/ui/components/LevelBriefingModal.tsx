@@ -1,7 +1,10 @@
 import React from 'react';
 import { sound } from '../../audio/soundSynth';
+import { useGameStore } from '../../store/useGameStore';
+import { translations } from '../i18n';
 import { X, Rocket, Target, CheckCircle2, BookOpen, Sparkles } from 'lucide-react';
 import season1Data from '../../data/seasons/season1_moon.json';
+import season2Data from '../../data/seasons/season2_mars.json';
 
 interface LevelBriefingModalProps {
   levelNumber: number;
@@ -14,7 +17,10 @@ export const LevelBriefingModal: React.FC<LevelBriefingModalProps> = ({
   onClose,
   onProceedToPlanner,
 }) => {
-  const level = season1Data.levels.find(l => l.levelNumber === levelNumber) || season1Data.levels[0];
+  const { selectedSeasonId, locale } = useGameStore();
+  const t = translations[locale];
+  const seasonData = selectedSeasonId === 2 ? season2Data : season1Data;
+  const level = seasonData.levels.find(l => l.levelNumber === levelNumber) || seasonData.levels[0];
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
@@ -74,7 +80,7 @@ export const LevelBriefingModal: React.FC<LevelBriefingModalProps> = ({
             <div className="bg-space-dark/80 p-3.5 rounded-lg border border-space-border space-y-1.5">
               <div className="flex items-center space-x-1.5 text-telemetry-cyan font-semibold text-[11px]">
                 <BookOpen className="w-3.5 h-3.5" />
-                <span>Why This Is Real: {level.realDataReference.title}</span>
+                <span>{t.whyThisIsReal}: {level.realDataReference.title}</span>
               </div>
               <p className="text-[11px] text-gray-400 leading-relaxed">
                 {level.realDataReference.explanation}
@@ -106,7 +112,7 @@ export const LevelBriefingModal: React.FC<LevelBriefingModalProps> = ({
             }}
             className="text-xs text-gray-400 hover:text-white font-mono px-3 py-2"
           >
-            Cancel
+            {t.back}
           </button>
 
           <button
@@ -117,7 +123,7 @@ export const LevelBriefingModal: React.FC<LevelBriefingModalProps> = ({
             className="py-2.5 px-5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-space-darkest font-extrabold text-xs uppercase tracking-wider flex items-center space-x-1.5 shadow-lg shadow-cyan-500/20 transition"
           >
             <Rocket className="w-4 h-4" />
-            <span>Proceed to Mission Planner</span>
+            <span>{t.missionPlanner}</span>
           </button>
         </div>
       </div>

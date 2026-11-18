@@ -4,6 +4,7 @@ import { translations } from '../i18n';
 import { sound } from '../../audio/soundSynth';
 import { ArrowLeft, Lock, ChevronRight, Globe, Star } from 'lucide-react';
 import season1Data from '../../data/seasons/season1_moon.json';
+import season2Data from '../../data/seasons/season2_mars.json';
 
 interface SeasonSelectProps {
   onSelectLevelBriefing: (levelNumber: number) => void;
@@ -170,15 +171,100 @@ export const SeasonSelect: React.FC<SeasonSelectProps> = ({ onSelectLevelBriefin
               })}
             </div>
           </div>
+        ) : activeTabSeasonId === 2 ? (
+          /* Season 2: Mars (Playable Level 1 + Scaffolded Levels 2-10) */
+          <div className="bg-space-darker p-5 rounded-xl border border-red-500/40 space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-space-border/80 pb-3">
+              <div>
+                <span className="text-xs font-mono uppercase text-red-400 tracking-wider font-semibold">
+                  Mars Exploration Campaign • Level 1 Playable (Levels 2-10 Scaffolded)
+                </span>
+                <h2 className="text-xl font-bold text-white mt-0.5">{season2Data.seasonName}</h2>
+                <p className="text-xs text-gray-400 mt-1 max-w-2xl leading-relaxed">
+                  {season2Data.description}
+                </p>
+              </div>
+              <div className="text-right">
+                <span className="text-[11px] font-mono text-cyan-300 bg-cyan-950/60 px-2 py-1 rounded border border-cyan-500/30">
+                  Light-Lag: 3.0 to 22.3 min
+                </span>
+              </div>
+            </div>
+
+            {/* Level Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {season2Data.levels.map((lvl) => {
+                const isPlayable = lvl.levelNumber === 1;
+
+                return (
+                  <div
+                    key={lvl.levelNumber}
+                    onClick={() => {
+                      if (isPlayable) {
+                        sound.playClick();
+                        useGameStore.setState({ selectedSeasonId: 2 });
+                        onSelectLevelBriefing(lvl.levelNumber);
+                      } else {
+                        sound.playWarning();
+                      }
+                    }}
+                    className={`p-4 rounded-lg border text-left transition relative flex flex-col justify-between ${
+                      isPlayable
+                        ? 'bg-space-card hover:bg-space-muted border-red-500/50 cursor-pointer hover:border-red-400 shadow-sm'
+                        : 'bg-space-dark/40 border-space-border/60 opacity-60 cursor-not-allowed'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-space-darkest text-red-300 border border-red-500/20">
+                          SOL {lvl.missionDurationDays} EXPEDITION
+                        </span>
+                        {isPlayable ? (
+                          <span className="text-[10px] font-mono text-emerald-400 flex items-center space-x-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                            <span>PLAYABLE</span>
+                          </span>
+                        ) : (
+                          <span className="flex items-center space-x-1 text-gray-500 text-[10px] font-mono">
+                            <Lock className="w-3 h-3" />
+                            <span>SCAFFOLD</span>
+                          </span>
+                        )}
+                      </div>
+
+                      <h3 className="text-sm font-bold text-white mt-2 font-sans">
+                        {lvl.title}
+                      </h3>
+                      <p className="text-[11px] text-gray-400 mt-1 line-clamp-2">
+                        {lvl.objectives[0]?.description}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-space-border/60 mt-3 flex items-center justify-between text-[11px] font-mono">
+                      <span className="text-gray-400">${(lvl.startingBudgetCredits / 1000).toFixed(0)}k Budget</span>
+                      {isPlayable ? (
+                        <span className="text-red-400 flex items-center space-x-1 font-semibold">
+                          <span>Briefing</span>
+                          <ChevronRight className="w-3 h-3" />
+                        </span>
+                      ) : (
+                        <span className="text-gray-500 text-[10px]">Scaffolded JSON</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         ) : (
-          /* Season 2-6 Preview Card */
+          /* Season 3-6 Preview Card */
           <div className="bg-space-darker p-8 rounded-xl border border-space-border text-center space-y-4 max-w-xl mx-auto my-6">
             <Globe className="w-12 h-12 text-telemetry-purple mx-auto animate-pulse" />
             <h2 className="text-xl font-bold text-white">
               {seasonsList.find(s => s.id === activeTabSeasonId)?.name}
             </h2>
             <p className="text-xs text-gray-400 leading-relaxed">
-              Full data-driven configuration cached in <code className="text-cyan-300">/src/data/seasons</code>. Levels 1-3 of Season 1 (Moon) must be completed before expanding forward.
+              Full data-driven configuration cached in <code className="text-cyan-300">/src/data/seasons</code>. Season 1 (Moon) and Season 2 (Mars) are playable destinations.
             </p>
             <button
               onClick={() => {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGameStore } from '../../store/useGameStore';
 import { sound } from '../../audio/soundSynth';
+import { translations } from '../i18n';
 import { 
   Trophy, 
   AlertOctagon, 
@@ -15,16 +16,21 @@ import {
   ExternalLink 
 } from 'lucide-react';
 import season1Data from '../../data/seasons/season1_moon.json';
+import season2Data from '../../data/seasons/season2_mars.json';
 
 export const MissionReport: React.FC = () => {
   const { 
     setScreen, 
+    selectedSeasonId,
     selectedLevelNumber, 
     loadLevel, 
     missionReport, 
+    locale,
   } = useGameStore();
 
-  const levelData = season1Data.levels.find(l => l.levelNumber === selectedLevelNumber) || season1Data.levels[0];
+  const t = translations[locale];
+  const seasonData = selectedSeasonId === 2 ? season2Data : season1Data;
+  const levelData = seasonData.levels.find(l => l.levelNumber === selectedLevelNumber) || seasonData.levels[0];
 
   const isVictory = missionReport?.status === 'VICTORY';
   const stars = missionReport?.stars ?? (isVictory ? 3 : 0);
@@ -33,11 +39,20 @@ export const MissionReport: React.FC = () => {
   const crewSafetyScore = missionReport?.crewSafetyScore ?? (isVictory ? 480 : 100);
   const efficiencyScore = missionReport?.efficiencyScore ?? (isVictory ? 420 : 150);
 
+  React.useEffect(() => {
+    if (isVictory) {
+      sound.playSuccess();
+    } else {
+      sound.playError();
+    }
+  }, [isVictory]);
+
   const handleNextLevel = () => {
     sound.playClick();
     const nextLvl = selectedLevelNumber + 1;
-    if (nextLvl <= 5) {
-      loadLevel(1, nextLvl);
+    const maxLvl = selectedSeasonId === 2 ? 1 : 10;
+    if (nextLvl <= maxLvl) {
+      loadLevel(selectedSeasonId, nextLvl);
     } else {
       setScreen('SEASON_SELECT');
     }
@@ -78,10 +93,10 @@ export const MissionReport: React.FC = () => {
             <span className={`text-xs font-mono uppercase tracking-widest px-3 py-1 rounded-full border ${
               isVictory ? 'bg-emerald-900/60 text-emerald-300 border-emerald-500/40' : 'bg-rose-900/60 text-rose-300 border-rose-500/40'
             }`}>
-              {isVictory ? 'Mission Objectives Completed' : 'Mission Critical Failure'}
+              {isVictory ? t.statusNominal : t.statusWarning}
             </span>
             <h1 className="text-2xl md:text-3xl font-extrabold text-white mt-2 font-sans tracking-tight">
-              {isVictory ? 'MISSION ACCOMPLISHED' : 'MISSION ABORTED'}
+              {isVictory ? t.missionVictory : t.missionDefeat}
             </h1>
             <p className="text-sm text-gray-300 mt-1 font-mono">
               {levelData.title} • {levelData.landingSiteId.replace('_', ' ').toUpperCase()}
@@ -209,7 +224,7 @@ export const MissionReport: React.FC = () => {
             className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-space-dark hover:bg-space-card border border-space-border text-gray-300 hover:text-white transition"
           >
             <Compass className="w-4 h-4 text-cyan-400" />
-            <span>Expedition Registry</span>
+            <span>{t.seasonSelect}</span>
           </button>
 
           <div className="flex items-center space-x-3">
@@ -218,15 +233,15 @@ export const MissionReport: React.FC = () => {
               className="flex items-center space-x-1.5 px-4 py-2.5 rounded-xl bg-space-dark hover:bg-space-card border border-space-border text-gray-300 hover:text-white transition"
             >
               <RotateCcw className="w-4 h-4 text-amber-400" />
-              <span>Retry Mission</span>
+              <span>{t.retryMission}</span>
             </button>
 
-            {isVictory && selectedLevelNumber < 5 && (
+            {isVictory && selectedLevelNumber < (selectedSeasonId === 2 ? 1 : 10) && (
               <button
                 onClick={handleNextLevel}
                 className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-space-darkest font-bold uppercase shadow-lg shadow-emerald-950/60 transition"
               >
-                <span>Proceed to Level {selectedLevelNumber + 1}</span>
+                <span>{t.nextMission} (L{selectedLevelNumber + 1})</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             )}

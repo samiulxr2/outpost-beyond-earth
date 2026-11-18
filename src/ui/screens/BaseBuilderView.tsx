@@ -5,6 +5,7 @@ import { ResourceBarHUD } from '../components/ResourceBarHUD';
 import { IsometricBaseCanvas } from '../../scenes/canvas/IsometricBaseCanvas';
 import { ModuleBuildMenu } from '../components/ModuleBuildMenu';
 import { ModuleInspectorModal } from '../components/ModuleInspectorModal';
+import { MarsCommsQueueHUD } from '../components/MarsCommsQueueHUD';
 import type { PlacedModule } from '../../types/game';
 import { 
   Save, 
@@ -206,6 +207,9 @@ export const BaseBuilderView: React.FC = () => {
           module={selectedModule}
           onClose={() => setSelectedModule(null)}
         />
+
+        {/* Mars Relativistic Light-Time Command Queue HUD */}
+        <MarsCommsQueueHUD />
 
         {/* Bottom Build Catalog Floating Trigger & Catalog Drawer */}
         <ModuleBuildMenu />

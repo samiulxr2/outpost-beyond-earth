@@ -7,13 +7,16 @@ import type {
   MissionObjective, 
   ActiveHazard, 
   MissionReportData, 
-  CampaignProgress 
+  CampaignProgress,
+  PendingCommand 
 } from '../types/game';
 import season1Data from '../data/seasons/season1_moon.json';
+import season2Data from '../data/seasons/season2_mars.json';
 import modulesData from '../data/modules.json';
 import { stepResourceSimulation, calculateSiteIllumination } from '../core/economy/resourceSimulation';
 import { calculateMissionScore } from '../core/economy/scoring';
 import { stepHazardSimulation, sampleSolarParticleEvent, sampleMicrometeoriteImpact, calculateRepairCost } from '../core/economy/hazardEngine';
+import { calculateEarthMarsDistanceAndDelay } from '../core/physics/comms';
 import technologiesData from '../data/technologies.json';
 
 function loadCampaignProgress(): CampaignProgress {
@@ -83,6 +86,7 @@ export interface GameStoreState {
   unlockedTechnologies: string[];
 
   // Campaign Progression & Persistence
+  pendingCommands: PendingCommand[];
   unlockedLevels: number[];
   levelHighScores: Record<number, { score: number; stars: number; scienceEarned: number }>;
   missionReport: MissionReportData | null;
@@ -117,6 +121,7 @@ export interface GameStoreState {
   unlockTechnology: (techId: string) => boolean;
   triggerSolarParticleEvent: () => void;
   triggerMicrometeoriteImpact: () => void;
+  startDemoMode: () => void;
 }
 
 // Generate base terrain for Shackleton Rim (elevated rim with craters & ice deposits)
@@ -194,6 +199,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   gridSize: 16,
   gridTiles: generateInitialGrid(16),
   placedModules: [],
+  pendingCommands: [],
   selectedModuleIdForBuild: null,
 
   activeHazards: [],
@@ -249,6 +255,45 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     const newDays = Math.floor(newSeconds / 86400);
 
     if (currentScreen === 'BASE_BUILDER') {
+      // 1. Process pending comms commands (e.g. Earth-Mars 3-22 min light-time delay)
+      let currentPlaced = [...placedModules];
+      let currentTiles = [...get().gridTiles];
+      let currentRoverDist = get().roverDistanceTraversedMeters;
+      let currentIce = get().iceProspectingDetectedPct;
+      const remainingPending: PendingCommand[] = [];
+
+      for (const cmd of get().pendingCommands) {
+        if (newSeconds >= cmd.executeAtMissionSeconds) {
+          if (cmd.type === 'PLACE_MODULE' && cmd.moduleId && cmd.x !== undefined && cmd.y !== undefined) {
+            const instanceId = `${cmd.moduleId}_${Date.now()}`;
+            currentPlaced.push({
+              instanceId,
+              moduleId: cmd.moduleId,
+              x: cmd.x,
+              y: cmd.y,
+              constructedAtMissionDay: newDays,
+              durabilityPct: 100,
+              isActive: true,
+              isConstructing: false,
+              constructionProgressPct: 100,
+              constructionTimeRemainingHours: 0,
+            });
+            currentTiles = currentTiles.map(t =>
+              t.x === cmd.x && t.y === cmd.y ? { ...t, occupiedByInstanceId: instanceId } : t
+            );
+          } else if (cmd.type === 'DRIVE_ROVER' && cmd.distanceMeters) {
+            currentRoverDist += cmd.distanceMeters;
+            if (cmd.icePct) currentIce = Math.max(currentIce, cmd.icePct);
+          } else if (cmd.type === 'REPAIR_MODULE' && cmd.targetInstanceId) {
+            currentPlaced = currentPlaced.map(m =>
+              m.instanceId === cmd.targetInstanceId ? { ...m, durabilityPct: 100 } : m
+            );
+          }
+        } else {
+          remainingPending.push(cmd);
+        }
+      }
+
       const sim = stepResourceSimulation(
         {
           missionElapsedSeconds: newSeconds,
@@ -264,7 +309,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
           landingSiteId,
           crewCount: 4,
         },
-        placedModules,
+        currentPlaced,
         secondsToAdd
       );
 
@@ -280,6 +325,23 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       const resolvedCount = get().activeHazards.length - hazardStep.updatedHazards.length;
       const newSurvivedCount = get().hazardsSurvivedCount + (resolvedCount > 0 ? resolvedCount : 0);
 
+      // Level 10 Dynamic Hazard Timeline (Day 30 MM, Day 70 Extreme SPE, Day 120 MM)
+      let activeHazardsList = hazardStep.updatedHazards;
+      if (get().selectedLevelNumber === 10) {
+        const hasSPE = activeHazardsList.some(h => h.category === 'Radiation');
+        const hasMM = activeHazardsList.some(h => h.category === 'Impact');
+        if (newDays >= 70 && newDays < 75 && !hasSPE) {
+          const spe = sampleSolarParticleEvent(newDays);
+          activeHazardsList = [...activeHazardsList, spe];
+        } else if (((newDays >= 30 && newDays < 33) || (newDays >= 120 && newDays < 123)) && !hasMM) {
+          const mm = sampleMicrometeoriteImpact(hazardStep.updatedModules);
+          if (mm) activeHazardsList = [...activeHazardsList, mm];
+        }
+      }
+
+      const siteIllum = calculateSiteIllumination(landingSiteId, newSeconds);
+      const newHasExperiencedNight = get().hasExperiencedNight || !siteIllum.isDaylight;
+
       set({
         missionElapsedSeconds: newSeconds,
         missionElapsedDays: newDays,
@@ -291,11 +353,18 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         oxygenKg: sim.oxygenKg,
         waterKg: sim.waterKg,
         foodDaysRemaining: sim.foodDaysRemaining,
+        regolithOreKg: sim.regolithOreKg,
+        propellantKg: sim.propellantKg,
         placedModules: hazardStep.updatedModules,
-        activeHazards: hazardStep.updatedHazards,
+        gridTiles: currentTiles,
+        roverDistanceTraversedMeters: currentRoverDist,
+        iceProspectingDetectedPct: currentIce,
+        pendingCommands: remainingPending,
+        activeHazards: activeHazardsList,
         cumulativeRadiationDoseMSv: newCumulativeDose,
         hourlyDoseRateMSv: hazardStep.hourlyDoseRateMSv,
         hazardsSurvivedCount: newSurvivedCount,
+        hasExperiencedNight: newHasExperiencedNight,
       });
 
       // Acute radiation sickness defeat check (250 mSv 30-day limit)
@@ -317,6 +386,10 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         get().triggerDefeat("Starvation: Crew food rations exhausted.");
         return;
       }
+      // Evaluate objectives upon current state advancement
+      get().checkObjectives();
+      if (get().currentScreen === 'MISSION_REPORT') return;
+
       if (newDays >= get().missionDurationDays && !get().objectives.every(o => o.completed)) {
         get().triggerDefeat("Mission expired: Scheduled operational duration ended before completing objectives.");
         return;
@@ -327,8 +400,6 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         missionElapsedDays: newDays,
       });
     }
-
-    get().checkObjectives();
   },
 
   tickMissionTime: (deltaRealSeconds: number) => {
@@ -357,6 +428,45 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     const newDays = Math.floor(newSeconds / 86400);
 
     if (currentScreen === 'BASE_BUILDER') {
+      // 1. Process pending comms commands (e.g. Earth-Mars 3-22 min light-time delay)
+      let currentPlaced = [...placedModules];
+      let currentTiles = [...get().gridTiles];
+      let currentRoverDist = get().roverDistanceTraversedMeters;
+      let currentIce = get().iceProspectingDetectedPct;
+      const remainingPending: PendingCommand[] = [];
+
+      for (const cmd of get().pendingCommands) {
+        if (newSeconds >= cmd.executeAtMissionSeconds) {
+          if (cmd.type === 'PLACE_MODULE' && cmd.moduleId && cmd.x !== undefined && cmd.y !== undefined) {
+            const instanceId = `${cmd.moduleId}_${Date.now()}`;
+            currentPlaced.push({
+              instanceId,
+              moduleId: cmd.moduleId,
+              x: cmd.x,
+              y: cmd.y,
+              constructedAtMissionDay: newDays,
+              durabilityPct: 100,
+              isActive: true,
+              isConstructing: false,
+              constructionProgressPct: 100,
+              constructionTimeRemainingHours: 0,
+            });
+            currentTiles = currentTiles.map(t =>
+              t.x === cmd.x && t.y === cmd.y ? { ...t, occupiedByInstanceId: instanceId } : t
+            );
+          } else if (cmd.type === 'DRIVE_ROVER' && cmd.distanceMeters) {
+            currentRoverDist += cmd.distanceMeters;
+            if (cmd.icePct) currentIce = Math.max(currentIce, cmd.icePct);
+          } else if (cmd.type === 'REPAIR_MODULE' && cmd.targetInstanceId) {
+            currentPlaced = currentPlaced.map(m =>
+              m.instanceId === cmd.targetInstanceId ? { ...m, durabilityPct: 100 } : m
+            );
+          }
+        } else {
+          remainingPending.push(cmd);
+        }
+      }
+
       const sim = stepResourceSimulation(
         {
           missionElapsedSeconds: newSeconds,
@@ -372,7 +482,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
           landingSiteId,
           crewCount: 4,
         },
-        placedModules,
+        currentPlaced,
         elapsedGameSeconds
       );
 
@@ -388,6 +498,23 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       const resolvedCount = get().activeHazards.length - hazardStep.updatedHazards.length;
       const newSurvivedCount = get().hazardsSurvivedCount + (resolvedCount > 0 ? resolvedCount : 0);
 
+      // Level 10 Dynamic Hazard Timeline (Day 30 MM, Day 70 Extreme SPE, Day 120 MM)
+      let activeHazardsList = hazardStep.updatedHazards;
+      if (get().selectedLevelNumber === 10) {
+        const hasSPE = activeHazardsList.some(h => h.category === 'Radiation');
+        const hasMM = activeHazardsList.some(h => h.category === 'Impact');
+        if (newDays >= 70 && newDays < 75 && !hasSPE) {
+          const spe = sampleSolarParticleEvent(newDays);
+          activeHazardsList = [...activeHazardsList, spe];
+        } else if (((newDays >= 30 && newDays < 33) || (newDays >= 120 && newDays < 123)) && !hasMM) {
+          const mm = sampleMicrometeoriteImpact(hazardStep.updatedModules);
+          if (mm) activeHazardsList = [...activeHazardsList, mm];
+        }
+      }
+
+      const siteIllum = calculateSiteIllumination(landingSiteId, newSeconds);
+      const newHasExperiencedNight = get().hasExperiencedNight || !siteIllum.isDaylight;
+
       set({
         missionElapsedSeconds: newSeconds,
         missionElapsedDays: newDays,
@@ -399,11 +526,18 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         oxygenKg: sim.oxygenKg,
         waterKg: sim.waterKg,
         foodDaysRemaining: sim.foodDaysRemaining,
+        regolithOreKg: sim.regolithOreKg,
+        propellantKg: sim.propellantKg,
         placedModules: hazardStep.updatedModules,
-        activeHazards: hazardStep.updatedHazards,
+        gridTiles: currentTiles,
+        roverDistanceTraversedMeters: currentRoverDist,
+        iceProspectingDetectedPct: currentIce,
+        pendingCommands: remainingPending,
+        activeHazards: activeHazardsList,
         cumulativeRadiationDoseMSv: newCumulativeDose,
         hourlyDoseRateMSv: hazardStep.hourlyDoseRateMSv,
         hazardsSurvivedCount: newSurvivedCount,
+        hasExperiencedNight: newHasExperiencedNight,
       });
 
       // Acute radiation sickness defeat check (250 mSv 30-day limit)
@@ -425,6 +559,10 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         get().triggerDefeat("Starvation: Crew food rations exhausted.");
         return;
       }
+      // Evaluate objectives upon current state advancement
+      get().checkObjectives();
+      if (get().currentScreen === 'MISSION_REPORT') return;
+
       if (newDays >= get().missionDurationDays && !get().objectives.every(o => o.completed)) {
         get().triggerDefeat("Mission expired: Scheduled operational duration ended before completing objectives.");
         return;
@@ -435,12 +573,10 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         missionElapsedDays: newDays,
       });
     }
-
-    get().checkObjectives();
   },
 
   loadLevel: (seasonId: number, levelNumber: number) => {
-    const season = seasonId === 1 ? season1Data : null;
+    const season = seasonId === 1 ? season1Data : (seasonId === 2 ? season2Data : null);
     if (!season) return;
 
     const level = season.levels.find(l => l.levelNumber === levelNumber) || season.levels[0];
@@ -462,8 +598,9 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       missionElapsedDays: 0,
       placedModules: [],
       gridTiles: initialTiles,
+      pendingCommands: [],
       selectedModuleIdForBuild: null,
-      activeHazards: levelNumber === 5 ? [sampleSolarParticleEvent(0)] : [],
+      activeHazards: (levelNumber === 5 || levelNumber === 8) ? [sampleSolarParticleEvent(0)] : [],
       crewSheltered: false,
       regolithBermThicknessCm: 0,
       cumulativeRadiationDoseMSv: 0,
@@ -491,7 +628,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   },
 
   placeModuleOnGrid: (moduleId: string, x: number, y: number) => {
-    const { gridTiles, placedModules, budgetCredits } = get();
+    const { gridTiles, placedModules, budgetCredits, landingSiteId, selectedSeasonId } = get();
     const tile = gridTiles.find(t => t.x === x && t.y === y);
     if (!tile || tile.isObstacle || tile.occupiedByInstanceId) {
       return false;
@@ -502,6 +639,35 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
 
     if (budgetCredits < modDef.costCredits) {
       return false; // Insufficient budget
+    }
+
+    const isMars = selectedSeasonId === 2 || landingSiteId.includes('jezero');
+    if (isMars) {
+      const { oneWayLightTimeSeconds } = calculateEarthMarsDistanceAndDelay(get().missionElapsedDays);
+      const cmdId = `cmd_place_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      const pendingCmd: PendingCommand = {
+        id: cmdId,
+        type: 'PLACE_MODULE',
+        description: `Deploy ${modDef.name} at (${x}, ${y})`,
+        moduleId,
+        x,
+        y,
+        queuedAtMissionSeconds: get().missionElapsedSeconds,
+        executeAtMissionSeconds: get().missionElapsedSeconds + oneWayLightTimeSeconds,
+        delaySeconds: oneWayLightTimeSeconds,
+      };
+
+      const updatedTiles = gridTiles.map(t =>
+        t.x === x && t.y === y ? { ...t, occupiedByInstanceId: `reserved_${cmdId}` } : t
+      );
+
+      set({
+        pendingCommands: [...get().pendingCommands, pendingCmd],
+        gridTiles: updatedTiles,
+        budgetCredits: budgetCredits - modDef.costCredits,
+        selectedModuleIdForBuild: null,
+      });
+      return true;
     }
 
     const instanceId = `${moduleId}_${Date.now()}`;
@@ -534,6 +700,25 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   },
 
   driveRover: (distanceMeters: number, icePct: number) => {
+    const isMars = get().selectedSeasonId === 2 || get().landingSiteId.includes('jezero');
+    if (isMars) {
+      const { oneWayLightTimeSeconds } = calculateEarthMarsDistanceAndDelay(get().missionElapsedDays);
+      const pendingCmd: PendingCommand = {
+        id: `cmd_rover_${Date.now()}`,
+        type: 'DRIVE_ROVER',
+        description: `Rover Sortie: Traverse +${distanceMeters}m`,
+        distanceMeters,
+        icePct,
+        queuedAtMissionSeconds: get().missionElapsedSeconds,
+        executeAtMissionSeconds: get().missionElapsedSeconds + oneWayLightTimeSeconds,
+        delaySeconds: oneWayLightTimeSeconds,
+      };
+      set({
+        pendingCommands: [...get().pendingCommands, pendingCmd],
+      });
+      return;
+    }
+
     const newDist = get().roverDistanceTraversedMeters + distanceMeters;
     const maxIce = Math.max(get().iceProspectingDetectedPct, icePct);
     set({
@@ -648,7 +833,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         }
       } else if (obj.type === 'POWER_SURVIVAL_PREP') {
         const hasNuclear = placedModules.some(m => m.moduleId === 'kilopower_nuclear_reactor');
-        const hasBatteryCapacity = get().maxPowerStorageKWh >= (obj.targetValue || 400);
+        const hasBatteryCapacity = get().maxPowerStorageKWh >= (obj.targetValue || 2000);
         if (hasNuclear || hasBatteryCapacity) {
           isDone = true;
         }
@@ -659,12 +844,17 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       } else if (obj.type === 'RESOURCE_ACCUMULATION') {
         if (obj.resource === 'waterKg' && waterKg >= (obj.targetValue || 250)) isDone = true;
         if (obj.resource === 'oxygenKg' && oxygenKg >= (obj.targetValue || 500)) isDone = true;
+        if (obj.resource === 'propellantKg' && get().propellantKg >= (obj.targetValue || 5000)) isDone = true;
       } else if (obj.type === 'GRID_POWER_KW') {
         if (netPowerWatts >= (obj.targetValue || 4.5) * 1000) isDone = true;
       } else if (obj.type === 'REGOLITH_BERM_THICKNESS') {
         if (get().regolithBermThicknessCm >= (obj.targetValue || 36)) isDone = true;
-      } else if (obj.type === 'RADIATION_SAFETY_MAX_MSV') {
-        if (get().cumulativeRadiationDoseMSv <= (obj.targetValue || 25) && (get().hazardsSurvivedCount >= 1 || get().missionElapsedDays >= 20)) {
+      } else if (obj.type === 'RADIATION_SAFETY_MAX_MSV' || obj.type === 'MAX_RADIATION_DOSE') {
+        if (get().cumulativeRadiationDoseMSv <= (obj.targetValue || 25) && (get().hazardsSurvivedCount >= 1 || get().missionElapsedDays >= 4)) {
+          isDone = true;
+        }
+      } else if (obj.type === 'FULL_EXPEDITION_SUCCESS') {
+        if (get().missionElapsedDays >= (obj.targetValue || 180) && get().powerStoredKWh > 0 && get().oxygenKg > 0) {
           isDone = true;
         }
       }
@@ -861,6 +1051,162 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         activeHazards: [...state.activeHazards, mm]
       }));
     }
+  },
+
+  startDemoMode: () => {
+    const l10 = season1Data.levels.find(l => l.levelNumber === 10) || season1Data.levels[season1Data.levels.length - 1];
+    const initialTiles = generateInitialGrid(16);
+
+    const demoPlacedModules: PlacedModule[] = [
+      {
+        instanceId: 'kilopower_nuclear_reactor_demo_1',
+        moduleId: 'kilopower_nuclear_reactor',
+        x: 7,
+        y: 7,
+        constructedAtMissionDay: 1,
+        durabilityPct: 98,
+        isActive: true,
+        isConstructing: false,
+        constructionProgressPct: 100,
+        constructionTimeRemainingHours: 0,
+      },
+      {
+        instanceId: 'vsat_solar_array_demo_1',
+        moduleId: 'vsat_solar_array',
+        x: 6,
+        y: 6,
+        constructedAtMissionDay: 2,
+        durabilityPct: 96,
+        isActive: true,
+        isConstructing: false,
+        constructionProgressPct: 100,
+        constructionTimeRemainingHours: 0,
+      },
+      {
+        instanceId: 'vsat_solar_array_demo_2',
+        moduleId: 'vsat_solar_array',
+        x: 6,
+        y: 7,
+        constructedAtMissionDay: 2,
+        durabilityPct: 97,
+        isActive: true,
+        isConstructing: false,
+        constructionProgressPct: 100,
+        constructionTimeRemainingHours: 0,
+      },
+      {
+        instanceId: 'inflatable_hab_alpha_demo_1',
+        moduleId: 'inflatable_hab_alpha',
+        x: 8,
+        y: 7,
+        constructedAtMissionDay: 3,
+        durabilityPct: 95,
+        isActive: true,
+        isConstructing: false,
+        constructionProgressPct: 100,
+        constructionTimeRemainingHours: 0,
+      },
+      {
+        instanceId: 'eclss_life_support_demo_1',
+        moduleId: 'eclss_life_support',
+        x: 8,
+        y: 8,
+        constructedAtMissionDay: 4,
+        durabilityPct: 96,
+        isActive: true,
+        isConstructing: false,
+        constructionProgressPct: 100,
+        constructionTimeRemainingHours: 0,
+      },
+      {
+        instanceId: 'thermal_ice_drill_plant_demo_1',
+        moduleId: 'thermal_ice_drill_plant',
+        x: 5,
+        y: 6,
+        constructedAtMissionDay: 5,
+        durabilityPct: 92,
+        isActive: true,
+        isConstructing: false,
+        constructionProgressPct: 100,
+        constructionTimeRemainingHours: 0,
+      },
+      {
+        instanceId: 'mre_oxygen_smelter_demo_1',
+        moduleId: 'mre_oxygen_smelter',
+        x: 9,
+        y: 7,
+        constructedAtMissionDay: 6,
+        durabilityPct: 94,
+        isActive: true,
+        isConstructing: false,
+        constructionProgressPct: 100,
+        constructionTimeRemainingHours: 0,
+      },
+      {
+        instanceId: 'regolith_sintering_printer_demo_1',
+        moduleId: 'regolith_sintering_printer',
+        x: 7,
+        y: 8,
+        constructedAtMissionDay: 7,
+        durabilityPct: 95,
+        isActive: true,
+        isConstructing: false,
+        constructionProgressPct: 100,
+        constructionTimeRemainingHours: 0,
+      },
+      {
+        instanceId: 'cryo_propellant_depot_demo_1',
+        moduleId: 'cryo_propellant_depot',
+        x: 9,
+        y: 8,
+        constructedAtMissionDay: 8,
+        durabilityPct: 99,
+        isActive: true,
+        isConstructing: false,
+        constructionProgressPct: 100,
+        constructionTimeRemainingHours: 0,
+      },
+    ];
+
+    const updatedTiles = initialTiles.map(tile => {
+      const mod = demoPlacedModules.find(m => m.x === tile.x && m.y === tile.y);
+      return mod ? { ...tile, occupiedByInstanceId: mod.instanceId } : tile;
+    });
+
+    const activeSPE = sampleSolarParticleEvent(30);
+
+    set({
+      currentScreen: 'BASE_BUILDER',
+      selectedSeasonId: 1,
+      selectedLevelNumber: 10,
+      levelTitle: l10.title,
+      landingSiteId: 'shackleton_rim',
+      missionDurationDays: 180,
+      missionElapsedDays: 30,
+      missionElapsedSeconds: 30 * 86400,
+      budgetCredits: 2450000,
+      sciencePoints: 1250,
+      unlockedLevels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      placedModules: demoPlacedModules,
+      gridTiles: updatedTiles,
+      regolithBermThicknessCm: 54,
+      crewSheltered: true,
+      activeHazards: [activeSPE],
+      roverDistanceTraversedMeters: 2850,
+      iceProspectingDetectedPct: 7.2,
+      netPowerWatts: 12500,
+      powerStoredKWh: 400,
+      maxPowerStorageKWh: 500,
+      oxygenKg: 850,
+      waterKg: 620,
+      foodDaysRemaining: 150,
+      propellantKg: 5400,
+      hazardsSurvivedCount: 3,
+      cumulativeRadiationDoseMSv: 14.2,
+      hourlyDoseRateMSv: 0.12,
+      tutorialCompleted: true,
+      objectives: (l10.objectives || []).map(o => ({ ...o, completed: true })),
+    });
   },
 }));
 

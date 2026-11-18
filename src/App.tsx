@@ -26,6 +26,16 @@ export function App() {
 
   const [briefingLevelNumber, setBriefingLevelNumber] = useState<number | null>(null);
 
+  // Check ?demo=true query param
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('demo') === 'true') {
+        useGameStore.getState().startDemoMode();
+      }
+    }
+  }, []);
+
   // Real-time Mission Ticker Loop
   const lastTimeRef = useRef<number>(performance.now());
   useEffect(() => {

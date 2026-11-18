@@ -115,3 +115,19 @@ export interface CampaignProgress {
   levelHighScores: Record<number, { score: number; stars: number; scienceEarned: number }>;
   totalSciencePoints: number;
 }
+
+export interface PendingCommand {
+  id: string;
+  type: 'PLACE_MODULE' | 'DRIVE_ROVER' | 'REPAIR_MODULE' | 'SINTER_BERM';
+  description: string;
+  queuedAtMissionSeconds: number;
+  executeAtMissionSeconds: number;
+  delaySeconds: number;
+  moduleId?: string;
+  x?: number;
+  y?: number;
+  distanceMeters?: number;
+  icePct?: number;
+  targetInstanceId?: string;
+  bermAdditionalCm?: number;
+}

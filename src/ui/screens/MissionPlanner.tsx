@@ -133,6 +133,7 @@ export const MissionPlanner: React.FC = () => {
       return;
     }
     sound.playSuccess();
+    sound.playLaunch();
     sound.playThrusterBurn(2.0);
     setIsLaunching(true);
 

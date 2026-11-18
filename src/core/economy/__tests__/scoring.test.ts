@@ -136,15 +136,15 @@ describe('Level 1-3 Objective Completion Logic', () => {
     });
     expect(evalNuclear.every(done => done)).toBe(true);
 
-    // Case B: Using >= 400 kWh battery storage without nuclear
+    // Case B: Using >= 2000 kWh battery storage without nuclear
     const placedBatteries = [
       { moduleId: 'inflatable_hab_alpha' }
     ];
-    const maxPowerStorageB = 450;
+    const maxPowerStorageB = 2100;
     const evalBatteries = l2.objectives.map((obj: any) => {
       if (obj.type === 'POWER_SURVIVAL_PREP') {
         const hasNuke = placedBatteries.some(m => m.moduleId === 'kilopower_nuclear_reactor');
-        return hasNuke || maxPowerStorageB >= (obj.targetValue || 400);
+        return hasNuke || maxPowerStorageB >= (obj.targetValue || 2000);
       }
       return true;
     });

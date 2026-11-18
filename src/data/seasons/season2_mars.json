@@ -19,37 +19,88 @@
   "levels": [
     {
       "levelNumber": 1,
-      "title": "Mars Level 1: Touchdown at Jezero",
+      "title": "Mars Level 1: Jezero Delta & MOXIE Oxygen",
       "landingSiteId": "jezero_crater",
-      "missionDurationDays": 30,
-      "startingBudgetCredits": 1500000,
+      "missionDurationDays": 40,
+      "startingBudgetCredits": 2500000,
       "startingSciencePoints": 300,
+      "startingResources": {
+        "powerStoredKWh": 150,
+        "oxygenKg": 100,
+        "waterKg": 400,
+        "foodRationsDays": 60,
+        "regolithOreKg": 100,
+        "propellantKg": 1000
+      },
       "availableModules": [
         "vsat_solar_array",
         "li_ion_battery_bank",
-        "moxie_oxygen_generator",
         "inflatable_hab_alpha",
-        "eclss_life_support"
+        "moxie_oxygen_generator",
+        "eclss_life_support",
+        "kilopower_nuclear_reactor"
       ],
       "objectives": [
         {
-          "id": "obj_mars_1",
-          "description": "Complete Mars Phase 1 Mission Objectives",
+          "id": "obj_jezero_hab",
+          "description": "Construct 1 Pressurized Surface Habitat Alpha in Jezero Crater",
           "targetCount": 1,
-          "type": "MISSION_OBJECTIVE",
+          "type": "BUILD_MODULE",
+          "moduleId": "inflatable_hab_alpha",
+          "completed": false
+        },
+        {
+          "id": "obj_build_moxie",
+          "description": "Deploy 1 MOXIE Atmospheric CO2 Solid Oxide Electrolyzer",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "moxie_oxygen_generator",
+          "completed": false
+        },
+        {
+          "id": "obj_extract_moxie_o2",
+          "description": "Extract and accumulate >= 200 kg breathable O2 from Martian CO2 air",
+          "targetValue": 200,
+          "type": "RESOURCE_ACCUMULATION",
+          "resource": "oxygenKg",
+          "completed": false
+        },
+        {
+          "id": "obj_power_mars_grid",
+          "description": "Maintain positive power grid (>= 3.0 kW) accounting for Mars solar flux (586 W/m²)",
+          "targetValue": 3.0,
+          "type": "GRID_POWER_KW",
           "completed": false
         }
       ],
-      "hazards": [],
+      "tutorialSteps": [
+        {
+          "step": 1,
+          "title": "Welcome to Jezero Crater, Mars (18.38°N, 77.58°E)",
+          "instruction": "Radio telemetry from Earth experiences an 852-second (14.2 minute) speed-of-light delay. Due to solar distance (1.52 AU), solar panels generate only 43% of lunar flux.",
+          "highlightElement": "canvas-grid",
+          "whyThisIsReal": "Radio travels at c = 299,792 km/s. Mars-Earth distance ranges from 54.6M km (3.0 min) to 401M km (22.3 min). Inverse-square law: 1361 / (1.524)^2 = 586 W/m²."
+        },
+        {
+          "step": 2,
+          "title": "MOXIE Solid Oxide Electrolysis (SOXE)",
+          "instruction": "Deploy the MOXIE module. MOXIE intakes thin 95% CO2 atmospheric gas, compresses it to 1 atm, and heats it to 800°C to split CO2 into CO + O2.",
+          "highlightElement": "btn-build-menu",
+          "whyThisIsReal": "NASA Mars 2020 Perseverance MOXIE completed 16 successful runs on Mars, producing 122 grams of 98% pure oxygen directly from atmospheric CO2."
+        }
+      ],
+      "hazards": [
+        "martian_dust_storm"
+      ],
       "scoring": {
         "threeStarThresholdDays": 20,
-        "twoStarThresholdDays": 28,
+        "twoStarThresholdDays": 35,
         "budgetBonusPerRemainingCredit": 0.001
       },
       "realDataReference": {
-        "title": "Mars 2020 Perseverance Science at Jezero",
-        "source": "NASA Mars 2020 Mission (Farley et al., Science 2020)",
-        "explanation": "Jezero crater preserves evidence of an ancient river-fed lake. MOXIE demonstrated generating oxygen from the thin 95% CO2 atmosphere."
+        "title": "NASA Mars 2020 MOXIE & Jezero Delta Science",
+        "source": "NASA Mars 2020 Perseverance / MIT MOXIE Team (Hecht et al., Science Advances 2022)",
+        "explanation": "MOXIE demonstrated that scalable solid oxide electrolysis can produce breathable oxygen and rocket oxidizer directly from Mars's carbon dioxide atmosphere, eliminating the need to haul oxidizer from Earth."
       }
     },
     {

@@ -143,14 +143,23 @@ export function stepHazardSimulation(
     if (hazard.status === 'WARNING') {
       const remainingWarning = hazard.warningTimeRemainingSeconds - deltaSeconds;
       if (remainingWarning <= 0) {
-        // Transition to IMPACTING!
-        const stormHazard: ActiveHazard = {
-          ...hazard,
-          status: 'IMPACTING',
-          warningTimeRemainingSeconds: 0,
-        };
-        updatedHazards.push(stormHazard);
-        alerts.push(`🚨 CRITICAL: ${hazard.name} has begun! Relativistic proton flux spiking!`);
+        // Transition to IMPACTING and apply any remaining excess time to duration
+        const excessSeconds = Math.abs(remainingWarning);
+        const remainingDuration = hazard.durationRemainingSeconds - excessSeconds;
+
+        if (remainingDuration <= 0) {
+          // Both warning and storm duration passed completely within this step
+          alerts.push(`✅ RESOLVED: ${hazard.name} has passed. Ambient telemetry returned to baseline.`);
+        } else {
+          const stormHazard: ActiveHazard = {
+            ...hazard,
+            status: 'IMPACTING',
+            warningTimeRemainingSeconds: 0,
+            durationRemainingSeconds: remainingDuration,
+          };
+          updatedHazards.push(stormHazard);
+          alerts.push(`🚨 CRITICAL: ${hazard.name} has begun! Relativistic proton flux spiking!`);
+        }
       } else {
         updatedHazards.push({
           ...hazard,

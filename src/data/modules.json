@@ -218,6 +218,7 @@
       "powerGenerationWatts": 0,
       "powerConsumptionWatts": 6000,
       "propellantCapacityKg": 50000,
+      "propellantProductionKgPerDay": 250,
       "durabilityHours": 35040,
       "degradationRatePerHour": 0.00002,
       "whyThisIsReal": "Liquid hydrogen (20K) and oxygen (90K) boil off rapidly in space heat. NASA Cryogenic Fluid Management (CFM) uses 90-layer MLI, active pulse-tube cryocoolers, and sunshields to preserve propellant for return rockets.",

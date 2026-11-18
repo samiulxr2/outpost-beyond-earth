@@ -22,7 +22,7 @@
       "title": "Level 1: First Footsteps (Tutorial)",
       "landingSiteId": "shackleton_rim",
       "missionDurationDays": 14,
-      "startingBudgetCredits": 800000,
+      "startingBudgetCredits": 1500000,
       "startingSciencePoints": 0,
       "startingResources": {
         "powerStoredKWh": 20,
@@ -125,13 +125,13 @@
       "levelNumber": 2,
       "title": "Level 2: The 354-Hour Lunar Night",
       "landingSiteId": "mare_tranquillitatis",
-      "missionDurationDays": 30,
-      "startingBudgetCredits": 1200000,
+      "missionDurationDays": 35,
+      "startingBudgetCredits": 2000000,
       "startingSciencePoints": 100,
       "startingResources": {
         "powerStoredKWh": 80,
-        "oxygenKg": 150,
-        "waterKg": 250,
+        "oxygenKg": 200,
+        "waterKg": 400,
         "foodRationsDays": 45,
         "regolithOreKg": 0,
         "propellantKg": 600
@@ -155,8 +155,8 @@
         },
         {
           "id": "obj_power_strategy",
-          "description": "Deploy Power Solution: Build Kilopower Nuclear Reactor OR size battery storage >= 400 kWh",
-          "targetValue": 400,
+          "description": "Deploy Power Solution: Build Kilopower Nuclear Reactor OR size battery microgrid >= 2000 kWh (5.7 kW x 354.35h night)",
+          "targetValue": 2000,
           "type": "POWER_SURVIVAL_PREP",
           "completed": false
         },
@@ -186,7 +186,7 @@
         {
           "step": 2,
           "title": "Equatorial Power Strategy",
-          "instruction": "Sustain the base through 354 hours of darkness by either deploying a 10 kWe Kilopower Nuclear Fission Reactor or accumulating >= 400 kWh in Li-ion batteries.",
+          "instruction": "Sustain the base through 354 hours of darkness by either deploying a 10 kWe Kilopower Nuclear Fission Reactor or accumulating >= 2000 kWh in Li-ion batteries (5.7 kW load x 354.35h = 2020 kWh).",
           "highlightElement": "btn-build-menu",
           "whyThisIsReal": "NASA Kilopower (KRUSTY) uses an enriched uranium cast core with Stirling power conversion to provide steady 10 kW electrical power through the 14-day night."
         }
@@ -202,7 +202,7 @@
       "realDataReference": {
         "title": "Equatorial Lunar Night & Fission Surface Power",
         "source": "NASA Glenn Research Center & Los Alamos National Laboratory Kilopower KRUSTY Project",
-        "explanation": "At Mare Tranquillitatis, the night lasts 354 continuous hours (14.75 Earth days), plunging temperatures to -180°C. Sizing chemical batteries for 354 hours of continuous multi-kilowatt life support requires dozens of metric tons of mass. NASA's Kilopower (KRUSTY) 10 kWe reactor provides compact, continuous Stirling fission power independent of the Sun."
+        "explanation": "At Mare Tranquillitatis, the night lasts 354.35 continuous hours (14.76 Earth days), plunging temperatures to -180°C. Sizing chemical batteries for 354.35 hours of continuous 5.7 kW life support requires 2,020 kWh (over 17 metric tons of batteries). NASA's Kilopower (KRUSTY) 10 kWe reactor provides compact, continuous Stirling fission power independent of the Sun."
       }
     },
     {
@@ -442,23 +442,46 @@
     },
     {
       "levelNumber": 6,
-      "title": "Level 6: Sintering the Surface",
+      "title": "Level 6: The Volatiles Rover Network",
       "landingSiteId": "shackleton_rim",
-      "missionDurationDays": 100,
-      "startingBudgetCredits": 2000000,
+      "missionDurationDays": 60,
+      "startingBudgetCredits": 2500000,
       "startingSciencePoints": 600,
       "availableModules": [
-        "regolith_sintering_printer",
-        "inflatable_hab_alpha",
-        "vsat_solar_array"
+        "vsat_solar_array",
+        "li_ion_battery_bank",
+        "prospecting_rover_garage",
+        "deep_space_comms_dish"
       ],
       "objectives": [
         {
-          "id": "obj_sinter_berm",
-          "description": "3D-print a sintered regolith berm (50cm thickness) around Habitat Alpha",
+          "id": "obj_build_garage",
+          "description": "Deploy 1 Pressurized Rover Garage & Charging Bay",
           "targetCount": 1,
           "type": "BUILD_MODULE",
-          "moduleId": "regolith_sintering_printer",
+          "moduleId": "prospecting_rover_garage",
+          "completed": false
+        },
+        {
+          "id": "obj_traverse_distance",
+          "description": "Drive VIPER-class prospecting rover >= 2,000 meters into cold trap",
+          "targetValue": 2000,
+          "type": "ROVER_DISTANCE_METERS",
+          "completed": false
+        },
+        {
+          "id": "obj_detect_ice",
+          "description": "Locate volatile cryogenic water ice concentration >= 5.0 wt%",
+          "targetValue": 5.0,
+          "type": "ICE_PROSPECTING_PCT",
+          "completed": false
+        },
+        {
+          "id": "obj_build_dish",
+          "description": "Construct Deep Space Comms Dish for telemetry downlink",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "deep_space_comms_dish",
           "completed": false
         }
       ],
@@ -466,68 +489,57 @@
         "micrometeorite_shower"
       ],
       "scoring": {
-        "threeStarThresholdDays": 50,
-        "twoStarThresholdDays": 80,
+        "threeStarThresholdDays": 25,
+        "twoStarThresholdDays": 45,
         "budgetBonusPerRemainingCredit": 0.001
       },
       "realDataReference": {
-        "title": "Microwave Regolith Sintering",
-        "source": "NASA / ICON Olympus Project",
-        "explanation": "Sintering regolith creates ceramic pavers that prevent lander plume blasts from sandblasting bases."
+        "title": "VIPER Volatiles Prospecting Architecture",
+        "source": "NASA Ames Research Center VIPER Mission Science Team",
+        "explanation": "VIPER utilizes the Neutron Spectrometer System (NSS) and NIRVSS spectrometer to identify hydrogen concentrations beneath shadowed lunar regolith."
       }
     },
     {
       "levelNumber": 7,
-      "title": "Level 7: The Solar Storm",
+      "title": "Level 7: In-Situ Fuel Depot",
       "landingSiteId": "shackleton_rim",
-      "missionDurationDays": 120,
-      "startingBudgetCredits": 2200000,
+      "missionDurationDays": 80,
+      "startingBudgetCredits": 3000000,
       "startingSciencePoints": 700,
-      "availableModules": [
-        "inflatable_hab_alpha",
-        "regolith_sintering_printer",
-        "kilopower_nuclear_reactor"
-      ],
-      "objectives": [
-        {
-          "id": "obj_survive_spe",
-          "description": "Survive a severe X-Class Solar Particle Event with zero astronaut radiation casualties (< 50 mSv)",
-          "targetValue": 50,
-          "type": "MAX_RADIATION_DOSE",
-          "completed": false
-        }
-      ],
-      "hazards": [
-        "solar_particle_event_x_class"
-      ],
-      "scoring": {
-        "threeStarThresholdDays": 60,
-        "twoStarThresholdDays": 90,
-        "budgetBonusPerRemainingCredit": 0.001
+      "startingResources": {
+        "powerStoredKWh": 100,
+        "oxygenKg": 200,
+        "waterKg": 300,
+        "foodRationsDays": 90,
+        "regolithOreKg": 0,
+        "propellantKg": 500
       },
-      "realDataReference": {
-        "title": "Solar Particle Events & Regolith Shielding",
-        "source": "NASA CRaTER Instrument on LRO",
-        "explanation": "An 18 cm half-value layer of regolith halves particle radiation; 50 cm blocks >85%."
-      }
-    },
-    {
-      "levelNumber": 8,
-      "title": "Level 8: Gateway Supply Run",
-      "landingSiteId": "shackleton_rim",
-      "missionDurationDays": 140,
-      "startingBudgetCredits": 2500000,
-      "startingSciencePoints": 800,
       "availableModules": [
         "cryo_propellant_depot",
         "thermal_ice_drill_plant",
-        "mre_oxygen_smelter",
-        "kilopower_nuclear_reactor"
+        "kilopower_nuclear_reactor",
+        "vsat_solar_array"
       ],
       "objectives": [
         {
-          "id": "obj_depot",
-          "description": "Build 1 Cryogenic Propellant Depot and store 5,000 kg of liquid O2/H2",
+          "id": "obj_build_depot",
+          "description": "Construct 1 Zero-Boil-Off Cryogenic Propellant Storage Depot",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "cryo_propellant_depot",
+          "completed": false
+        },
+        {
+          "id": "obj_build_drill",
+          "description": "Construct 1 Thermal Ice Drill & Condenser Rig in shadow cold trap",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "thermal_ice_drill_plant",
+          "completed": false
+        },
+        {
+          "id": "obj_propellant_threshold",
+          "description": "Produce and accumulate >= 5,000 kg cryogenic propellant in depot storage",
           "targetValue": 5000,
           "type": "RESOURCE_ACCUMULATION",
           "resource": "propellantKg",
@@ -536,57 +548,156 @@
       ],
       "hazards": [],
       "scoring": {
-        "threeStarThresholdDays": 70,
-        "twoStarThresholdDays": 110,
+        "threeStarThresholdDays": 35,
+        "twoStarThresholdDays": 60,
         "budgetBonusPerRemainingCredit": 0.001
       },
       "realDataReference": {
         "title": "Lunar In-Situ Propellant Production (ISPP)",
-        "source": "NASA Glenn CFM Portfolio",
-        "explanation": "Mining water and splitting it into LOX/LH2 turns the Moon into a deep space refueling station."
+        "source": "NASA Glenn CFM Portfolio & STMD In-Situ Resource Utilization Project",
+        "explanation": "Mining water and splitting it into LOX/LH2 turns the Moon into a deep space refueling station, drastically reducing launch mass from Earth."
+      }
+    },
+    {
+      "levelNumber": 8,
+      "title": "Level 8: The Century Storm",
+      "landingSiteId": "shackleton_rim",
+      "missionDurationDays": 90,
+      "startingBudgetCredits": 3200000,
+      "startingSciencePoints": 800,
+      "startingResources": {
+        "powerStoredKWh": 200,
+        "oxygenKg": 300,
+        "waterKg": 400,
+        "foodRationsDays": 90,
+        "regolithOreKg": 500,
+        "propellantKg": 1000
+      },
+      "availableModules": [
+        "inflatable_hab_alpha",
+        "kilopower_nuclear_reactor",
+        "regolith_sintering_printer"
+      ],
+      "objectives": [
+        {
+          "id": "obj_build_hab",
+          "description": "Construct 1 Pressurized Surface Habitat (4-Crew)",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "inflatable_hab_alpha",
+          "completed": false
+        },
+        {
+          "id": "obj_berm_shield",
+          "description": "Sinter radiation protective regolith berm >= 36 cm thickness around habitat",
+          "targetValue": 36,
+          "type": "REGOLITH_BERM_THICKNESS",
+          "completed": false
+        },
+        {
+          "id": "obj_survive_storm",
+          "description": "Shelter crew and survive extreme Solar Particle Event keeping cumulative dose < 25 mSv",
+          "targetValue": 25.0,
+          "type": "RADIATION_SAFETY_MAX_MSV",
+          "completed": false
+        }
+      ],
+      "hazards": [
+        "solar_particle_event_x_class"
+      ],
+      "scoring": {
+        "threeStarThresholdDays": 30,
+        "twoStarThresholdDays": 55,
+        "budgetBonusPerRemainingCredit": 0.001
+      },
+      "realDataReference": {
+        "title": "Extreme Solar Particle Events & Sintered Regolith Shielding",
+        "source": "NASA CRaTER Instrument on LRO / DONKI Database",
+        "explanation": "Major X-class flare SEP events produce extreme proton fluxes. 36 cm of sintered regolith provides two half-value layers (75% attenuation), keeping crew doses safe."
       }
     },
     {
       "levelNumber": 9,
-      "title": "Level 9: Long-Range Traverse",
+      "title": "Level 9: Gateway Supply Relay",
       "landingSiteId": "malapert_mountain",
-      "missionDurationDays": 160,
-      "startingBudgetCredits": 2800000,
+      "missionDurationDays": 120,
+      "startingBudgetCredits": 3500000,
       "startingSciencePoints": 900,
+      "startingResources": {
+        "powerStoredKWh": 250,
+        "oxygenKg": 350,
+        "waterKg": 500,
+        "foodRationsDays": 120,
+        "regolithOreKg": 200,
+        "propellantKg": 1500
+      },
       "availableModules": [
-        "prospecting_rover_garage",
+        "cryo_propellant_depot",
         "deep_space_comms_dish",
-        "kilopower_nuclear_reactor"
+        "kilopower_nuclear_reactor",
+        "thermal_ice_drill_plant"
       ],
       "objectives": [
         {
-          "id": "obj_malapert_sortie",
-          "description": "Conduct a 20 km rover traverse to Malapert Mountain summit and erect a high-gain dish",
+          "id": "obj_build_dish",
+          "description": "Construct 1 High-Gain Deep Space Comms Dish atop Malapert Mountain",
           "targetCount": 1,
           "type": "BUILD_MODULE",
           "moduleId": "deep_space_comms_dish",
+          "completed": false
+        },
+        {
+          "id": "obj_build_depot",
+          "description": "Construct 1 Zero-Boil-Off Cryogenic Propellant Storage Depot",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "cryo_propellant_depot",
+          "completed": false
+        },
+        {
+          "id": "obj_supply_propellant",
+          "description": "Stockpile >= 3,000 kg cryogenic propellant ready for Lunar Gateway ascent",
+          "targetValue": 3000,
+          "type": "RESOURCE_ACCUMULATION",
+          "resource": "propellantKg",
+          "completed": false
+        },
+        {
+          "id": "obj_supply_water",
+          "description": "Maintain >= 600 kg purified water reserves",
+          "targetValue": 600,
+          "type": "RESOURCE_ACCUMULATION",
+          "resource": "waterKg",
           "completed": false
         }
       ],
       "hazards": [],
       "scoring": {
-        "threeStarThresholdDays": 80,
-        "twoStarThresholdDays": 130,
+        "threeStarThresholdDays": 45,
+        "twoStarThresholdDays": 80,
         "budgetBonusPerRemainingCredit": 0.001
       },
       "realDataReference": {
-        "title": "Malapert Mountain Direct Earth Line-of-Sight",
-        "source": "NASA LOLA Elevation Map",
-        "explanation": "At 5 km altitude, Malapert Mountain has constant visibility of Earth for high-rate communications."
+        "title": "Malapert Mountain Direct Earth Line-of-Sight & Gateway Logistics",
+        "source": "NASA LOLA Elevation Map & Artemis Architecture Definition Document",
+        "explanation": "Malapert Mountain's 5 km altitude offers uninterrupted line-of-sight to Earth and ideal trajectory geometry for orbital propellant transfers to the Lunar Gateway."
       }
     },
     {
       "levelNumber": 10,
-      "title": "Level 10: Permanent Settlement",
+      "title": "Level 10: Expedition Artemis Base Camp",
       "landingSiteId": "shackleton_rim",
-      "missionDurationDays": 180,
-      "startingBudgetCredits": 3500000,
+      "missionDurationDays": 190,
+      "startingBudgetCredits": 6000000,
       "startingSciencePoints": 1000,
+      "startingResources": {
+        "powerStoredKWh": 300,
+        "oxygenKg": 500,
+        "waterKg": 800,
+        "foodRationsDays": 200,
+        "regolithOreKg": 500,
+        "propellantKg": 2000
+      },
       "availableModules": [
         "vsat_solar_array",
         "li_ion_battery_bank",
@@ -602,8 +713,47 @@
       ],
       "objectives": [
         {
-          "id": "obj_sustain_base",
-          "description": "Support 4 crew through an entire 6-month expedition with 95% closed-loop ECLSS and 10,000 kg propellant in storage",
+          "id": "obj_hab",
+          "description": "Construct 1 Pressurized Surface Habitat (4-Crew)",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "inflatable_hab_alpha",
+          "completed": false
+        },
+        {
+          "id": "obj_eclss",
+          "description": "Deploy 1 ECLSS Closed-Loop Life Support Processor",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "eclss_life_support",
+          "completed": false
+        },
+        {
+          "id": "obj_kilopower",
+          "description": "Deploy 1 Kilopower KRUSTY Nuclear Fission Reactor (10 kWe continuous)",
+          "targetCount": 1,
+          "type": "BUILD_MODULE",
+          "moduleId": "kilopower_nuclear_reactor",
+          "completed": false
+        },
+        {
+          "id": "obj_berm",
+          "description": "Sinter protective regolith berm (>= 36 cm thickness)",
+          "targetValue": 36,
+          "type": "REGOLITH_BERM_THICKNESS",
+          "completed": false
+        },
+        {
+          "id": "obj_propellant_stockpile",
+          "description": "Produce and stockpile >= 5,000 kg cryogenic propellant for crew return vehicle",
+          "targetValue": 5000,
+          "type": "RESOURCE_ACCUMULATION",
+          "resource": "propellantKg",
+          "completed": false
+        },
+        {
+          "id": "obj_survive_expedition",
+          "description": "Complete full 180-day sustained expedition surviving dynamic space weather",
           "targetValue": 180,
           "type": "FULL_EXPEDITION_SUCCESS",
           "completed": false
@@ -614,15 +764,31 @@
         "lunar_night_deep_freeze",
         "micrometeorite_shower"
       ],
+      "tutorialSteps": [
+        {
+          "step": 1,
+          "title": "Expedition Artemis: 180-Day Architecture",
+          "instruction": "Commander, your crew of 4 will occupy Artemis Base Camp for 6 months. Deploy continuous nuclear baseload, life support, and sintering drones immediately.",
+          "highlightElement": "btn-build-menu",
+          "whyThisIsReal": "NASA's Artemis Plan establishes sustained lunar exploration with 30-to-180-day human surface stays at the lunar South Pole."
+        },
+        {
+          "step": 2,
+          "title": "Dynamic Hazard Milestones",
+          "instruction": "Mission telemetry forecasts: Day 30 Micrometeorite impact requiring module repairs, Day 70 Extreme SPE storm requiring >= 36 cm berm and crew shelter, and Day 120 secondary impact.",
+          "highlightElement": "btn-shelter",
+          "whyThisIsReal": "Long-duration stays encounter cumulative environmental hazards. Multi-layered defense (regolith shielding, automated repair, closed-loop ECLSS) is mandatory."
+        }
+      ],
       "scoring": {
-        "threeStarThresholdDays": 120,
-        "twoStarThresholdDays": 170,
+        "threeStarThresholdDays": 180,
+        "twoStarThresholdDays": 180,
         "budgetBonusPerRemainingCredit": 0.001
       },
       "realDataReference": {
-        "title": "Sustained Lunar Architecture",
+        "title": "Sustained Artemis Base Camp Architecture",
         "source": "NASA Artemis Plan (NASA SP-2020-5009)",
-        "explanation": "Completes the Artemis Base Camp demonstration: long-term human presence powered by nuclear/solar and local resources."
+        "explanation": "Validates the long-term human presence blueprint: continuous nuclear/solar baseload, 90%+ ECLSS recycling, in-situ water/LOX propellant production, and sintered regolith shielding."
       }
     }
   ]

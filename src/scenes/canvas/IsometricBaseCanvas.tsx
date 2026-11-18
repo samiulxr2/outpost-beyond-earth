@@ -112,9 +112,9 @@ export const IsometricBaseCanvas: React.FC<IsometricBaseCanvasProps> = ({ onSele
           // Attempt placement
           const success = placeModuleOnGrid(selectedModuleIdForBuild, gx, gy);
           if (success) {
-            sound.playSuccess();
+            sound.playBuild();
           } else {
-            sound.playWarning();
+            sound.playError();
           }
         } else if (existing) {
           // Select module to inspect / repair

@@ -128,6 +128,10 @@ export function stepResourceSimulation(
   let totalBatteryCapacityKWh = 50; // Base lander emergency reserve
   let o2ProductionPerDayKg = 0;
   let waterExtractionPerDayKg = 0;
+  let propellantProductionPerDayKg = 0;
+  let maxPropellantCapacityKg = 1000;
+
+  const solarFluxMultiplier = state.landingSiteId.includes('jezero') ? (586 / 1361) : 1.0;
 
   // Update construction progress and degradation
   const updatedModules = placedModules.map(module => {
@@ -157,8 +161,8 @@ export function stepResourceSimulation(
     if (!isConstructing && module.isActive) {
       if (def.category === 'Power') {
         if (def.id.includes('solar')) {
-          // Solar generation attenuated by illumination fraction and dust
-          const gen = (def.powerGenerationWatts || 0) * illuminationFraction;
+          // Solar generation attenuated by illumination fraction and solar distance (inverse-square law)
+          const gen = (def.powerGenerationWatts || 0) * illuminationFraction * solarFluxMultiplier;
           totalPowerGenWatts += gen;
         } else if (def.id.includes('nuclear') || def.id.includes('kilopower')) {
           // Nuclear fission generates continuous power Day & Night
@@ -173,8 +177,11 @@ export function stepResourceSimulation(
       totalPowerConsWatts += def.powerConsumptionWatts || 0;
 
       // ISRU outputs
-      if (def.o2ProductionKgPerDay) o2ProductionPerDayKg += def.o2ProductionKgPerDay;
+      const o2Yield = (def as any).o2ProductionKgPerDay || (def as any).oxygenProductionKgPerDay || 0;
+      o2ProductionPerDayKg += o2Yield;
       if (def.iceExtractionRateKgPerDay) waterExtractionPerDayKg += def.iceExtractionRateKgPerDay;
+      if ((def as any).propellantCapacityKg) maxPropellantCapacityKg += (def as any).propellantCapacityKg;
+      if ((def as any).propellantProductionKgPerDay) propellantProductionPerDayKg += (def as any).propellantProductionKgPerDay;
     }
 
     return {
@@ -232,6 +239,8 @@ export function stepResourceSimulation(
     alerts.push("CRITICAL ECLSS: Oxygen reserve below 20 kg! Activate MRE smelter immediately.");
   }
 
+  const newPropellantKg = Math.min(maxPropellantCapacityKg, state.propellantKg + propellantProductionPerDayKg * deltaDays);
+
   return {
     powerGeneratedWatts: Math.round(totalPowerGenWatts),
     powerConsumedWatts: Math.round(totalPowerConsWatts),
@@ -242,7 +251,7 @@ export function stepResourceSimulation(
     waterKg: newWaterKg,
     foodDaysRemaining: newFoodDays,
     regolithOreKg: state.regolithOreKg,
-    propellantKg: state.propellantKg,
+    propellantKg: Math.round(newPropellantKg * 10) / 10,
     isDaylight,
     sunIlluminationFraction: illuminationFraction,
     hoursUntilNextSunTransition: hoursUntilNextTransition,

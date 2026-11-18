@@ -267,7 +267,11 @@ export const ResourceBarHUD: React.FC = () => {
                     : 'bg-red-950/60 border-red-500/70 text-red-100 animate-pulse'
                 }`}
               >
-                <div className="flex items-center space-x-2">
+                <div 
+                  onClick={() => setEngineerPanelModuleId('radiation_protection')}
+                  title="Click to view SPE physics, DONKI telemetry, and HVL shielding in Engineer's Panel"
+                  className="flex items-center space-x-2 cursor-pointer hover:underline"
+                >
                   {isWarning ? (
                     <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
                   ) : (
@@ -280,6 +284,9 @@ export const ResourceBarHUD: React.FC = () => {
                     <span className="font-sans font-bold">{h.name}</span>
                     <span className="text-[11px] text-gray-300 ml-2">
                       {isWarning ? `[Shock Arrival in ${remainingHours}h]` : `[Duration Remaining: ${remainingHours}h]`}
+                    </span>
+                    <span className="text-[10px] text-cyan-300 ml-2 font-mono underline">
+                      [Engineer's Telemetry]
                     </span>
                   </div>
                 </div>

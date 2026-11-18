@@ -39,6 +39,17 @@ export const MainMenu: React.FC = () => {
           <button
             onClick={() => {
               sound.playSuccess();
+              useGameStore.getState().startDemoMode();
+            }}
+            title="Instant 2-Minute Video Demo: Pre-built base, active rover, radiation storm, and live telemetry"
+            className="w-full py-3 px-6 rounded-lg bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 hover:from-amber-400 hover:to-orange-400 text-space-darkest font-extrabold text-xs uppercase tracking-wider shadow-lg shadow-amber-500/25 flex items-center justify-center space-x-2 transition transform hover:-translate-y-0.5 animate-pulse"
+          >
+            <span>⚡ 2-MIN NASA DEMO RUN</span>
+          </button>
+
+          <button
+            onClick={() => {
+              sound.playSuccess();
               setScreen('SEASON_SELECT');
             }}
             className="w-full py-3.5 px-6 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-space-darkest font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-cyan-500/25 flex items-center justify-center space-x-2 transition transform hover:-translate-y-0.5"

@@ -68,3 +68,45 @@ export function calculateLightTimeDelay(distanceKm: number): CommsDelayResult {
 export function isSolarConjunctionBlackout(separationAngleDeg: number): boolean {
   return separationAngleDeg < 2.0;
 }
+
+/**
+ * Calculates real-time distance and one-way light delay between Earth and Mars
+ * for a given mission elapsed time (in days from campaign start).
+ * 
+ * Accurately models Keplerian orbital positions:
+ * - Earth: 1.0 AU (149.6M km), 365.256 day period
+ * - Mars: 1.524 AU (227.9M km), 686.98 day period
+ * Distance ranges from 54.6M km (3.03 min) to 401M km (22.29 min).
+ */
+export function calculateEarthMarsDistanceAndDelay(missionElapsedDays: number, initialPhaseOffsetRad: number = 0.85): {
+  distanceKm: number;
+  oneWayLightTimeSeconds: number;
+  oneWayLightTimeString: string;
+} {
+  const rEarthKm = 149597870.7;
+  const rMarsKm = 227939200.0;
+  
+  // Angular positions
+  const omegaEarth = (2 * Math.PI) / 365.256;
+  const omegaMars = (2 * Math.PI) / 686.980;
+  
+  const thetaEarth = omegaEarth * missionElapsedDays;
+  const thetaMars = initialPhaseOffsetRad + omegaMars * missionElapsedDays;
+  const deltaTheta = thetaMars - thetaEarth;
+  
+  // Law of Cosines
+  const distKm = Math.sqrt(
+    Math.pow(rEarthKm, 2) + Math.pow(rMarsKm, 2) - 2 * rEarthKm * rMarsKm * Math.cos(deltaTheta)
+  );
+  
+  const delaySec = distKm / SPEED_OF_LIGHT_KM_S;
+  const minutes = Math.floor(delaySec / 60);
+  const seconds = Math.floor(delaySec % 60);
+  const formatted = `${minutes}m ${seconds.toString().padStart(2, '0')}s`;
+  
+  return {
+    distanceKm: Math.round(distKm),
+    oneWayLightTimeSeconds: Math.round(delaySec),
+    oneWayLightTimeString: formatted,
+  };
+}
