@@ -1,11 +1,20 @@
 {
   "framesSampled": 119,
-  "avgFrameTimeMs": 42.4,
-  "medianFrameTimeMs": 49.9,
-  "p95FrameTimeMs": 66.6,
-  "p99FrameTimeMs": 66.6,
-  "minFrameTimeMs": 16.6,
-  "maxFrameTimeMs": 66.7,
-  "effectiveFps": 23.6,
-  "simSpeedMultiplier": 1440
+  "avgFrameTimeMs": 19.73,
+  "medianFrameTimeMs": 16.7,
+  "p95FrameTimeMs": 33.4,
+  "p99FrameTimeMs": 49.8,
+  "minFrameTimeMs": 16.1,
+  "maxFrameTimeMs": 50,
+  "effectiveFps": 50.7,
+  "avgDrawTimeMs": 0.094,
+  "p95DrawTimeMs": 0.2,
+  "maxDrawTimeMs": 1.3,
+  "simSpeedMultiplier": 1440,
+  "timeProgression": {
+    "realSecondsElapsed": 1.004,
+    "gameSecondsElapsed": 87661,
+    "gameDaysElapsed": 1.01,
+    "daysPerRealSecond": 1.01
+  }
 }

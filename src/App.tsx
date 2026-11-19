@@ -14,15 +14,13 @@ import { LevelBriefingModal } from './ui/components/LevelBriefingModal';
 import { InteractiveTutorialOverlay } from './ui/components/InteractiveTutorialOverlay';
 
 export function App() {
-  const {
-    currentScreen,
-    setScreen,
-    tickMissionTime,
-    togglePause,
-    setTimeScale,
-    setEngineerPanelModuleId,
-    engineerPanelModuleId,
-  } = useGameStore();
+  const currentScreen = useGameStore((s) => s.currentScreen);
+  const setScreen = useGameStore((s) => s.setScreen);
+  const tickMissionTime = useGameStore((s) => s.tickMissionTime);
+  const togglePause = useGameStore((s) => s.togglePause);
+  const setTimeScale = useGameStore((s) => s.setTimeScale);
+  const setEngineerPanelModuleId = useGameStore((s) => s.setEngineerPanelModuleId);
+  const engineerPanelModuleId = useGameStore((s) => s.engineerPanelModuleId);
 
   const [briefingLevelNumber, setBriefingLevelNumber] = useState<number | null>(null);
 
@@ -44,7 +42,9 @@ export function App() {
       const deltaSec = (now - lastTimeRef.current) / 1000;
       lastTimeRef.current = now;
       if (deltaSec > 0 && deltaSec < 1.0) {
-        tickMissionTime(deltaSec);
+        // Cap simulation steps per frame to max 33ms to prevent CPU choking at 1440x
+        const cappedDeltaSec = Math.min(deltaSec, 0.033);
+        tickMissionTime(cappedDeltaSec);
       }
       animId = requestAnimationFrame(loop);
     };

@@ -319,6 +319,69 @@ describe('Resource Simulation & Conservation Laws', () => {
     expect(nuclearResult.alerts.some(a => a.includes('CRITICAL BLACKOUT'))).toBe(false);
   });
 
+  it('Level 2 Route A includes Deep Space Comms Dish 450W draw and verifies total net power', () => {
+    // Route A infrastructure: Hab (5200W) + Comms Dish (450W) + Kilopower (10000W gen, 50W aux cons)
+    const habModule: PlacedModule = {
+      instanceId: 'hab_route_a',
+      moduleId: 'inflatable_hab_alpha',
+      x: 5,
+      y: 5,
+      durabilityPct: 100,
+      isActive: true,
+      isConstructing: false,
+      constructionProgressPct: 100,
+      constructionTimeRemainingHours: 0,
+      constructedAtMissionDay: 1,
+    };
+    const commsModule: PlacedModule = {
+      instanceId: 'comms_route_a',
+      moduleId: 'deep_space_comms_dish',
+      x: 6,
+      y: 5,
+      durabilityPct: 100,
+      isActive: true,
+      isConstructing: false,
+      constructionProgressPct: 100,
+      constructionTimeRemainingHours: 0,
+      constructedAtMissionDay: 1,
+    };
+    const kiloModule: PlacedModule = {
+      instanceId: 'kilo_route_a',
+      moduleId: 'kilopower_nuclear_reactor',
+      x: 4,
+      y: 4,
+      durabilityPct: 100,
+      isActive: true,
+      isConstructing: false,
+      constructionProgressPct: 100,
+      constructionTimeRemainingHours: 0,
+      constructedAtMissionDay: 1,
+    };
+
+    const nightState: SimulationState = {
+      ...baseInitialState,
+      landingSiteId: 'mare_tranquillitatis',
+      missionElapsedSeconds: 400 * 3600, // Middle of 354h equatorial night
+      powerStoredKWh: 50,
+      maxPowerStorageKWh: 50,
+    };
+
+    const res = stepResourceSimulation(
+      nightState,
+      [habModule, commsModule, kiloModule],
+      3600
+    );
+
+    // Total draw: Hab (3500) + Comms Dish (450) = 3950 W
+    expect(res.powerConsumedWatts).toBe(3950);
+    // Generation: Kilopower 10000 W
+    expect(res.powerGeneratedWatts).toBe(10000);
+    // Net: 10000 - 3950 = +6050 W (+6.05 kW)
+    expect(res.netPowerWatts).toBe(6050);
+    // Comms dish power draw is explicitly verified in total consumption
+    expect(res.powerStoredKWh).toBe(50);
+  });
+
   it('performance benchmark: 1440x time-scale simulation of 354-hour night executes in under 50ms', () => {
     let state: SimulationState = {
       ...baseInitialState,

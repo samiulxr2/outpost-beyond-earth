@@ -18,48 +18,101 @@ import {
   ArrowLeft 
 } from 'lucide-react';
 
+// Dedicated Objectives Card component with isolated subscription
+const ObjectivesCard: React.FC = () => {
+  const objectives = useGameStore((s) => s.objectives);
+  const powerStoredKWh = useGameStore((s) => s.powerStoredKWh);
+  const waterKg = useGameStore((s) => s.waterKg);
+  const placedModules = useGameStore((s) => s.placedModules);
+  const levelTitle = useGameStore((s) => s.levelTitle);
+  const locale = useGameStore((s) => s.locale);
+  const selectedSeasonId = useGameStore((s) => s.selectedSeasonId);
+  const selectedLevelNumber = useGameStore((s) => s.selectedLevelNumber);
+  const t = translations[locale];
+  const [showObjectives, setShowObjectives] = useState<boolean>(true);
+
+  return (
+    <div className="absolute top-4 left-4 z-20 w-72 sm:w-80 bg-space-darker/90 backdrop-blur-md border border-space-border rounded-xl shadow-xl overflow-hidden font-sans text-xs select-none">
+      <div
+        onClick={() => setShowObjectives(s => !s)}
+        className="p-3 bg-space-dark/80 border-b border-space-border/60 flex items-center justify-between cursor-pointer hover:bg-space-dark"
+      >
+        <div className="flex items-center space-x-2">
+          <Target className="w-4 h-4 text-telemetry-cyan" />
+          <span className="font-bold text-white font-mono uppercase text-[11px] truncate">
+            {getLocalizedLevelTitle(selectedSeasonId || 1, selectedLevelNumber, levelTitle, locale)}
+          </span>
+        </div>
+        {showObjectives ? <ChevronUp className="w-3.5 h-3.5 text-gray-400" /> : <ChevronDown className="w-3.5 h-3.5 text-gray-400" />}
+      </div>
+
+      {showObjectives && (
+        <div className="p-3 space-y-2.5 max-h-56 overflow-y-auto">
+          <div className="flex items-center justify-between text-[10px] font-mono text-gray-400 pb-1 border-b border-space-border/40">
+            <span>{t.missionDirectives}</span>
+            <span className="text-cyan-300 font-bold">
+              {objectives.filter(o => o.completed).length} / {objectives.length} {t.completed}
+            </span>
+          </div>
+          {objectives.map((obj, i) => {
+            const liveProgress = !obj.completed && (
+              obj.type === 'BUILD_MODULE'
+                ? `${placedModules.filter(m => m.moduleId === obj.moduleId).length}/${obj.targetCount || 1}`
+                : obj.resource === 'powerStoredKWh'
+                ? `${powerStoredKWh.toFixed(0)}/${obj.targetValue} kWh`
+                : obj.resource === 'waterKg'
+                ? `${waterKg.toFixed(0)}/${obj.targetValue} kg`
+                : null
+            );
+
+            return (
+              <div key={i} className="flex items-start space-x-2 text-[11px] leading-snug">
+                <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${
+                  obj.completed ? 'text-telemetry-emerald' : 'text-gray-500'
+                }`} />
+                <div className="flex-1">
+                  <span className={obj.completed ? 'text-emerald-300 font-semibold' : 'text-gray-300'}>
+                    {getLocalizedObjectiveDescription(obj.id, obj.description, locale)}
+                  </span>
+                  {liveProgress && (
+                    <span className="block text-[10px] font-mono text-cyan-400 mt-0.5">
+                      {t.progress}: {liveProgress}
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const BaseBuilderView: React.FC = () => {
-  const {
-    setScreen,
-    gridTiles,
-    placedModules,
-    missionElapsedSeconds,
-    missionElapsedDays,
-    powerStoredKWh,
-    oxygenKg,
-    waterKg,
-    foodDaysRemaining,
-    regolithOreKg,
-    propellantKg,
-    budgetCredits,
-    landingSiteId,
-    objectives,
-    levelTitle,
-    locale,
-    selectedSeasonId,
-    selectedLevelNumber,
-  } = useGameStore();
+  const setScreen = useGameStore((s) => s.setScreen);
+  const locale = useGameStore((s) => s.locale);
   const t = translations[locale];
   const [selectedModule, setSelectedModule] = useState<PlacedModule | null>(null);
-  const [showObjectives, setShowObjectives] = useState<boolean>(true);
   const [saveNotification, setSaveNotification] = useState<string | null>(null);
 
   // Periodic LocalStorage Auto-Save
   const handleSaveGame = () => {
     try {
+      const s = useGameStore.getState();
       const saveData = {
-        gridTiles,
-        placedModules,
-        missionElapsedSeconds,
-        missionElapsedDays,
-        powerStoredKWh,
-        oxygenKg,
-        waterKg,
-        foodDaysRemaining,
-        regolithOreKg,
-        propellantKg,
-        budgetCredits,
-        landingSiteId,
+        gridTiles: s.gridTiles,
+        placedModules: s.placedModules,
+        missionElapsedSeconds: s.missionElapsedSeconds,
+        missionElapsedDays: s.missionElapsedDays,
+        powerStoredKWh: s.powerStoredKWh,
+        oxygenKg: s.oxygenKg,
+        waterKg: s.waterKg,
+        foodDaysRemaining: s.foodDaysRemaining,
+        regolithOreKg: s.regolithOreKg,
+        propellantKg: s.propellantKg,
+        budgetCredits: s.budgetCredits,
+        landingSiteId: s.landingSiteId,
         savedAt: new Date().toISOString(),
       };
       localStorage.setItem('outpost_base_save', JSON.stringify(saveData));
@@ -81,18 +134,19 @@ export const BaseBuilderView: React.FC = () => {
         return;
       }
       const data = JSON.parse(raw);
+      const s = useGameStore.getState();
       useGameStore.setState({
-        gridTiles: data.gridTiles || gridTiles,
-        placedModules: data.placedModules || placedModules,
-        missionElapsedSeconds: data.missionElapsedSeconds || missionElapsedSeconds,
-        missionElapsedDays: data.missionElapsedDays || missionElapsedDays,
-        powerStoredKWh: data.powerStoredKWh ?? powerStoredKWh,
-        oxygenKg: data.oxygenKg ?? oxygenKg,
-        waterKg: data.waterKg ?? waterKg,
-        foodDaysRemaining: data.foodDaysRemaining ?? foodDaysRemaining,
-        regolithOreKg: data.regolithOreKg ?? regolithOreKg,
-        propellantKg: data.propellantKg ?? propellantKg,
-        budgetCredits: data.budgetCredits ?? budgetCredits,
+        gridTiles: data.gridTiles || s.gridTiles,
+        placedModules: data.placedModules || s.placedModules,
+        missionElapsedSeconds: data.missionElapsedSeconds || s.missionElapsedSeconds,
+        missionElapsedDays: data.missionElapsedDays || s.missionElapsedDays,
+        powerStoredKWh: data.powerStoredKWh ?? s.powerStoredKWh,
+        oxygenKg: data.oxygenKg ?? s.oxygenKg,
+        waterKg: data.waterKg ?? s.waterKg,
+        foodDaysRemaining: data.foodDaysRemaining ?? s.foodDaysRemaining,
+        regolithOreKg: data.regolithOreKg ?? s.regolithOreKg,
+        propellantKg: data.propellantKg ?? s.propellantKg,
+        budgetCredits: data.budgetCredits ?? s.budgetCredits,
       });
       sound.playSuccess();
       setSaveNotification('Base state restored from LocalStorage!');
@@ -109,63 +163,10 @@ export const BaseBuilderView: React.FC = () => {
 
       {/* Main Base Canvas Viewport */}
       <div className="flex-1 w-full h-full relative">
-        <IsometricBaseCanvas onSelectPlacedModule={(m) => setSelectedModule(m)} />
+        <IsometricBaseCanvas onSelectPlacedModule={setSelectedModule} />
 
         {/* Top-Left Floating Mission Objectives Card */}
-        <div className="absolute top-4 left-4 z-20 w-72 sm:w-80 bg-space-darker/90 backdrop-blur-md border border-space-border rounded-xl shadow-xl overflow-hidden font-sans text-xs select-none">
-          <div
-            onClick={() => setShowObjectives(s => !s)}
-            className="p-3 bg-space-dark/80 border-b border-space-border/60 flex items-center justify-between cursor-pointer hover:bg-space-dark"
-          >
-            <div className="flex items-center space-x-2">
-              <Target className="w-4 h-4 text-telemetry-cyan" />
-              <span className="font-bold text-white font-mono uppercase text-[11px] truncate">
-                {getLocalizedLevelTitle(selectedSeasonId || 1, selectedLevelNumber, levelTitle, locale)}
-              </span>
-            </div>
-            {showObjectives ? <ChevronUp className="w-3.5 h-3.5 text-gray-400" /> : <ChevronDown className="w-3.5 h-3.5 text-gray-400" />}
-          </div>
-
-          {showObjectives && (
-            <div className="p-3 space-y-2.5 max-h-56 overflow-y-auto">
-              <div className="flex items-center justify-between text-[10px] font-mono text-gray-400 pb-1 border-b border-space-border/40">
-                <span>{t.missionDirectives}</span>
-                <span className="text-cyan-300 font-bold">
-                  {objectives.filter(o => o.completed).length} / {objectives.length} {t.completed}
-                </span>
-              </div>
-              {objectives.map((obj, i) => {
-                const liveProgress = !obj.completed && (
-                  obj.type === 'BUILD_MODULE'
-                    ? `${placedModules.filter(m => m.moduleId === obj.moduleId).length}/${obj.targetCount || 1}`
-                    : obj.resource === 'powerStoredKWh'
-                    ? `${powerStoredKWh.toFixed(0)}/${obj.targetValue} kWh`
-                    : obj.resource === 'waterKg'
-                    ? `${waterKg.toFixed(0)}/${obj.targetValue} kg`
-                    : null
-                );
-
-                return (
-                  <div key={i} className="flex items-start space-x-2 text-[11px] leading-snug">
-                    <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${
-                      obj.completed ? 'text-telemetry-emerald' : 'text-gray-500'
-                    }`} />
-                    <div className="flex-1">
-                      <span className={obj.completed ? 'text-emerald-300 font-semibold' : 'text-gray-300'}>
-                        {getLocalizedObjectiveDescription(obj.id, obj.description, locale)}
-                      </span>
-                      {liveProgress && (
-                        <span className="block text-[10px] font-mono text-cyan-400 mt-0.5">
-                          {t.progress}: {liveProgress}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        <ObjectivesCard />
 
         {/* Top-Right Save / Load Quick Action Bar */}
         <div className="absolute top-4 right-4 z-20 flex items-center space-x-2 font-mono text-xs">

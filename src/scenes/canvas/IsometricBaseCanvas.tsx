@@ -11,17 +11,14 @@ interface IsometricBaseCanvasProps {
 const TILE_W = 64;
 const TILE_H = 32;
 
-export const IsometricBaseCanvas: React.FC<IsometricBaseCanvasProps> = ({ onSelectPlacedModule }) => {
+export const IsometricBaseCanvas: React.FC<IsometricBaseCanvasProps> = React.memo(({ onSelectPlacedModule }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const {
-    gridTiles,
-    placedModules,
-    gridSize,
-    selectedModuleIdForBuild,
-    placeModuleOnGrid,
-    setEngineerPanelModuleId,
-  } = useGameStore();
+  const gridTiles = useGameStore((s) => s.gridTiles);
+  const gridSize = useGameStore((s) => s.gridSize);
+  const selectedModuleIdForBuild = useGameStore((s) => s.selectedModuleIdForBuild);
+  const placeModuleOnGrid = useGameStore((s) => s.placeModuleOnGrid);
+  const setEngineerPanelModuleId = useGameStore((s) => s.setEngineerPanelModuleId);
 
   // Camera Pan & Zoom State
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -29,27 +26,57 @@ export const IsometricBaseCanvas: React.FC<IsometricBaseCanvasProps> = ({ onSele
   const [hoveredTile, setHoveredTile] = useState<{ x: number; y: number } | null>(null);
   const [selectedInstanceId, setSelectedInstanceId] = useState<string | null>(null);
 
+  const panRef = useRef(pan);
+  panRef.current = pan;
+  const zoomRef = useRef(zoom);
+  zoomRef.current = zoom;
+  const hoveredTileRef = useRef(hoveredTile);
+  hoveredTileRef.current = hoveredTile;
+  const selectedInstanceIdRef = useRef(selectedInstanceId);
+  selectedInstanceIdRef.current = selectedInstanceId;
+  const selectedModuleIdForBuildRef = useRef(selectedModuleIdForBuild);
+  selectedModuleIdForBuildRef.current = selectedModuleIdForBuild;
+
   const isDraggingRef = useRef<boolean>(false);
   const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const panStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  // Offscreen Canvas Cache for Static Terrain
+  const offscreenCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const isTerrainDirtyRef = useRef<boolean>(true);
+
+  // Fast O(1) tile lookup cache
+  const tileMapRef = useRef<Map<string, (typeof gridTiles)[0]>>(new Map());
+  useEffect(() => {
+    const map = new Map<string, (typeof gridTiles)[0]>();
+    gridTiles.forEach(t => map.set(`${t.x}_${t.y}`, t));
+    tileMapRef.current = map;
+    isTerrainDirtyRef.current = true;
+  }, [gridTiles]);
+
+  // Invalidate terrain cache whenever camera pan, zoom, or grid size changes
+  useEffect(() => {
+    isTerrainDirtyRef.current = true;
+  }, [pan, zoom, gridSize]);
 
   // Center the grid on initial load
   useEffect(() => {
     if (canvasRef.current) {
       const rect = canvasRef.current.getBoundingClientRect();
       setPan({ x: rect.width / 2, y: rect.height / 4 });
+      isTerrainDirtyRef.current = true;
     }
   }, []);
 
   // Convert Grid Coordinates (x, y) to Screen Coordinates (sx, sy)
-  const gridToScreen = useCallback(
-    (gx: number, gy: number, elevation: number = 0) => {
-      const sx = (gx - gy) * (TILE_W / 2) * zoom + pan.x;
-      const elevOffset = (elevation / 100) * 8 * zoom; // Elevation height displacement
-      const sy = (gx + gy) * (TILE_H / 2) * zoom + pan.y - elevOffset;
+  const getScreenCoords = useCallback(
+    (gx: number, gy: number, elevation: number = 0, currentZoom = zoomRef.current, currentPan = panRef.current) => {
+      const sx = (gx - gy) * (TILE_W / 2) * currentZoom + currentPan.x;
+      const elevOffset = (elevation / 100) * 8 * currentZoom;
+      const sy = (gx + gy) * (TILE_H / 2) * currentZoom + currentPan.y - elevOffset;
       return { sx, sy };
     },
-    [zoom, pan]
+    []
   );
 
   // Convert Screen Coordinates (sx, sy) to Grid Coordinates (gx, gy)
@@ -106,7 +133,7 @@ export const IsometricBaseCanvas: React.FC<IsometricBaseCanvasProps> = ({ onSele
 
       if (gx >= 0 && gx < gridSize && gy >= 0 && gy < gridSize) {
         // Check if there is an existing placed module on this tile
-        const existing = placedModules.find(m => m.x === gx && m.y === gy);
+        const existing = useGameStore.getState().placedModules.find(m => m.x === gx && m.y === gy);
 
         if (selectedModuleIdForBuild) {
           // Attempt placement
@@ -159,31 +186,33 @@ export const IsometricBaseCanvas: React.FC<IsometricBaseCanvasProps> = ({ onSele
 
     let animId: number;
 
-    const render = () => {
-      const width = canvas.width;
-      const height = canvas.height;
+    const renderTerrainToOffscreen = (offCanvas: HTMLCanvasElement, w: number, h: number) => {
+      const offCtx = offCanvas.getContext('2d');
+      if (!offCtx) return;
 
-      ctx.clearRect(0, 0, width, height);
+      offCtx.clearRect(0, 0, w, h);
 
       // Deep space background gradient
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      const bgGrad = offCtx.createLinearGradient(0, 0, 0, h);
       bgGrad.addColorStop(0, '#040711');
       bgGrad.addColorStop(0.5, '#070C18');
       bgGrad.addColorStop(1, '#020409');
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, width, height);
+      offCtx.fillStyle = bgGrad;
+      offCtx.fillRect(0, 0, w, h);
+
+      const curZoom = zoomRef.current;
+      const curPan = panRef.current;
+      const tw = (TILE_W / 2) * curZoom;
+      const th = (TILE_H / 2) * curZoom;
+      const skirtDepth = 6 * curZoom;
 
       // Render Grid Tiles in Isometric Order (back to front: row + col)
       for (let y = 0; y < gridSize; y++) {
         for (let x = 0; x < gridSize; x++) {
-          const tile = gridTiles.find(t => t.x === x && t.y === y);
+          const tile = tileMapRef.current.get(`${x}_${y}`);
           if (!tile) continue;
 
-          const { sx, sy } = gridToScreen(x, y, tile.elevationMeters);
-          const tw = (TILE_W / 2) * zoom;
-          const th = (TILE_H / 2) * zoom;
-
-          const isHovered = hoveredTile?.x === x && hoveredTile?.y === y;
+          const { sx, sy } = getScreenCoords(x, y, tile.elevationMeters, curZoom, curPan);
           const isShadowColdTrap = tile.illuminationPct === 0;
           const isPeakLight = tile.illuminationPct > 90;
 
@@ -205,6 +234,79 @@ export const IsometricBaseCanvas: React.FC<IsometricBaseCanvasProps> = ({ onSele
           }
 
           // Isometric Diamond Path
+          offCtx.beginPath();
+          offCtx.moveTo(sx, sy);
+          offCtx.lineTo(sx + tw, sy + th);
+          offCtx.lineTo(sx, sy + th * 2);
+          offCtx.lineTo(sx - tw, sy + th);
+          offCtx.closePath();
+
+          offCtx.fillStyle = tileFill;
+          offCtx.fill();
+
+          offCtx.lineWidth = 1;
+          offCtx.strokeStyle = tileStroke;
+          offCtx.stroke();
+
+          // Render Elevation 3D Skirt
+          offCtx.beginPath();
+          offCtx.moveTo(sx - tw, sy + th);
+          offCtx.lineTo(sx, sy + th * 2);
+          offCtx.lineTo(sx, sy + th * 2 + skirtDepth);
+          offCtx.lineTo(sx - tw, sy + th + skirtDepth);
+          offCtx.closePath();
+          offCtx.fillStyle = isShadowColdTrap ? '#060B14' : '#111722';
+          offCtx.fill();
+
+          offCtx.beginPath();
+          offCtx.moveTo(sx, sy + th * 2);
+          offCtx.lineTo(sx + tw, sy + th);
+          offCtx.lineTo(sx + tw, sy + th + skirtDepth);
+          offCtx.lineTo(sx, sy + th * 2 + skirtDepth);
+          offCtx.closePath();
+          offCtx.fillStyle = isShadowColdTrap ? '#080E1A' : '#151D2A';
+          offCtx.fill();
+        }
+      }
+    };
+
+    const render = () => {
+      const drawStartTime = performance.now();
+      const width = canvas.width;
+      const height = canvas.height;
+
+      // Update offscreen terrain cache only on dirty change (pan, zoom, tiles, resize)
+      if (
+        isTerrainDirtyRef.current || 
+        !offscreenCanvasRef.current || 
+        offscreenCanvasRef.current.width !== width || 
+        offscreenCanvasRef.current.height !== height
+      ) {
+        if (!offscreenCanvasRef.current) {
+          offscreenCanvasRef.current = document.createElement('canvas');
+        }
+        offscreenCanvasRef.current.width = width;
+        offscreenCanvasRef.current.height = height;
+        renderTerrainToOffscreen(offscreenCanvasRef.current, width, height);
+        isTerrainDirtyRef.current = false;
+      }
+
+      // 1. Blit pre-cached static terrain in a single ultra-fast operation (<0.2ms)
+      ctx.drawImage(offscreenCanvasRef.current, 0, 0);
+
+      const curZoom = zoomRef.current;
+      const curPan = panRef.current;
+      const tw = (TILE_W / 2) * curZoom;
+      const th = (TILE_H / 2) * curZoom;
+      const curHovered = hoveredTileRef.current;
+      const curSelectedId = selectedInstanceIdRef.current;
+      const curBuildId = selectedModuleIdForBuildRef.current;
+
+      // 2. Render Hover Highlight if active
+      if (curHovered) {
+        const hTile = tileMapRef.current.get(`${curHovered.x}_${curHovered.y}`);
+        if (hTile) {
+          const { sx, sy } = getScreenCoords(curHovered.x, curHovered.y, hTile.elevationMeters, curZoom, curPan);
           ctx.beginPath();
           ctx.moveTo(sx, sy);
           ctx.lineTo(sx + tw, sy + th);
@@ -212,56 +314,49 @@ export const IsometricBaseCanvas: React.FC<IsometricBaseCanvasProps> = ({ onSele
           ctx.lineTo(sx - tw, sy + th);
           ctx.closePath();
 
-          ctx.fillStyle = tileFill;
+          const canBuild = curBuildId && !hTile.isObstacle && !hTile.occupiedByInstanceId;
+          ctx.fillStyle = canBuild ? 'rgba(56, 189, 248, 0.35)' : 'rgba(239, 68, 68, 0.35)';
           ctx.fill();
-
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = tileStroke;
+          ctx.strokeStyle = canBuild ? '#38BDF8' : '#EF4444';
+          ctx.lineWidth = 2;
           ctx.stroke();
+        }
+      }
 
-          // Render Elevation 3D Skirt
-          const skirtDepth = 6 * zoom;
-          ctx.beginPath();
-          ctx.moveTo(sx - tw, sy + th);
-          ctx.lineTo(sx, sy + th * 2);
-          ctx.lineTo(sx, sy + th * 2 + skirtDepth);
-          ctx.lineTo(sx - tw, sy + th + skirtDepth);
-          ctx.closePath();
-          ctx.fillStyle = isShadowColdTrap ? '#060B14' : '#111722';
-          ctx.fill();
+      // 3. Render Placed Modules sorted back-to-front by isometric depth (x + y)
+      const placed = useGameStore.getState().placedModules;
+      const sortedModules = [...placed].sort((a, b) => (a.x + a.y) - (b.x + b.y));
+      for (const mod of sortedModules) {
+        const tile = tileMapRef.current.get(`${mod.x}_${mod.y}`);
+        const { sx, sy } = getScreenCoords(mod.x, mod.y, tile?.elevationMeters || 0, curZoom, curPan);
+        renderModule(ctx, mod, sx, sy + th, curZoom, mod.instanceId === curSelectedId);
+      }
 
-          ctx.beginPath();
-          ctx.moveTo(sx, sy + th * 2);
-          ctx.lineTo(sx + tw, sy + th);
-          ctx.lineTo(sx + tw, sy + th + skirtDepth);
-          ctx.lineTo(sx, sy + th * 2 + skirtDepth);
-          ctx.closePath();
-          ctx.fillStyle = isShadowColdTrap ? '#080E1A' : '#151D2A';
-          ctx.fill();
-
-          // Hover Highlight
-          if (isHovered) {
-            ctx.beginPath();
-            ctx.moveTo(sx, sy);
-            ctx.lineTo(sx + tw, sy + th);
-            ctx.lineTo(sx, sy + th * 2);
-            ctx.lineTo(sx - tw, sy + th);
-            ctx.closePath();
-
-            const canBuild = selectedModuleIdForBuild && !tile.isObstacle && !tile.occupiedByInstanceId;
-            ctx.fillStyle = canBuild ? 'rgba(56, 189, 248, 0.35)' : 'rgba(239, 68, 68, 0.35)';
-            ctx.fill();
-            ctx.strokeStyle = canBuild ? '#38BDF8' : '#EF4444';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-          }
-
-          // Render Placed Module on this tile
-          const mod = placedModules.find(m => m.x === x && m.y === y);
-          if (mod) {
-            renderModule(ctx, mod, sx, sy + th, zoom, mod.instanceId === selectedInstanceId);
+      // 4. Render Active Environmental Hazards Overlay (e.g. Solar Particle Event radiation haze)
+      const activeHazards = useGameStore.getState().activeHazards;
+      if (activeHazards && activeHazards.length > 0) {
+        for (const h of activeHazards) {
+          if (h.status === 'IMPACTING') {
+            if (h.category === 'Radiation') {
+              ctx.fillStyle = 'rgba(245, 158, 11, 0.08)';
+              ctx.fillRect(0, 0, width, height);
+            } else if (h.category === 'Impact') {
+              ctx.fillStyle = 'rgba(239, 68, 68, 0.06)';
+              ctx.fillRect(0, 0, width, height);
+            }
           }
         }
+      }
+
+      // Record exact canvas draw duration per frame
+      const drawDurationMs = performance.now() - drawStartTime;
+      (window as any).__LAST_CANVAS_DRAW_TIME_MS__ = drawDurationMs;
+      if (!(window as any).__CANVAS_DRAW_TIMES__) {
+        (window as any).__CANVAS_DRAW_TIMES__ = [];
+      }
+      (window as any).__CANVAS_DRAW_TIMES__.push(drawDurationMs);
+      if ((window as any).__CANVAS_DRAW_TIMES__.length > 200) {
+        (window as any).__CANVAS_DRAW_TIMES__.shift();
       }
 
       animId = requestAnimationFrame(render);
@@ -270,16 +365,7 @@ export const IsometricBaseCanvas: React.FC<IsometricBaseCanvasProps> = ({ onSele
     render();
 
     return () => cancelAnimationFrame(animId);
-  }, [
-    gridTiles,
-    placedModules,
-    gridSize,
-    hoveredTile,
-    selectedInstanceId,
-    selectedModuleIdForBuild,
-    gridToScreen,
-    zoom,
-  ]);
+  }, [gridSize, getScreenCoords]);
 
   return (
     <div className="w-full h-full relative overflow-hidden select-none touch-none">
@@ -324,7 +410,7 @@ export const IsometricBaseCanvas: React.FC<IsometricBaseCanvasProps> = ({ onSele
       </div>
     </div>
   );
-};
+});
 
 // 2.5D Isometric Module Renderer
 function renderModule(

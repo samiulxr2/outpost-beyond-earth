@@ -61,6 +61,45 @@ export const EngineersPanel: React.FC = () => {
               </div>
             </div>
 
+            {/* Mission Propellant Target Specifications */}
+            {selectedModule.id === 'cryo_propellant_depot' && (
+              <div className="bg-space-darkest p-3 rounded-lg border border-cyan-500/40 font-mono space-y-1.5 text-xs">
+                <div className="text-[11px] text-cyan-400 font-bold uppercase tracking-wider">Mission Propellant Accumulation Targets</div>
+                <div className="text-gray-300 space-y-1 text-[11px]">
+                  <div>&bull; Level 7 (In-Situ Fuel Depot): <span className="text-cyan-300 font-bold">&ge; 5,000 kg</span></div>
+                  <div>&bull; Level 9 (Gateway Supply Relay): <span className="text-emerald-400 font-bold">&ge; 3,000 kg</span> (ascend to Gateway)</div>
+                  <div>&bull; Level 10 (Expedition Base Camp): <span className="text-amber-400 font-bold">&ge; 5,000 kg</span> (crew return vehicle)</div>
+                  <div>&bull; Production Rate: <span className="text-white font-bold">250 kg / Day</span> (ZBO Active Cryocooling)</div>
+                </div>
+              </div>
+            )}
+
+            {/* Level 2 Lunar Night Power Architecture Callout */}
+            {selectedModule.id === 'kilopower_nuclear_reactor' && (
+              <div className="bg-space-darkest p-3 rounded-lg border border-amber-500/40 font-mono space-y-1.5 text-xs">
+                <div className="text-[11px] text-amber-400 font-bold uppercase tracking-wider">Level 2: 354h Equatorial Night Architecture</div>
+                <div className="text-gray-300 space-y-1 text-[11px]">
+                  <div>&bull; Intended Route: <span className="text-emerald-400 font-bold">Kilopower Fission Route ($1,820k &le; $2.0M)</span></div>
+                  <div>&bull; Power Generation: <span className="text-white font-bold">10.0 kW (continuous Day & Night)</span></div>
+                  <div>&bull; Total Base Night Load: <span className="text-cyan-300 font-bold">3.95 kW</span> (Hab 3.50 kW + Comms Dish 0.45 kW)</div>
+                  <div>&bull; Net Continuous Power: <span className="text-emerald-400 font-bold">+6.05 kW</span> (Zero blackout risk)</div>
+                  <div>&bull; Battery Route Contrast: <span className="text-rose-400 font-bold">$4.97M</span> (20 battery banks needed for 2,000 kWh, exceeding budget)</div>
+                </div>
+              </div>
+            )}
+
+            {/* Comms Dish Power & Telemetry Specifications */}
+            {selectedModule.id === 'deep_space_comms_dish' && (
+              <div className="bg-space-darkest p-3 rounded-lg border border-cyan-500/40 font-mono space-y-1.5 text-xs">
+                <div className="text-[11px] text-cyan-400 font-bold uppercase tracking-wider">Telemetry & Power Draw Specifications</div>
+                <div className="text-gray-300 space-y-1 text-[11px]">
+                  <div>&bull; Continuous Power Draw: <span className="text-amber-400 font-bold">450 W (0.45 kW)</span></div>
+                  <div>&bull; Power Model: <span className="text-white font-bold">Fully factored into base net power load</span></div>
+                  <div>&bull; Level 2 Net Power Impact: Consumes 450 W alongside Hab (3.50 kW) = 3.95 kW total baseline load</div>
+                </div>
+              </div>
+            )}
+
             {/* Simplification Note */}
             <div className="bg-amber-950/30 p-3 rounded-lg border border-amber-500/30 text-amber-200/90 text-xs space-y-1">
               <div className="flex items-center space-x-1.5 text-telemetry-amber font-semibold">

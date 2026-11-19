@@ -23,14 +23,16 @@ export const ModuleInspectorModal: React.FC<ModuleInspectorModalProps> = ({ modu
     budgetCredits,
     setEngineerPanelModuleId,
     repairModule,
+    placedModules,
   } = useGameStore();
 
   if (!module) return null;
 
-  const def = modulesData.modules.find(m => m.id === module.moduleId);
+  const currentModule = placedModules.find(m => m.instanceId === module.instanceId) || module;
+  const def = modulesData.modules.find(m => m.id === currentModule.moduleId);
   if (!def) return null;
 
-  const repairCost = calculateRepairCost(def.costCredits, module.durabilityPct);
+  const repairCost = calculateRepairCost(def.costCredits, currentModule.durabilityPct);
   const speedUpCost = 10000;
   const deconstructRefund = Math.round(def.costCredits * 0.5);
 
@@ -39,7 +41,7 @@ export const ModuleInspectorModal: React.FC<ModuleInspectorModalProps> = ({ modu
       sound.playWarning();
       return;
     }
-    const success = repairModule(module.instanceId);
+    const success = repairModule(currentModule.instanceId);
     if (success) {
       sound.playSuccess();
     } else {
@@ -52,7 +54,7 @@ export const ModuleInspectorModal: React.FC<ModuleInspectorModalProps> = ({ modu
     useGameStore.setState(state => ({
       budgetCredits: Math.max(0, state.budgetCredits - speedUpCost),
       placedModules: state.placedModules.map(m =>
-        m.instanceId === module.instanceId 
+        m.instanceId === currentModule.instanceId 
           ? { ...m, isConstructing: false, constructionProgressPct: 100, constructionTimeRemainingHours: 0 } 
           : m
       ),
@@ -63,9 +65,9 @@ export const ModuleInspectorModal: React.FC<ModuleInspectorModalProps> = ({ modu
     sound.playWarning();
     useGameStore.setState(state => ({
       budgetCredits: state.budgetCredits + deconstructRefund,
-      placedModules: state.placedModules.filter(m => m.instanceId !== module.instanceId),
+      placedModules: state.placedModules.filter(m => m.instanceId !== currentModule.instanceId),
       gridTiles: state.gridTiles.map(t =>
-        t.occupiedByInstanceId === module.instanceId ? { ...t, occupiedByInstanceId: undefined } : t
+        t.occupiedByInstanceId === currentModule.instanceId ? { ...t, occupiedByInstanceId: undefined } : t
       ),
     }));
     onClose();
@@ -100,7 +102,7 @@ export const ModuleInspectorModal: React.FC<ModuleInspectorModalProps> = ({ modu
               {def.category}
             </span>
             <span className="text-[10px] font-mono text-gray-400">
-              Grid: ({module.x}, {module.y})
+              Grid: ({currentModule.x}, {currentModule.y})
             </span>
           </div>
           <h3 className="text-base font-bold text-white mt-1">{def.name}</h3>
@@ -111,27 +113,27 @@ export const ModuleInspectorModal: React.FC<ModuleInspectorModalProps> = ({ modu
           <div className="flex justify-between text-[11px]">
             <span className="text-gray-400">Durability (Structural Integrity):</span>
             <span className={`font-bold ${
-              module.durabilityPct > 70 ? 'text-telemetry-emerald' : module.durabilityPct > 30 ? 'text-telemetry-amber' : 'text-telemetry-rose'
+              currentModule.durabilityPct > 70 ? 'text-telemetry-emerald' : currentModule.durabilityPct > 30 ? 'text-telemetry-amber' : 'text-telemetry-rose'
             }`}>
-              {module.durabilityPct}%
+              {currentModule.durabilityPct}%
             </span>
           </div>
           <div className="w-full h-2 rounded bg-space-darkest overflow-hidden border border-space-border/60">
             <div
               className={`h-full transition-all duration-300 ${
-                module.durabilityPct > 70 ? 'bg-telemetry-emerald' : module.durabilityPct > 30 ? 'bg-telemetry-amber' : 'bg-telemetry-rose'
+                currentModule.durabilityPct > 70 ? 'bg-telemetry-emerald' : currentModule.durabilityPct > 30 ? 'bg-telemetry-amber' : 'bg-telemetry-rose'
               }`}
-              style={{ width: `${module.durabilityPct}%` }}
+              style={{ width: `${currentModule.durabilityPct}%` }}
             />
           </div>
         </div>
 
         {/* Under Construction Notice */}
-        {module.isConstructing && (
+        {currentModule.isConstructing && (
           <div className="p-2.5 rounded-lg bg-amber-950/40 border border-amber-500/40 text-amber-200 space-y-1.5 font-mono text-[11px]">
             <div className="flex justify-between items-center font-bold">
               <span>Construction in Progress:</span>
-              <span className="text-yellow-300">{module.constructionProgressPct}%</span>
+              <span className="text-yellow-300">{currentModule.constructionProgressPct}%</span>
             </div>
             <p className="text-[10px] text-amber-300/80 font-sans">
               Robotic builders are assembling pressure vessels and thermal radiators.
@@ -150,9 +152,9 @@ export const ModuleInspectorModal: React.FC<ModuleInspectorModalProps> = ({ modu
         <div className="grid grid-cols-2 gap-2 pt-1 font-mono">
           <button
             onClick={handleRepair}
-            disabled={module.durabilityPct >= 100 || budgetCredits < repairCost}
+            disabled={currentModule.durabilityPct >= 100 || budgetCredits < repairCost}
             className={`py-2 px-3 rounded-lg flex items-center justify-center space-x-1.5 transition ${
-              module.durabilityPct < 100 && budgetCredits >= repairCost
+              currentModule.durabilityPct < 100 && budgetCredits >= repairCost
                 ? 'bg-cyan-600 hover:bg-cyan-500 text-space-darkest font-bold cursor-pointer'
                 : 'bg-space-dark text-gray-500 cursor-not-allowed border border-space-border/60'
             }`}
@@ -174,7 +176,7 @@ export const ModuleInspectorModal: React.FC<ModuleInspectorModalProps> = ({ modu
         <button
           onClick={() => {
             sound.playClick();
-            setEngineerPanelModuleId(module.moduleId);
+            setEngineerPanelModuleId(currentModule.moduleId);
           }}
           className="w-full py-2 px-3 rounded-lg bg-space-dark hover:bg-space-card border border-space-border text-cyan-300 flex items-center justify-center space-x-1.5 text-xs font-mono transition"
         >

@@ -155,7 +155,7 @@
         },
         {
           "id": "obj_power_strategy",
-          "description": "Deploy Power Solution: Build Kilopower Nuclear Reactor OR size battery microgrid >= 2000 kWh (5.7 kW x 354.35h night)",
+          "description": "Deploy Power Solution: Deploy Kilopower Nuclear Reactor (intended solution for 354h night) or size battery microgrid >= 2,000 kWh",
           "targetValue": 2000,
           "type": "POWER_SURVIVAL_PREP",
           "completed": false
@@ -186,7 +186,7 @@
         {
           "step": 2,
           "title": "Equatorial Power Strategy",
-          "instruction": "Sustain the base through 354 hours of darkness by either deploying a 10 kWe Kilopower Nuclear Fission Reactor or accumulating >= 2000 kWh in Li-ion batteries (5.7 kW load x 354.35h = 2020 kWh).",
+          "instruction": "Sustain the base through 354 hours of darkness by deploying a 10 kWe Kilopower Nuclear Fission Reactor (the intended solution within the $2.0M budget). Sizing batteries alone for the full 354h night (>= 2000 kWh) would require 20 battery banks costing $4.97M, proving why NASA requires fission surface power.",
           "highlightElement": "btn-build-menu",
           "whyThisIsReal": "NASA Kilopower (KRUSTY) uses an enriched uranium cast core with Stirling power conversion to provide steady 10 kW electrical power through the 14-day night."
         }

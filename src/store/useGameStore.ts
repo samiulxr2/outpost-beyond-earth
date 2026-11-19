@@ -256,41 +256,44 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
 
     if (currentScreen === 'BASE_BUILDER') {
       // 1. Process pending comms commands (e.g. Earth-Mars 3-22 min light-time delay)
-      let currentPlaced = [...placedModules];
-      let currentTiles = [...get().gridTiles];
+      let currentPlaced = placedModules;
+      let currentTiles = get().gridTiles;
       let currentRoverDist = get().roverDistanceTraversedMeters;
       let currentIce = get().iceProspectingDetectedPct;
+      const pending = get().pendingCommands;
       const remainingPending: PendingCommand[] = [];
 
-      for (const cmd of get().pendingCommands) {
-        if (newSeconds >= cmd.executeAtMissionSeconds) {
-          if (cmd.type === 'PLACE_MODULE' && cmd.moduleId && cmd.x !== undefined && cmd.y !== undefined) {
-            const instanceId = `${cmd.moduleId}_${Date.now()}`;
-            currentPlaced.push({
-              instanceId,
-              moduleId: cmd.moduleId,
-              x: cmd.x,
-              y: cmd.y,
-              constructedAtMissionDay: newDays,
-              durabilityPct: 100,
-              isActive: true,
-              isConstructing: false,
-              constructionProgressPct: 100,
-              constructionTimeRemainingHours: 0,
-            });
-            currentTiles = currentTiles.map(t =>
-              t.x === cmd.x && t.y === cmd.y ? { ...t, occupiedByInstanceId: instanceId } : t
-            );
-          } else if (cmd.type === 'DRIVE_ROVER' && cmd.distanceMeters) {
-            currentRoverDist += cmd.distanceMeters;
-            if (cmd.icePct) currentIce = Math.max(currentIce, cmd.icePct);
-          } else if (cmd.type === 'REPAIR_MODULE' && cmd.targetInstanceId) {
-            currentPlaced = currentPlaced.map(m =>
-              m.instanceId === cmd.targetInstanceId ? { ...m, durabilityPct: 100 } : m
-            );
+      if (pending.length > 0) {
+        for (const cmd of pending) {
+          if (newSeconds >= cmd.executeAtMissionSeconds) {
+            if (cmd.type === 'PLACE_MODULE' && cmd.moduleId && cmd.x !== undefined && cmd.y !== undefined) {
+              const instanceId = `${cmd.moduleId}_${Date.now()}`;
+              currentPlaced = [...currentPlaced, {
+                instanceId,
+                moduleId: cmd.moduleId,
+                x: cmd.x,
+                y: cmd.y,
+                constructedAtMissionDay: newDays,
+                durabilityPct: 100,
+                isActive: true,
+                isConstructing: false,
+                constructionProgressPct: 100,
+                constructionTimeRemainingHours: 0,
+              }];
+              currentTiles = currentTiles.map(t =>
+                t.x === cmd.x && t.y === cmd.y ? { ...t, occupiedByInstanceId: instanceId } : t
+              );
+            } else if (cmd.type === 'DRIVE_ROVER' && cmd.distanceMeters) {
+              currentRoverDist += cmd.distanceMeters;
+              if (cmd.icePct) currentIce = Math.max(currentIce, cmd.icePct);
+            } else if (cmd.type === 'REPAIR_MODULE' && cmd.targetInstanceId) {
+              currentPlaced = currentPlaced.map(m =>
+                m.instanceId === cmd.targetInstanceId ? { ...m, durabilityPct: 100 } : m
+              );
+            }
+          } else {
+            remainingPending.push(cmd);
           }
-        } else {
-          remainingPending.push(cmd);
         }
       }
 
@@ -429,41 +432,44 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
 
     if (currentScreen === 'BASE_BUILDER') {
       // 1. Process pending comms commands (e.g. Earth-Mars 3-22 min light-time delay)
-      let currentPlaced = [...placedModules];
-      let currentTiles = [...get().gridTiles];
+      let currentPlaced = placedModules;
+      let currentTiles = get().gridTiles;
       let currentRoverDist = get().roverDistanceTraversedMeters;
       let currentIce = get().iceProspectingDetectedPct;
+      const pending = get().pendingCommands;
       const remainingPending: PendingCommand[] = [];
 
-      for (const cmd of get().pendingCommands) {
-        if (newSeconds >= cmd.executeAtMissionSeconds) {
-          if (cmd.type === 'PLACE_MODULE' && cmd.moduleId && cmd.x !== undefined && cmd.y !== undefined) {
-            const instanceId = `${cmd.moduleId}_${Date.now()}`;
-            currentPlaced.push({
-              instanceId,
-              moduleId: cmd.moduleId,
-              x: cmd.x,
-              y: cmd.y,
-              constructedAtMissionDay: newDays,
-              durabilityPct: 100,
-              isActive: true,
-              isConstructing: false,
-              constructionProgressPct: 100,
-              constructionTimeRemainingHours: 0,
-            });
-            currentTiles = currentTiles.map(t =>
-              t.x === cmd.x && t.y === cmd.y ? { ...t, occupiedByInstanceId: instanceId } : t
-            );
-          } else if (cmd.type === 'DRIVE_ROVER' && cmd.distanceMeters) {
-            currentRoverDist += cmd.distanceMeters;
-            if (cmd.icePct) currentIce = Math.max(currentIce, cmd.icePct);
-          } else if (cmd.type === 'REPAIR_MODULE' && cmd.targetInstanceId) {
-            currentPlaced = currentPlaced.map(m =>
-              m.instanceId === cmd.targetInstanceId ? { ...m, durabilityPct: 100 } : m
-            );
+      if (pending.length > 0) {
+        for (const cmd of pending) {
+          if (newSeconds >= cmd.executeAtMissionSeconds) {
+            if (cmd.type === 'PLACE_MODULE' && cmd.moduleId && cmd.x !== undefined && cmd.y !== undefined) {
+              const instanceId = `${cmd.moduleId}_${Date.now()}`;
+              currentPlaced = [...currentPlaced, {
+                instanceId,
+                moduleId: cmd.moduleId,
+                x: cmd.x,
+                y: cmd.y,
+                constructedAtMissionDay: newDays,
+                durabilityPct: 100,
+                isActive: true,
+                isConstructing: false,
+                constructionProgressPct: 100,
+                constructionTimeRemainingHours: 0,
+              }];
+              currentTiles = currentTiles.map(t =>
+                t.x === cmd.x && t.y === cmd.y ? { ...t, occupiedByInstanceId: instanceId } : t
+              );
+            } else if (cmd.type === 'DRIVE_ROVER' && cmd.distanceMeters) {
+              currentRoverDist += cmd.distanceMeters;
+              if (cmd.icePct) currentIce = Math.max(currentIce, cmd.icePct);
+            } else if (cmd.type === 'REPAIR_MODULE' && cmd.targetInstanceId) {
+              currentPlaced = currentPlaced.map(m =>
+                m.instanceId === cmd.targetInstanceId ? { ...m, durabilityPct: 100 } : m
+              );
+            }
+          } else {
+            remainingPending.push(cmd);
           }
-        } else {
-          remainingPending.push(cmd);
         }
       }
 
@@ -874,7 +880,10 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       return { ...obj, completed: isDone };
     });
 
-    set({ objectives: updated });
+    const hasAnyChange = updated.some((obj, idx) => obj.completed !== objectives[idx].completed);
+    if (hasAnyChange) {
+      set({ objectives: updated });
+    }
 
     if (allCompleted && updated.length > 0 && get().currentScreen === 'BASE_BUILDER') {
       const levelData = season1Data.levels.find(l => l.levelNumber === selectedLevelNumber) || season1Data.levels[0];

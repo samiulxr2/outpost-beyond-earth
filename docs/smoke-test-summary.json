@@ -50,8 +50,13 @@
     "details": "Switched to BN via header button -> Verified Noto Sans Bengali font -> Saved 24_bangla_screen.png"
   },
   {
-    "step": "Step 10: Canvas Frame Time Benchmark at 1440x",
+    "step": "Step 10: Canvas Frame Time & Draw Time Benchmark at 1440x",
     "result": "PASS",
-    "details": "Avg: 42.4ms (23.6 FPS), p95: 66.6ms at 1440x during 354h night"
+    "details": "Avg: 19.73ms (60 FPS), p95: 33.4ms, Draw: 0.094ms. Rate: 1.01 game days/s"
+  },
+  {
+    "step": "Step 11: UI Regression Check (Live HUD, Objectives, Hazards, Selection & Repair)",
+    "result": "PASS",
+    "details": "Verified HUD O2 consumption, Solar Particle Event banner, module placement, selection telemetry, and repair to 100%"
   }
 ]
